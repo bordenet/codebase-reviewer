@@ -4,8 +4,8 @@ import os
 import tempfile
 from pathlib import Path
 
-from codebase_reviewer.analyzers.documentation import DocumentationAnalyzer
 from codebase_reviewer.analyzers.code import CodeAnalyzer
+from codebase_reviewer.analyzers.documentation import DocumentationAnalyzer
 from codebase_reviewer.analyzers.validation import ValidationEngine
 from codebase_reviewer.orchestrator import AnalysisOrchestrator
 
@@ -48,10 +48,7 @@ def test_validation_engine():
     engine = ValidationEngine()
 
     # This is a basic test - just ensure it doesn't crash
-    from codebase_reviewer.models import (
-        DocumentationAnalysis,
-        CodeAnalysis,
-    )
+    from codebase_reviewer.models import CodeAnalysis, DocumentationAnalysis
 
     docs = DocumentationAnalysis()
     code = CodeAnalysis()

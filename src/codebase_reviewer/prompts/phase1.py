@@ -40,12 +40,8 @@ class Phase1Generator:
                             {"name": l.name, "percentage": l.percentage}
                             for l in (code.structure.languages if code.structure else [])
                         ],
-                        "frameworks": [
-                            f.name for f in (code.structure.frameworks if code.structure else [])
-                        ],
-                        "entry_points": [
-                            ep.path for ep in (code.structure.entry_points if code.structure else [])
-                        ],
+                        "frameworks": [f.name for f in (code.structure.frameworks if code.structure else [])],
+                        "entry_points": [ep.path for ep in (code.structure.entry_points if code.structure else [])],
                     },
                     "validation_results": (
                         [
@@ -76,9 +72,7 @@ class Phase1Generator:
                     "requires_code_analysis": True,
                 },
                 dependencies=["0.1", "0.2"],
-                critical_findings=(
-                    validation.architecture_drift if validation else None
-                ),
+                critical_findings=(validation.architecture_drift if validation else None),
             )
         )
 
@@ -101,9 +95,7 @@ class Phase1Generator:
                         ],
                         "total_count": len(code.dependencies),
                         "documented_prerequisites": (
-                            docs.setup_instructions.prerequisites
-                            if docs.setup_instructions
-                            else []
+                            docs.setup_instructions.prerequisites if docs.setup_instructions else []
                         ),
                     },
                     objective="Analyze project dependencies for health, security, and documentation accuracy",

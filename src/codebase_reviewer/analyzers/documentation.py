@@ -8,10 +8,10 @@ from typing import Dict, List, Optional, Tuple
 
 from codebase_reviewer.analyzers.constants import DOCUMENTATION_PATTERNS
 from codebase_reviewer.analyzers.parsing_utils import (
-    extract_section,
-    extract_list_items,
-    extract_code_blocks,
     detect_architecture_pattern,
+    extract_code_blocks,
+    extract_list_items,
+    extract_section,
 )
 from codebase_reviewer.models import (
     APISpec,
@@ -22,8 +22,8 @@ from codebase_reviewer.models import (
     DocumentationAnalysis,
     DocumentFile,
     Issue,
-    Severity,
     SetupGuide,
+    Severity,
 )
 
 
@@ -47,15 +47,11 @@ class DocumentationAnalyzer:
 
         # Prioritize and analyze documents
         readme_docs = [d for d in discovered_docs if d.doc_type == "primary"]
-        architecture_docs = [
-            d for d in discovered_docs if d.doc_type == "architecture"
-        ]
+        architecture_docs = [d for d in discovered_docs if d.doc_type == "architecture"]
         setup_docs = [d for d in discovered_docs if d.doc_type in ["setup", "primary"]]
 
         # Extract architecture claims
-        claimed_architecture = self._extract_architecture_claims(
-            readme_docs + architecture_docs
-        )
+        claimed_architecture = self._extract_architecture_claims(readme_docs + architecture_docs)
 
         # Extract setup instructions
         setup_instructions = self._extract_setup_guide(setup_docs)
@@ -65,9 +61,7 @@ class DocumentationAnalyzer:
         api_documentation = self._extract_api_spec(api_docs + readme_docs)
 
         # Extract coding standards
-        contributing_docs = [
-            d for d in discovered_docs if d.doc_type == "contributing"
-        ]
+        contributing_docs = [d for d in discovered_docs if d.doc_type == "contributing"]
         coding_standards = self._extract_coding_standards(contributing_docs)
 
         # Extract known issues
@@ -99,24 +93,16 @@ class DocumentationAnalyzer:
                     # Glob pattern
                     for file_path in repo_root.glob(pattern):
                         if file_path.is_file():
-                            discovered.append(
-                                self._create_document_file(
-                                    file_path, doc_type, repo_path
-                                )
-                            )
+                            discovered.append(self._create_document_file(file_path, doc_type, repo_path))
                 else:
                     # Exact path
                     file_path = repo_root / pattern
                     if file_path.is_file():
-                        discovered.append(
-                            self._create_document_file(file_path, doc_type, repo_path)
-                        )
+                        discovered.append(self._create_document_file(file_path, doc_type, repo_path))
 
         return self._prioritize_documents(discovered)
 
-    def _create_document_file(
-        self, file_path: Path, doc_type: str, repo_root: str
-    ) -> DocumentFile:
+    def _create_document_file(self, file_path: Path, doc_type: str, repo_root: str) -> DocumentFile:
         """Create DocumentFile object from path."""
         try:
             with open(file_path, "r", encoding="utf-8") as file:
@@ -154,9 +140,7 @@ class DocumentationAnalyzer:
         """Sort documents by priority."""
         return sorted(docs, key=lambda d: (d.priority, d.path))
 
-    def _extract_architecture_claims(
-        self, docs: List[DocumentFile]
-    ) -> ArchitectureClaims:
+    def _extract_architecture_claims(self, docs: List[DocumentFile]) -> ArchitectureClaims:
         """Extract architecture claims from documentation."""
         pattern = None
         layers: List[str] = []
@@ -227,17 +211,13 @@ class DocumentationAnalyzer:
 
         for doc in docs:
             # Extract prerequisites
-            prereq_section = extract_section(
-                doc.content, ["prerequisite", "requirement", "dependencies"]
-            )
+            prereq_section = extract_section(doc.content, ["prerequisite", "requirement", "dependencies"])
             if prereq_section:
                 prerequisites.extend(extract_list_items(prereq_section))
                 documented_in.append(doc.path)
 
             # Extract build steps
-            build_section = extract_section(
-                doc.content, ["build", "installation", "install", "setup"]
-            )
+            build_section = extract_section(doc.content, ["build", "installation", "install", "setup"])
             if build_section:
                 build_steps.extend(extract_list_items(build_section))
                 build_steps.extend(extract_code_blocks(build_section))
@@ -280,9 +260,7 @@ class DocumentationAnalyzer:
                 api_type = "GraphQL"
             elif "grpc" in content_lower:
                 api_type = "gRPC"
-            elif any(
-                keyword in content_lower for keyword in ["rest", "api", "endpoint"]
-            ):
+            elif any(keyword in content_lower for keyword in ["rest", "api", "endpoint"]):
                 api_type = "REST"
 
             # Extract endpoint patterns
@@ -295,9 +273,7 @@ class DocumentationAnalyzer:
             for pattern in endpoint_patterns:
                 matches = re.finditer(pattern, doc.content)
                 for match in matches:
-                    endpoints.append(
-                        {"method": match.group(1), "path": match.group(2)}
-                    )
+                    endpoints.append({"method": match.group(1), "path": match.group(2)})
 
             if endpoints or api_type:
                 documented_in.append(doc.path)
@@ -322,9 +298,7 @@ class DocumentationAnalyzer:
             documented_in=documented_in,
         )
 
-    def _extract_coding_standards(
-        self, docs: List[DocumentFile]
-    ) -> Optional[CodingStandards]:
+    def _extract_coding_standards(self, docs: List[DocumentFile]) -> Optional[CodingStandards]:
         """Extract coding standards and conventions."""
         if not docs:
             return None
@@ -360,9 +334,7 @@ class DocumentationAnalyzer:
 
         for doc in docs:
             # Look for known issues sections
-            issues_section = extract_section(
-                doc.content, ["known issue", "limitation", "bug", "todo"]
-            )
+            issues_section = extract_section(doc.content, ["known issue", "limitation", "bug", "todo"])
             if issues_section:
                 items = extract_list_items(issues_section)
                 for item in items[:10]:  # Limit

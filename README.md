@@ -1,14 +1,4 @@
-# Codebase Reviewer
-
-AI-powered codebase analysis and onboarding tool that generates structured prompts for systematic code review.
-
-## Overview
-
-Codebase Reviewer analyzes repositories to help teams:
-- **Onboard new engineers faster** with structured learning paths
-- **Review large codebases systematically** using AI-optimized prompts
-- **Identify technical debt and documentation drift** automatically
-- **Generate actionable remediation plans** prioritized by impact
+q
 
 ## Key Features
 
@@ -39,8 +29,6 @@ Generates AI prompts in 5 progressive phases:
 **For non-Python engineers or one-time use**, use the automated setup script that handles all dependencies:
 
 ```bash
-cd review-codebase
-
 # Show help
 ./setup.sh --help
 
@@ -67,9 +55,6 @@ The script automatically:
 If you're developing or want manual control:
 
 ```bash
-# Clone the repository
-cd review-codebase
-
 # Create virtual environment
 python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
@@ -77,9 +62,24 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Install in development mode
-pip install -e .
+# Install in development mode with dev dependencies
+pip install -e ".[dev]"
+
+# Set up pre-commit hooks (enforces quality checks on commits)
+pre-commit install
 ```
+
+### Pre-Commit Hooks
+
+This project uses pre-commit hooks to maintain code quality. Every commit automatically runs:
+
+- **Black** - Code formatting (auto-fixes)
+- **isort** - Import sorting (auto-fixes)
+- **PyLint** - Code linting (must score 9.5+/10)
+- **MyPy** - Type checking
+- **Pytest** - All tests must pass
+
+If any check fails, the commit is blocked. The hooks will auto-fix formatting issues when possible.
 
 ## Usage
 
@@ -353,7 +353,7 @@ black src/codebase_reviewer
 ## Project Structure
 
 ```
-review-codebase/
+codebase-reviewer/
 ├── src/
 │   └── codebase_reviewer/
 │       ├── __init__.py
@@ -430,7 +430,7 @@ A Claude skill is available for interactive codebase review within Claude conver
 **Usage**: Simply ask Claude to review a codebase, and the skill will guide a systematic multi-phase analysis:
 - Phase 0: Documentation review and claims extraction
 - Phase 1: Architecture validation against code
-- Phase 2: Implementation analysis (quality, security, observability)  
+- Phase 2: Implementation analysis (quality, security, observability)
 - Phase 3: Development workflow validation
 - Phase 4: Interactive remediation planning
 

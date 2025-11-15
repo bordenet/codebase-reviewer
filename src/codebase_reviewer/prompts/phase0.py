@@ -54,9 +54,7 @@ class Phase0Generator:
         # Prompt 0.2: Architecture Documentation Review
         arch_docs = [d for d in docs.discovered_docs if d.doc_type == "architecture"]
         if arch_docs:
-            arch_content = "\n\n---\n\n".join(
-                f"## {d.path}\n{d.content[:3000]}" for d in arch_docs[:3]
-            )
+            arch_content = "\n\n---\n\n".join(f"## {d.path}\n{d.content[:3000]}" for d in arch_docs[:3])
 
             prompts.append(
                 Prompt(
@@ -66,11 +64,7 @@ class Phase0Generator:
                     context={
                         "architecture_docs": arch_content,
                         "doc_count": len(arch_docs),
-                        "claimed_pattern": (
-                            docs.claimed_architecture.pattern
-                            if docs.claimed_architecture
-                            else None
-                        ),
+                        "claimed_pattern": (docs.claimed_architecture.pattern if docs.claimed_architecture else None),
                     },
                     objective="Understand the documented system architecture and design decisions",
                     tasks=[

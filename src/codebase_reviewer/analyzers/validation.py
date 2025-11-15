@@ -16,9 +16,7 @@ from codebase_reviewer.models import (
 class ValidationEngine:
     """Validates documentation claims against code implementation."""
 
-    def validate(
-        self, docs: DocumentationAnalysis, code: CodeAnalysis
-    ) -> DriftReport:
+    def validate(self, docs: DocumentationAnalysis, code: CodeAnalysis) -> DriftReport:
         """
         Validate documentation against code.
 
@@ -35,9 +33,7 @@ class ValidationEngine:
         undocumented_features = self._find_undocumented_features(docs, code)
 
         # Calculate overall drift severity
-        drift_severity = self._calculate_drift_severity(
-            architecture_drift, setup_drift, api_drift
-        )
+        drift_severity = self._calculate_drift_severity(architecture_drift, setup_drift, api_drift)
 
         return DriftReport(
             architecture_drift=architecture_drift,
@@ -48,9 +44,7 @@ class ValidationEngine:
             drift_severity=drift_severity,
         )
 
-    def _validate_architecture_claims(
-        self, docs: DocumentationAnalysis, code: CodeAnalysis
-    ) -> List[ValidationResult]:
+    def _validate_architecture_claims(self, docs: DocumentationAnalysis, code: CodeAnalysis) -> List[ValidationResult]:
         """Validate architecture claims against actual code structure."""
         results: List[ValidationResult] = []
 
@@ -66,26 +60,19 @@ class ValidationEngine:
                 (
                     c
                     for c in docs.claims
-                    if c.claim_type == ClaimType.ARCHITECTURE
-                    and claimed_arch.pattern.lower() in c.description.lower()
+                    if c.claim_type == ClaimType.ARCHITECTURE and claimed_arch.pattern.lower() in c.description.lower()
                 ),
                 None,
             )
 
             if pattern_claim:
                 # Check if claimed pattern matches detected frameworks
-                pattern_valid = self._check_pattern_consistency(
-                    claimed_arch.pattern, actual_structure.frameworks
-                )
+                pattern_valid = self._check_pattern_consistency(claimed_arch.pattern, actual_structure.frameworks)
 
                 results.append(
                     ValidationResult(
                         claim=pattern_claim,
-                        validation_status=(
-                            ValidationStatus.VALID
-                            if pattern_valid
-                            else ValidationStatus.PARTIAL
-                        ),
+                        validation_status=(ValidationStatus.VALID if pattern_valid else ValidationStatus.PARTIAL),
                         severity=Severity.MEDIUM,
                         evidence=f"Detected frameworks: {[f.name for f in actual_structure.frameworks]}",
                         recommendation=(
@@ -110,9 +97,7 @@ class ValidationEngine:
                 # Less than 50% of claimed components found
                 results.append(
                     ValidationResult(
-                        claim=docs.claims[0]
-                        if docs.claims
-                        else None,  # type: ignore
+                        claim=docs.claims[0] if docs.claims else None,  # type: ignore
                         validation_status=ValidationStatus.PARTIAL,
                         severity=Severity.MEDIUM,
                         evidence=f"Found {components_found}/{len(claimed_arch.components)} claimed components",
@@ -122,9 +107,7 @@ class ValidationEngine:
 
         return results
 
-    def _check_pattern_consistency(
-        self, claimed_pattern: str, frameworks: List
-    ) -> bool:
+    def _check_pattern_consistency(self, claimed_pattern: str, frameworks: List) -> bool:
         """Check if claimed architecture pattern is consistent with frameworks."""
         pattern_lower = claimed_pattern.lower()
 
@@ -139,17 +122,12 @@ class ValidationEngine:
             expected_frameworks = consistency_map[pattern_lower]
             framework_names = [f.name.lower() for f in frameworks]
 
-            return any(
-                any(exp in fname for exp in expected_frameworks)
-                for fname in framework_names
-            )
+            return any(any(exp in fname for exp in expected_frameworks) for fname in framework_names)
 
         # If we don't have rules, assume consistent
         return True
 
-    def _validate_setup_instructions(
-        self, docs: DocumentationAnalysis, code: CodeAnalysis
-    ) -> List[ValidationResult]:
+    def _validate_setup_instructions(self, docs: DocumentationAnalysis, code: CodeAnalysis) -> List[ValidationResult]:
         """Validate setup instructions against actual configuration."""
         results: List[ValidationResult] = []
 
@@ -159,11 +137,7 @@ class ValidationEngine:
         setup = docs.setup_instructions
 
         # Check if documented dependencies match actual dependencies
-        doc_deps = set(
-            dep.lower()
-            for dep in setup.prerequisites
-            if len(dep) > 3  # Filter out short words
-        )
+        doc_deps = set(dep.lower() for dep in setup.prerequisites if len(dep) > 3)  # Filter out short words
         actual_deps = set(dep.name.lower() for dep in code.dependencies)
 
         # Find dependencies mentioned in docs but not in dependency files
@@ -174,9 +148,7 @@ class ValidationEngine:
 
         if missing_deps and len(missing_deps) > 2:
             # More than 2 discrepancies
-            setup_claims = [
-                c for c in docs.claims if c.claim_type == ClaimType.SETUP
-            ]
+            setup_claims = [c for c in docs.claims if c.claim_type == ClaimType.SETUP]
             if setup_claims:
                 results.append(
                     ValidationResult(
@@ -190,9 +162,7 @@ class ValidationEngine:
 
         return results
 
-    def _validate_api_documentation(
-        self, docs: DocumentationAnalysis, code: CodeAnalysis
-    ) -> List[ValidationResult]:
+    def _validate_api_documentation(self, docs: DocumentationAnalysis, code: CodeAnalysis) -> List[ValidationResult]:
         """Validate API documentation against code."""
         results: List[ValidationResult] = []
 
@@ -226,9 +196,7 @@ class ValidationEngine:
 
         return results
 
-    def _find_undocumented_features(
-        self, docs: DocumentationAnalysis, code: CodeAnalysis
-    ) -> List[str]:
+    def _find_undocumented_features(self, docs: DocumentationAnalysis, code: CodeAnalysis) -> List[str]:
         """Find code features not mentioned in documentation."""
         undocumented: List[str] = []
 
@@ -239,9 +207,7 @@ class ValidationEngine:
         detected_frameworks = {f.name for f in code.structure.frameworks}
 
         # Get all documentation content
-        doc_content = " ".join(
-            doc.content.lower() for doc in docs.discovered_docs
-        )
+        doc_content = " ".join(doc.content.lower() for doc in docs.discovered_docs)
 
         for framework in detected_frameworks:
             if framework.lower() not in doc_content:
@@ -269,18 +235,11 @@ class ValidationEngine:
 
         # Count invalid/partial results
         invalid_count = sum(
-            1
-            for r in all_results
-            if r.validation_status
-            in [ValidationStatus.INVALID, ValidationStatus.PARTIAL]
+            1 for r in all_results if r.validation_status in [ValidationStatus.INVALID, ValidationStatus.PARTIAL]
         )
 
         # Check for critical/high severity issues
-        critical_count = sum(
-            1
-            for r in all_results
-            if r.severity in [Severity.CRITICAL, Severity.HIGH]
-        )
+        critical_count = sum(1 for r in all_results if r.severity in [Severity.CRITICAL, Severity.HIGH])
 
         if critical_count > 0:
             return Severity.HIGH

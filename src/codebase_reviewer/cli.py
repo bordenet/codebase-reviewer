@@ -60,9 +60,7 @@ def analyze(repo_path, output, prompts_output, format, quiet):  # pylint: disabl
             if not quiet:
                 click.echo(f"  {message}")
 
-        analysis = orchestrator.run_full_analysis(
-            repo_path, progress_callback=progress_callback
-        )
+        analysis = orchestrator.run_full_analysis(repo_path, progress_callback=progress_callback)
 
         # Save analysis results if requested
         if output:
@@ -71,68 +69,36 @@ def analyze(repo_path, output, prompts_output, format, quiet):  # pylint: disabl
                 "timestamp": analysis.timestamp.isoformat(),
                 "duration_seconds": analysis.analysis_duration_seconds,
                 "documentation": {
-                    "total_docs": len(analysis.documentation.discovered_docs)
-                    if analysis.documentation
-                    else 0,
-                    "completeness_score": (
-                        analysis.documentation.completeness_score
-                        if analysis.documentation
-                        else 0
-                    ),
-                    "claims_count": (
-                        len(analysis.documentation.claims)
-                        if analysis.documentation
-                        else 0
-                    ),
+                    "total_docs": len(analysis.documentation.discovered_docs) if analysis.documentation else 0,
+                    "completeness_score": (analysis.documentation.completeness_score if analysis.documentation else 0),
+                    "claims_count": (len(analysis.documentation.claims) if analysis.documentation else 0),
                 },
                 "code": {
                     "languages": [
                         {"name": l.name, "percentage": l.percentage}
                         for l in (
-                            analysis.code.structure.languages
-                            if analysis.code and analysis.code.structure
-                            else []
+                            analysis.code.structure.languages if analysis.code and analysis.code.structure else []
                         )
                     ],
                     "frameworks": [
                         f.name
                         for f in (
-                            analysis.code.structure.frameworks
-                            if analysis.code and analysis.code.structure
-                            else []
+                            analysis.code.structure.frameworks if analysis.code and analysis.code.structure else []
                         )
                     ],
-                    "quality_issues_count": (
-                        len(analysis.code.quality_issues) if analysis.code else 0
-                    ),
+                    "quality_issues_count": (len(analysis.code.quality_issues) if analysis.code else 0),
                 },
                 "validation": {
-                    "drift_severity": (
-                        analysis.validation.drift_severity.value
-                        if analysis.validation
-                        else "unknown"
-                    ),
+                    "drift_severity": (analysis.validation.drift_severity.value if analysis.validation else "unknown"),
                     "architecture_drift_count": (
-                        len(analysis.validation.architecture_drift)
-                        if analysis.validation
-                        else 0
+                        len(analysis.validation.architecture_drift) if analysis.validation else 0
                     ),
-                    "setup_drift_count": (
-                        len(analysis.validation.setup_drift)
-                        if analysis.validation
-                        else 0
-                    ),
+                    "setup_drift_count": (len(analysis.validation.setup_drift) if analysis.validation else 0),
                 },
                 "prompts": {
-                    "total_count": (
-                        len(analysis.prompts.all_prompts()) if analysis.prompts else 0
-                    ),
+                    "total_count": (len(analysis.prompts.all_prompts()) if analysis.prompts else 0),
                     "by_phase": {
-                        f"phase{i}": (
-                            len(getattr(analysis.prompts, f"phase{i}"))
-                            if analysis.prompts
-                            else 0
-                        )
+                        f"phase{i}": (len(getattr(analysis.prompts, f"phase{i}")) if analysis.prompts else 0)
                         for i in range(5)
                     },
                 },
@@ -142,11 +108,7 @@ def analyze(repo_path, output, prompts_output, format, quiet):  # pylint: disabl
                 json.dump(output_data, f, indent=2)
 
             if not quiet:
-                click.echo(
-                    click.style(
-                        f"\n✓ Analysis results saved to: {output}", fg="green"
-                    )
-                )
+                click.echo(click.style(f"\n✓ Analysis results saved to: {output}", fg="green"))
 
         # Save prompts
         if analysis.prompts:
@@ -157,38 +119,22 @@ def analyze(repo_path, output, prompts_output, format, quiet):  # pylint: disabl
                 prompts_output = "prompts.md" if format != "json" else "prompts.json"
 
             if format in ["markdown", "both"]:
-                md_output = (
-                    prompts_output if prompts_output.endswith(".md") else f"{prompts_output}.md"
-                )
-                markdown_content = prompt_gen.export_prompts_markdown(
-                    analysis.prompts
-                )
+                md_output = prompts_output if prompts_output.endswith(".md") else f"{prompts_output}.md"
+                markdown_content = prompt_gen.export_prompts_markdown(analysis.prompts)
                 with open(md_output, "w", encoding="utf-8") as f:
                     f.write(markdown_content)
 
                 if not quiet:
-                    click.echo(
-                        click.style(
-                            f"✓ Prompts saved to: {md_output}", fg="green"
-                        )
-                    )
+                    click.echo(click.style(f"✓ Prompts saved to: {md_output}", fg="green"))
 
             if format in ["json", "both"]:
-                json_output = (
-                    prompts_output
-                    if prompts_output.endswith(".json")
-                    else f"{prompts_output}.json"
-                )
+                json_output = prompts_output if prompts_output.endswith(".json") else f"{prompts_output}.json"
                 json_content = prompt_gen.export_prompts_json(analysis.prompts)
                 with open(json_output, "w", encoding="utf-8") as f:
                     f.write(json_content)
 
                 if not quiet:
-                    click.echo(
-                        click.style(
-                            f"✓ Prompts saved to: {json_output}", fg="green"
-                        )
-                    )
+                    click.echo(click.style(f"✓ Prompts saved to: {json_output}", fg="green"))
 
         # Display summary
         if not quiet:
@@ -205,21 +151,15 @@ def analyze(repo_path, output, prompts_output, format, quiet):  # pylint: disabl
 
 def display_summary(analysis):
     """Display analysis summary."""
-    click.echo(
-        click.style("\n" + "=" * 60, fg="cyan")
-    )
+    click.echo(click.style("\n" + "=" * 60, fg="cyan"))
     click.echo(click.style("ANALYSIS SUMMARY", fg="cyan", bold=True))
     click.echo(click.style("=" * 60, fg="cyan"))
 
     # Documentation
     if analysis.documentation:
         click.echo(click.style("\nDocumentation:", fg="yellow", bold=True))
-        click.echo(
-            f"  Files found: {len(analysis.documentation.discovered_docs)}"
-        )
-        click.echo(
-            f"  Completeness: {analysis.documentation.completeness_score:.1f}%"
-        )
+        click.echo(f"  Files found: {len(analysis.documentation.discovered_docs)}")
+        click.echo(f"  Completeness: {analysis.documentation.completeness_score:.1f}%")
         click.echo(f"  Claims extracted: {len(analysis.documentation.claims)}")
 
         if analysis.documentation.claimed_architecture:
@@ -234,21 +174,15 @@ def display_summary(analysis):
             click.echo(f"  {lang.name}: {lang.percentage:.1f}%")
 
         if analysis.code.structure.frameworks:
-            click.echo(
-                f"  Frameworks: {', '.join(f.name for f in analysis.code.structure.frameworks)}"
-            )
+            click.echo(f"  Frameworks: {', '.join(f.name for f in analysis.code.structure.frameworks)}")
 
         if analysis.code.quality_issues:
-            click.echo(
-                f"  Quality issues: {len(analysis.code.quality_issues)}"
-            )
+            click.echo(f"  Quality issues: {len(analysis.code.quality_issues)}")
 
     # Validation
     if analysis.validation:
         click.echo(click.style("\nValidation:", fg="yellow", bold=True))
-        click.echo(
-            f"  Drift severity: {analysis.validation.drift_severity.value.upper()}"
-        )
+        click.echo(f"  Drift severity: {analysis.validation.drift_severity.value.upper()}")
         drift_total = (
             len(analysis.validation.architecture_drift)
             + len(analysis.validation.setup_drift)
@@ -257,9 +191,7 @@ def display_summary(analysis):
         click.echo(f"  Drift issues: {drift_total}")
 
         if analysis.validation.undocumented_features:
-            click.echo(
-                f"  Undocumented features: {len(analysis.validation.undocumented_features)}"
-            )
+            click.echo(f"  Undocumented features: {len(analysis.validation.undocumented_features)}")
 
     # Prompts
     if analysis.prompts:
@@ -299,11 +231,7 @@ def prompts(repo_path, phase):
     try:
         repo_path = str(Path(repo_path).resolve())
 
-        click.echo(
-            click.style(
-                f"\nGenerating prompts for: {repo_path}\n", fg="cyan", bold=True
-            )
-        )
+        click.echo(click.style(f"\nGenerating prompts for: {repo_path}\n", fg="cyan", bold=True))
 
         orchestrator = AnalysisOrchestrator()
         analysis = orchestrator.run_full_analysis(repo_path)
@@ -330,18 +258,14 @@ def prompts(repo_path, phase):
 
             click.echo(
                 click.style(
-                    f"\n{'=' * 60}\n"
-                    f"PHASE {phase_num}: {phase_names[phase_num]}\n"
-                    f"{'=' * 60}\n",
+                    f"\n{'=' * 60}\n" f"PHASE {phase_num}: {phase_names[phase_num]}\n" f"{'=' * 60}\n",
                     fg="cyan",
                     bold=True,
                 )
             )
 
             for prompt in phase_prompts:
-                click.echo(
-                    click.style(f"\n[{prompt.prompt_id}] {prompt.title}", bold=True)
-                )
+                click.echo(click.style(f"\n[{prompt.prompt_id}] {prompt.title}", bold=True))
                 click.echo(f"\nObjective: {prompt.objective}\n")
                 click.echo("Tasks:")
                 for task in prompt.tasks:
@@ -376,9 +300,7 @@ def web(host, port, debug):
 
         run_server(host=host, port=port, debug=debug)
     except ImportError as e:
-        click.echo(
-            click.style(f"\n✗ Error: {str(e)}", fg="red"), err=True
-        )
+        click.echo(click.style(f"\n✗ Error: {str(e)}", fg="red"), err=True)
         click.echo("\nMake sure Flask is installed: pip install Flask")
         sys.exit(1)
     except Exception as e:  # pylint: disable=broad-except

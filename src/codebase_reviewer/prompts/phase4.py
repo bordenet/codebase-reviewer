@@ -17,9 +17,7 @@ class Phase4Generator:
 
         if analysis.validation:
             for drift in (
-                analysis.validation.architecture_drift
-                + analysis.validation.setup_drift
-                + analysis.validation.api_drift
+                analysis.validation.architecture_drift + analysis.validation.setup_drift + analysis.validation.api_drift
             ):
                 all_issues.append(
                     {
@@ -50,18 +48,10 @@ class Phase4Generator:
                 context={
                     "total_issues": len(all_issues),
                     "issues_by_severity": {
-                        "critical": len(
-                            [i for i in all_issues if i.get("severity") == "critical"]
-                        ),
-                        "high": len(
-                            [i for i in all_issues if i.get("severity") == "high"]
-                        ),
-                        "medium": len(
-                            [i for i in all_issues if i.get("severity") == "medium"]
-                        ),
-                        "low": len(
-                            [i for i in all_issues if i.get("severity") == "low"]
-                        ),
+                        "critical": len([i for i in all_issues if i.get("severity") == "critical"]),
+                        "high": len([i for i in all_issues if i.get("severity") == "high"]),
+                        "medium": len([i for i in all_issues if i.get("severity") == "medium"]),
+                        "low": len([i for i in all_issues if i.get("severity") == "low"]),
                     },
                     "top_issues": all_issues[:15],
                 },
