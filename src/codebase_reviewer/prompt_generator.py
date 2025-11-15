@@ -3,17 +3,13 @@
 import json
 from typing import List
 
-from codebase_reviewer.models import (
-    Prompt,
-    PromptCollection,
-    RepositoryAnalysis,
-)
+from codebase_reviewer.models import Prompt, PromptCollection, RepositoryAnalysis
+from codebase_reviewer.prompts.export import PromptExporter
 from codebase_reviewer.prompts.phase0 import Phase0Generator
 from codebase_reviewer.prompts.phase1 import Phase1Generator
 from codebase_reviewer.prompts.phase2 import Phase2Generator
 from codebase_reviewer.prompts.phase3 import Phase3Generator
 from codebase_reviewer.prompts.phase4 import Phase4Generator
-from codebase_reviewer.prompts.export import PromptExporter
 
 
 class PromptGenerator:
@@ -27,9 +23,7 @@ class PromptGenerator:
         self.phase4 = Phase4Generator()
         self.exporter = PromptExporter()
 
-    def generate_all_phases(
-        self, repo_analysis: RepositoryAnalysis
-    ) -> PromptCollection:
+    def generate_all_phases(self, repo_analysis: RepositoryAnalysis) -> PromptCollection:
         """
         Generate complete prompt set for all phases.
 

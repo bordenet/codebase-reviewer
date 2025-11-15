@@ -4,7 +4,7 @@ import json
 import os
 import tempfile
 
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, jsonify, render_template, request, send_file
 
 from codebase_reviewer.orchestrator import AnalysisOrchestrator
 from codebase_reviewer.prompt_generator import PromptGenerator
@@ -49,70 +49,30 @@ def analyze():
             "timestamp": analysis.timestamp.isoformat(),
             "duration_seconds": analysis.analysis_duration_seconds,
             "documentation": {
-                "total_docs": (
-                    len(analysis.documentation.discovered_docs)
-                    if analysis.documentation
-                    else 0
-                ),
-                "completeness_score": (
-                    analysis.documentation.completeness_score
-                    if analysis.documentation
-                    else 0
-                ),
-                "claims_count": (
-                    len(analysis.documentation.claims)
-                    if analysis.documentation
-                    else 0
-                ),
+                "total_docs": (len(analysis.documentation.discovered_docs) if analysis.documentation else 0),
+                "completeness_score": (analysis.documentation.completeness_score if analysis.documentation else 0),
+                "claims_count": (len(analysis.documentation.claims) if analysis.documentation else 0),
             },
             "code": {
                 "languages": [
                     {"name": l.name, "percentage": l.percentage}
-                    for l in (
-                        analysis.code.structure.languages
-                        if analysis.code and analysis.code.structure
-                        else []
-                    )
+                    for l in (analysis.code.structure.languages if analysis.code and analysis.code.structure else [])
                 ],
                 "frameworks": [
                     f.name
-                    for f in (
-                        analysis.code.structure.frameworks
-                        if analysis.code and analysis.code.structure
-                        else []
-                    )
+                    for f in (analysis.code.structure.frameworks if analysis.code and analysis.code.structure else [])
                 ],
-                "quality_issues_count": (
-                    len(analysis.code.quality_issues) if analysis.code else 0
-                ),
+                "quality_issues_count": (len(analysis.code.quality_issues) if analysis.code else 0),
             },
             "validation": {
-                "drift_severity": (
-                    analysis.validation.drift_severity.value
-                    if analysis.validation
-                    else "unknown"
-                ),
-                "architecture_drift_count": (
-                    len(analysis.validation.architecture_drift)
-                    if analysis.validation
-                    else 0
-                ),
-                "setup_drift_count": (
-                    len(analysis.validation.setup_drift)
-                    if analysis.validation
-                    else 0
-                ),
+                "drift_severity": (analysis.validation.drift_severity.value if analysis.validation else "unknown"),
+                "architecture_drift_count": (len(analysis.validation.architecture_drift) if analysis.validation else 0),
+                "setup_drift_count": (len(analysis.validation.setup_drift) if analysis.validation else 0),
             },
             "prompts": {
-                "total_count": (
-                    len(analysis.prompts.all_prompts()) if analysis.prompts else 0
-                ),
+                "total_count": (len(analysis.prompts.all_prompts()) if analysis.prompts else 0),
                 "by_phase": {
-                    f"phase{i}": (
-                        len(getattr(analysis.prompts, f"phase{i}"))
-                        if analysis.prompts
-                        else 0
-                    )
+                    f"phase{i}": (len(getattr(analysis.prompts, f"phase{i}")) if analysis.prompts else 0)
                     for i in range(5)
                 },
             },
@@ -168,9 +128,7 @@ def get_prompts():
             md_lines.append(f"\n**Deliverable:** {prompt.deliverable}\n")
 
             if prompt.dependencies:
-                md_lines.append(
-                    f"\n**Dependencies:** {', '.join(prompt.dependencies)}\n"
-                )
+                md_lines.append(f"\n**Dependencies:** {', '.join(prompt.dependencies)}\n")
 
             md_lines.append("\n**Context:**\n```json\n")
             md_lines.append(json.dumps(prompt.context, indent=2))
@@ -224,9 +182,7 @@ def download_prompts():
     with os.fdopen(fd, "w") as f:
         f.write(content)
 
-    return send_file(
-        path, mimetype=mimetype, as_attachment=True, download_name=filename
-    )
+    return send_file(path, mimetype=mimetype, as_attachment=True, download_name=filename)
 
 
 def run_server(host="127.0.0.1", port=5000, debug=False):

@@ -1,6 +1,6 @@
 """Setup configuration for Codebase Reviewer."""
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -13,7 +13,7 @@ setup(
     description="AI-powered codebase analysis and onboarding tool",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/bordenet/scripts",
+    url="https://github.com/matt/codebase-reviewer",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     classifiers=[
@@ -49,6 +49,7 @@ setup(
             "pytest-cov>=4.1.0",
             "black>=23.12.1",
             "mypy>=1.7.1",
+            "pre-commit>=3.6.0",
         ],
     },
     entry_points={

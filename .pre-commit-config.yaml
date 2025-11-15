@@ -1,0 +1,82 @@
+# Pre-commit hooks for codebase-reviewer
+# See https://pre-commit.com for more information
+
+repos:
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: mixed-line-ending
+
+  # Python code formatting with black
+  - repo: https://github.com/psf/black
+    rev: 23.12.1
+    hooks:
+      - id: black
+        args: ['--line-length=120']
+        language_version: python3
+
+  # Python import sorting
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ['--profile', 'black', '--line-length', '120']
+
+  # Python linting with pylint
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: .venv/bin/python
+        args: ['-m', 'pylint', 'src/codebase_reviewer', '--max-line-length=120', '--min-similarity-lines=10', '--fail-under=9.5']
+        language: system
+        types: [python]
+        require_serial: true
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
+  # Python type checking with mypy
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: .venv/bin/python
+        args: ['-m', 'mypy', 'src/codebase_reviewer', '--ignore-missing-imports']
+        language: system
+        types: [python]
+        require_serial: true
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
+  # Run pytest tests
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: .venv/bin/python
+        args: ['-m', 'pytest', 'tests/', '-v', '--tb=short']
+        language: system
+        types: [python]
+        require_serial: true
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
+  # Check requirements.txt is sorted
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: requirements-txt-fixer
+        files: requirements.txt

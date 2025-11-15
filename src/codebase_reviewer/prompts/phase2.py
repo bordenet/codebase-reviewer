@@ -30,14 +30,10 @@ class Phase2Generator:
                 title="Code Quality and Technical Debt Assessment",
                 context={
                     "todo_count": len(todos),
-                    "sample_todos": [
-                        {"title": t.title, "description": t.description}
-                        for t in todos[:10]
-                    ],
+                    "sample_todos": [{"title": t.title, "description": t.description} for t in todos[:10]],
                     "security_issues_count": len(security_issues),
                     "sample_security_issues": [
-                        {"title": s.title, "description": s.description}
-                        for s in security_issues[:5]
+                        {"title": s.title, "description": s.description} for s in security_issues[:5]
                     ],
                 },
                 objective="Assess code quality, identify technical debt, and security concerns",
@@ -68,11 +64,7 @@ class Phase2Generator:
                 title="Observability and Operational Maturity",
                 context={
                     "repository_path": analysis.repository_path,
-                    "frameworks": (
-                        [f.name for f in code.structure.frameworks]
-                        if code.structure
-                        else []
-                    ),
+                    "frameworks": ([f.name for f in code.structure.frameworks] if code.structure else []),
                 },
                 objective="Assess logging, monitoring, and operational maturity of the codebase",
                 tasks=[

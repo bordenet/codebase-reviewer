@@ -39,9 +39,7 @@ class PromptExporter:
                 lines.append(f"\n**Deliverable:** {prompt.deliverable}\n")
 
                 if prompt.dependencies:
-                    lines.append(
-                        f"\n**Dependencies:** {', '.join(prompt.dependencies)}\n"
-                    )
+                    lines.append(f"\n**Dependencies:** {', '.join(prompt.dependencies)}\n")
 
                 lines.append("\n**Context:**\n```json\n")
                 lines.append(json.dumps(prompt.context, indent=2))

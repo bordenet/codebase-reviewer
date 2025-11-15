@@ -6,11 +6,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from codebase_reviewer.analyzers.constants import (
-    LANGUAGE_EXTENSIONS,
-    FRAMEWORK_PATTERNS,
-    DEPENDENCY_FILES,
-)
+from codebase_reviewer.analyzers.constants import DEPENDENCY_FILES, FRAMEWORK_PATTERNS, LANGUAGE_EXTENSIONS
 from codebase_reviewer.models import (
     CodeAnalysis,
     CodeStructure,
@@ -104,9 +100,7 @@ class CodeAnalyzer:
                     try:
                         with open(file_path, "r", encoding="utf-8") as f_handle:
                             lines = sum(1 for _ in f_handle)
-                            extension_lines[ext] = (
-                                extension_lines.get(ext, 0) + lines
-                            )
+                            extension_lines[ext] = extension_lines.get(ext, 0) + lines
                     except (UnicodeDecodeError, PermissionError):
                         pass
 
@@ -137,16 +131,12 @@ class CodeAnalyzer:
         for framework_name, patterns in FRAMEWORK_PATTERNS.items():
             for file_pattern, search_term in patterns:
                 if self._search_for_pattern(repo_path, file_pattern, search_term):
-                    frameworks.append(
-                        Framework(name=framework_name, confidence=0.8)
-                    )
+                    frameworks.append(Framework(name=framework_name, confidence=0.8))
                     break
 
         return frameworks
 
-    def _search_for_pattern(
-        self, repo_path: str, file_pattern: str, search_term: str
-    ) -> bool:
+    def _search_for_pattern(self, repo_path: str, file_pattern: str, search_term: str) -> bool:
         """Search for pattern in files."""
         repo_root = Path(repo_path)
 
@@ -172,9 +162,7 @@ class CodeAnalyzer:
 
         return False
 
-    def _find_entry_points(
-        self, repo_path: str, languages: List[Language]
-    ) -> List[EntryPoint]:
+    def _find_entry_points(self, repo_path: str, languages: List[Language]) -> List[EntryPoint]:
         """Find application entry points."""
         entry_points: List[EntryPoint] = []
 
@@ -227,11 +215,7 @@ class CodeAnalyzer:
 
         for root, dirs, files in os.walk(repo_path):
             # Skip ignored directories
-            dirs[:] = [
-                d
-                for d in dirs
-                if d not in [".git", "node_modules", "venv", "__pycache__"]
-            ]
+            dirs[:] = [d for d in dirs if d not in [".git", "node_modules", "venv", "__pycache__"]]
             total_dirs += len(dirs)
             total_files += len(files)
 
@@ -242,9 +226,7 @@ class CodeAnalyzer:
             total_dirs=total_dirs,
         )
 
-    def _analyze_dependencies(
-        self, repo_path: str, structure: CodeStructure
-    ) -> List[DependencyInfo]:
+    def _analyze_dependencies(self, repo_path: str, structure: CodeStructure) -> List[DependencyInfo]:
         """Analyze project dependencies."""
         dependencies: List[DependencyInfo] = []
 
@@ -273,9 +255,7 @@ class CodeAnalyzer:
 
         return dependencies
 
-    def _parse_dependency_file(
-        self, file_path: Path, language: str
-    ) -> List[DependencyInfo]:
+    def _parse_dependency_file(self, file_path: Path, language: str) -> List[DependencyInfo]:
         """Parse dependency file."""
         dependencies: List[DependencyInfo] = []
 
@@ -315,11 +295,7 @@ class CodeAnalyzer:
                                     DependencyInfo(
                                         name=name,
                                         version=version,
-                                        dependency_type=(
-                                            "production"
-                                            if dep_type == "dependencies"
-                                            else "development"
-                                        ),
+                                        dependency_type=("production" if dep_type == "dependencies" else "development"),
                                         source_file=str(file_path.name),
                                     )
                                 )
@@ -360,9 +336,7 @@ class CodeAnalyzer:
                                 if match:
                                     todo_type = match.group(1)
                                     description = match.group(2).strip()
-                                    relative_path = os.path.relpath(
-                                        file_path, repo_path
-                                    )
+                                    relative_path = os.path.relpath(file_path, repo_path)
                                     issues.append(
                                         Issue(
                                             title=f"{todo_type} in {relative_path}:{line_num}",
@@ -402,9 +376,7 @@ class CodeAnalyzer:
 
                             for pattern, description in secret_patterns:
                                 if re.search(pattern, content, re.IGNORECASE):
-                                    relative_path = os.path.relpath(
-                                        file_path, repo_path
-                                    )
+                                    relative_path = os.path.relpath(file_path, repo_path)
                                     issues.append(
                                         Issue(
                                             title=f"Potential {description}",
