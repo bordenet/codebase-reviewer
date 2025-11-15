@@ -175,10 +175,10 @@ install_dependencies() {
 
     # Upgrade pip
     log_info "Upgrading pip..."
-    python -m pip install --upgrade pip --quiet
+    "$VENV_DIR/bin/python" -m pip install --upgrade pip --quiet
 
     # Check if dependencies are already installed
-    if python -c "import codebase_reviewer" 2>/dev/null; then
+    if "$VENV_DIR/bin/python" -c "import codebase_reviewer" 2>/dev/null; then
         log_info "Dependencies already installed"
         return 0
     fi
@@ -264,7 +264,7 @@ main() {
         fi
 
         # Run analysis
-        python -m codebase_reviewer analyze "$repo_path"
+        "$VENV_DIR/bin/python" -m codebase_reviewer analyze "$repo_path"
 
     else
         # Web UI mode
@@ -275,7 +275,7 @@ main() {
         echo ""
 
         # Run web server
-        python -m codebase_reviewer web
+        "$VENV_DIR/bin/python" -m codebase_reviewer web
     fi
 }
 
