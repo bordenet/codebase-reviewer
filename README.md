@@ -1,4 +1,6 @@
-q
+# Codebase Reviewer
+
+Python tool for analyzing codebases and generating AI review prompts.
 
 ## Key Features
 
@@ -24,9 +26,9 @@ Generates AI prompts in 5 progressive phases:
 - Architecture pattern detection and validation
 - Setup instruction validation
 
-## Quick Start (Recommended)
+## Quick Start
 
-**For non-Python engineers or one-time use**, use the automated setup script that handles all dependencies:
+Use the automated setup script:
 
 ```bash
 # Show help
@@ -42,13 +44,11 @@ Generates AI prompts in 5 progressive phases:
 ./setup.sh --force-setup
 ```
 
-The script automatically:
-- Detects and uses Python 3.9+
-- Creates and manages a virtual environment in `.venv/`
-- Installs all dependencies
-- Runs the tool in your chosen mode
-
-**No need to manually manage virtual environments!** The script handles everything for you.
+The script:
+- Detects Python 3.9+
+- Creates virtual environment in `.venv/`
+- Installs dependencies
+- Runs the tool
 
 ## Manual Installation (For Development)
 
@@ -71,15 +71,13 @@ pre-commit install
 
 ### Pre-Commit Hooks
 
-This project uses pre-commit hooks to maintain code quality. Every commit automatically runs:
+Pre-commit hooks enforce code quality:
 
-- **Black** - Code formatting (auto-fixes)
-- **isort** - Import sorting (auto-fixes)
-- **PyLint** - Code linting (must score 9.5+/10)
-- **MyPy** - Type checking
-- **Pytest** - All tests must pass
-
-If any check fails, the commit is blocked. The hooks will auto-fix formatting issues when possible.
+- Black - Code formatting (auto-fixes)
+- isort - Import sorting (auto-fixes)
+- PyLint - Linting (requires 9.5+/10)
+- MyPy - Type checking
+- Pytest - All tests must pass
 
 ## Usage
 
@@ -130,12 +128,11 @@ python -m codebase_reviewer web --debug
 
 Then open your browser to `http://127.0.0.1:5000`
 
-**Features:**
-- 🎨 Clean, modern interface
-- 📊 Real-time analysis progress
-- 📈 Visual metrics dashboard
-- 💾 Download prompts (Markdown/JSON)
-- 📁 Export analysis results
+Features:
+- Real-time analysis progress
+- Visual metrics dashboard
+- Download prompts (Markdown/JSON)
+- Export analysis results
 
 ### Example Output
 
@@ -375,63 +372,22 @@ codebase-reviewer/
 └── README.md                      # This file
 ```
 
-## Design Philosophy
-
-1. **Documentation-First**: Always analyze docs before code to understand claims
-2. **Progressive Disclosure**: Layer information from high-level to detailed
-3. **Validation-Centric**: Cross-check documentation against reality
-4. **AI-Optimized**: Generate prompts designed for AI assistant workflows
-5. **Actionable**: Produce prioritized, executable recommendations
-
 ## Limitations
 
 - Static analysis only (no code execution)
-- Best suited for repositories with documentation
-- Initial release supports Python, JavaScript/TypeScript, Java, C#, Go, Ruby, Shell
-- Large repositories (>1GB) may require significant processing time
-
-## Future Enhancements
-
-- Web interface for interactive analysis
-- Direct AI model integration (API calls)
-- Historical analysis (code evolution over time)
-- Team contribution pattern analysis
-- IDE integration (VS Code, JetBrains)
-- Custom plugin system for analyzers
+- Supports Python, JavaScript/TypeScript, Java, C#, Go, Ruby, Shell
+- Large repositories (>1GB) may be slow
 
 ## Contributing
 
-This tool is designed for extension:
+To extend this tool:
 
-1. **Add Language Support**: Extend `LANGUAGE_EXTENSIONS` in `code.py`
-2. **Add Framework Detection**: Update `FRAMEWORK_PATTERNS` in `code.py`
-3. **Add Documentation Patterns**: Modify `DOCUMENTATION_PATTERNS` in `documentation.py`
-4. **Custom Validation Rules**: Extend `ValidationEngine` class
-5. **Custom Prompts**: Modify `PromptGenerator` methods
+1. Add language support: Extend `LANGUAGE_EXTENSIONS` in `code.py`
+2. Add framework detection: Update `FRAMEWORK_PATTERNS` in `code.py`
+3. Add documentation patterns: Modify `DOCUMENTATION_PATTERNS` in `documentation.py`
+4. Custom validation rules: Extend `ValidationEngine` class
+5. Custom prompts: Modify `PromptGenerator` methods
 
 ## License
 
 MIT License - see LICENSE file
-
-## Authors
-
-Engineering Excellence Team
-
----
-
-**Built with high standards. Tested on real codebases.**
-
-## Claude Skill
-
-A Claude skill is available for interactive codebase review within Claude conversations.
-
-**Location**: `~/.skills/codebase-review/skill.md`
-
-**Usage**: Simply ask Claude to review a codebase, and the skill will guide a systematic multi-phase analysis:
-- Phase 0: Documentation review and claims extraction
-- Phase 1: Architecture validation against code
-- Phase 2: Implementation analysis (quality, security, observability)
-- Phase 3: Development workflow validation
-- Phase 4: Interactive remediation planning
-
-The skill follows the same documentation-first methodology as this tool.
