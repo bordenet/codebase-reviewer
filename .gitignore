@@ -213,5 +213,11 @@ marimo/_lsp/
 __marimo__/
 
 
-#Ignore vscode AI rules
+# Ignore vscode AI rules
 .github/instructions/codacy.instructions.md
+
+# Codebase reviewer output files
+analysis-results.json
+prompts.json
+prompts.md
+prompts.md.json

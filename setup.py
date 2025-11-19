@@ -8,14 +8,18 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setup(
     name="review-codebase",
     version="1.0.0",
-    author="Engineering Excellence Team",
-    author_email="engineering@example.com",
-    description="AI-powered codebase analysis and onboarding tool",
+    author="Matt",
+    author_email="",
+    description="Python tool for analyzing codebases and generating AI review prompts",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/matt/codebase-reviewer",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
+    package_data={
+        "codebase_reviewer": ["templates/*.html"],
+    },
+    include_package_data=True,
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
