@@ -528,22 +528,133 @@ Open an issue or reach out to the maintainers.
 
 ### Phase 5: External Service Setup
 
-#### 5.1 Codecov Setup
+⚠️ **CRITICAL**: These steps are REQUIRED for badges to work. Do not skip!
+
+#### 5.1 Codecov Setup (REQUIRED)
+
+**Why**: Without this, the codecov badge will show "unknown" and coverage won't be tracked.
 
 **Steps**:
 1. Visit https://codecov.io
-2. Sign in with GitHub
-3. Add the repository
-4. Copy the upload token
-5. Add to GitHub repository secrets:
-   - Go to repository Settings → Secrets and variables → Actions
-   - Click "New repository secret"
-   - Name: `CODECOV_TOKEN`
-   - Value: (paste token)
+2. Click "Sign up" or "Log in" → Choose "Sign in with GitHub"
+3. Authorize Codecov to access your GitHub account
+4. Click "Add new repository" or go to https://app.codecov.io/gh/<owner>
+5. Find your repository in the list and click it
+6. You'll see a setup page with your upload token
+7. Copy the upload token (starts with something like `abc123...`)
+8. Go to your GitHub repository
+9. Click Settings → Secrets and variables → Actions
+10. Click "New repository secret"
+11. Name: `CODECOV_TOKEN` (exactly this, case-sensitive)
+12. Value: (paste the token you copied)
+13. Click "Add secret"
 
-**Verification**: Next CI run should upload coverage to Codecov.
+**Verification**:
+- Secret should appear in the list (value will be hidden)
+- Next CI run should upload coverage to Codecov
+- Codecov badge should update within 5 minutes of successful upload
 
-#### 5.2 Optional: Read the Docs Setup
+**Troubleshooting**:
+- If badge still shows "unknown" after CI run, check Codecov dashboard for errors
+- Verify token is named exactly `CODECOV_TOKEN`
+- Check CI logs for "Upload coverage to Codecov" step - should show success
+- May need to wait 5-10 minutes for badge to update after first upload
+
+#### 5.2 Fix CI Failures (REQUIRED)
+
+**Why**: CI badge shows "failing" when tests/quality checks don't pass.
+
+**Common Causes & Fixes**:
+
+**A. Coverage Below Threshold**
+
+Check CI logs for:
+```
+FAILED tests/ - AssertionError: coverage is below 80%
+```
+
+**Fix Options**:
+1. **Improve test coverage** (preferred):
+   ```bash
+   # Find uncovered code
+   pytest tests/ -v --cov=src/<package_name> --cov-report=term-missing
+   # Add tests for missing lines
+   ```
+
+2. **Lower threshold temporarily**:
+   - Edit `.pre-commit-config.yaml`: Change `--cov-fail-under=80` to `--cov-fail-under=60`
+   - Edit `.github/workflows/ci.yml`: Add `--cov-fail-under=60` to pytest command
+   - Commit and push
+
+**B. Pylint Score Below 9.5**
+
+Check CI logs for:
+```
+Your code has been rated at 8.5/10
+```
+
+**Fix Options**:
+1. **Fix linting issues** (preferred):
+   ```bash
+   # See all issues
+   pylint src/<package_name>
+   # Fix issues in code
+   ```
+
+2. **Lower threshold temporarily**:
+   - Edit `.pre-commit-config.yaml`: Change `--fail-under=9.5` to `--fail-under=8.0`
+   - Edit `.github/workflows/ci.yml`: Change `--fail-under=9.5` to `--fail-under=8.0`
+   - Commit and push
+
+**C. Type Checking Failures**
+
+Check CI logs for mypy errors.
+
+**Fix Options**:
+1. **Fix type issues** (preferred):
+   ```bash
+   mypy src/<package_name>
+   # Add type hints or fix type errors
+   ```
+
+2. **Add exceptions**:
+   - Create `mypy.ini`:
+     ```ini
+     [mypy]
+     ignore_missing_imports = True
+     disallow_untyped_defs = False
+     ```
+
+**D. Import Sorting Issues**
+
+Check CI logs for isort errors.
+
+**Fix**:
+```bash
+# Auto-fix locally
+isort src/<package_name> tests/
+# Commit and push
+```
+
+**E. Code Formatting Issues**
+
+Check CI logs for black errors.
+
+**Fix**:
+```bash
+# Auto-fix locally
+black src/<package_name> tests/
+# Commit and push
+```
+
+**Verification After Fixes**:
+1. Run locally: `pre-commit run --all-files`
+2. All checks should pass
+3. Commit and push
+4. Wait for CI to complete (check Actions tab)
+5. CI badge should turn green within 2-3 minutes
+
+#### 5.3 Optional: Read the Docs Setup
 
 If project needs documentation hosting:
 
