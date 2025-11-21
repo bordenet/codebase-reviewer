@@ -41,14 +41,29 @@ Generates AI prompts in 5 progressive phases:
 
 ## Quick Start
 
+### Web UI (Recommended)
+
+**One command to start everything:**
+
+```bash
+./start-web.sh
+```
+
+This script:
+- ✅ Sets up virtual environment automatically
+- ✅ Installs all dependencies
+- ✅ Kills stale processes on the port
+- ✅ Finds an available port (defaults to 3000)
+- ✅ Opens your browser automatically
+- ✅ Just works - zero friction!
+
+### CLI Analysis
+
 Use the automated setup script:
 
 ```bash
 # Show help
 ./setup.sh --help
-
-# Start web UI (opens at http://localhost:5000)
-./setup.sh
 
 # Analyze a repository via CLI
 ./setup.sh /path/to/repository
@@ -125,11 +140,23 @@ python -m codebase_reviewer prompts /path/to/repo --phase 0
 ### Web Interface
 
 #### Start Web Server
-```bash
-# Using the automated script (recommended)
-./setup.sh
 
-# Or manually (if venv is activated)
+**Recommended: Use the startup script**
+
+```bash
+./start-web.sh
+```
+
+This automatically:
+- Sets up dependencies
+- Kills stale processes
+- Finds an available port
+- Opens your browser
+
+**Manual start (if needed):**
+
+```bash
+# Start web server (default port 3000)
 python -m codebase_reviewer web
 
 # Specify custom host and port
@@ -139,7 +166,7 @@ python -m codebase_reviewer web --host 0.0.0.0 --port 8080
 python -m codebase_reviewer web --debug
 ```
 
-Then open your browser to `http://127.0.0.1:5000`
+Then open your browser to `http://127.0.0.1:3000` (or your specified port)
 
 Features:
 - Real-time analysis progress

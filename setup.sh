@@ -69,7 +69,8 @@ ARGUMENTS:
 MODES:
     Web UI Mode (default):
         ./setup-and-run.sh
-        Starts the web interface on http://localhost:5000
+        Starts the web interface on http://localhost:3000
+        (Note: Use ./start-web.sh for better UX with auto-browser opening)
 
     CLI Mode:
         ./setup-and-run.sh /path/to/repository
@@ -269,13 +270,15 @@ main() {
     else
         # Web UI mode
         log_info "Starting web UI..."
-        log_info "Access at: http://localhost:5000"
+        log_info "Access at: http://localhost:3000"
         echo ""
         log_warning "Press Ctrl+C to stop the server"
         echo ""
+        log_info "Tip: Use ./start-web.sh for auto-browser opening and better port management"
+        echo ""
 
         # Run web server
-        "$VENV_DIR/bin/python" -m codebase_reviewer web
+        "$VENV_DIR/bin/python" -m codebase_reviewer web --port 3000
     fi
 }
 
