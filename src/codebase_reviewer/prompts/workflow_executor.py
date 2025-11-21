@@ -69,9 +69,7 @@ class WorkflowExecutor:
         self._executions: Dict[str, PromptExecution] = {}
         self._progress: Optional[WorkflowProgress] = None
 
-    def execute(
-        self, workflow_name: str, repo_analysis: RepositoryAnalysis
-    ) -> tuple[List[Prompt], WorkflowProgress]:
+    def execute(self, workflow_name: str, repo_analysis: RepositoryAnalysis) -> tuple[List[Prompt], WorkflowProgress]:
         """Execute a workflow and return generated prompts with progress.
 
         Args:
@@ -126,9 +124,7 @@ class WorkflowExecutor:
             return prompt_ref.custom.id
         return "unknown"
 
-    def _execute_workflow(
-        self, workflow_def: WorkflowDefinition, repo_analysis: RepositoryAnalysis
-    ) -> List[Prompt]:
+    def _execute_workflow(self, workflow_def: WorkflowDefinition, repo_analysis: RepositoryAnalysis) -> List[Prompt]:
         """Execute all prompts in the workflow.
 
         Args:
@@ -173,4 +169,3 @@ class WorkflowExecutor:
             WorkflowProgress object or None if no workflow is executing
         """
         return self._progress
-
