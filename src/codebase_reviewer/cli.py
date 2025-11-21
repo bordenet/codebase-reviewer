@@ -8,6 +8,7 @@ import click
 
 from codebase_reviewer.orchestrator import AnalysisOrchestrator
 from codebase_reviewer.prompt_generator import PromptGenerator
+from codebase_reviewer.simulation import LLMSimulator
 
 
 @click.group()
@@ -312,6 +313,58 @@ def web(host, port, debug):
         sys.exit(1)
     except Exception as e:  # pylint: disable=broad-except
         click.echo(click.style(f"\n✗ Error: {str(e)}", fg="red"), err=True)
+        sys.exit(1)
+
+
+@cli.command()
+@click.argument("repo_path", type=click.Path(exists=True))
+@click.option(
+    "--workflow",
+    "-w",
+    default="default",
+    help="Workflow to use for simulation (default, reviewer_criteria, etc.)",
+)
+@click.option(
+    "--output-dir",
+    "-o",
+    type=click.Path(),
+    help="Directory to save simulation results (default: ./simulation_results)",
+)
+def simulate(repo_path, workflow, output_dir):
+    """Run LLM simulation to test and tune prompts.
+
+    This command simulates running the prompts against a repository,
+    allowing you to review and tune the prompt quality before using
+    them with a real LLM.
+
+    Example:
+        codebase-reviewer simulate . --workflow reviewer_criteria
+    """
+    try:
+        click.echo(click.style("\n🎯 Starting LLM Simulation", fg="cyan", bold=True))
+        click.echo(f"Repository: {repo_path}")
+        click.echo(f"Workflow: {workflow}")
+
+        # Run simulation
+        simulator = LLMSimulator(output_dir=output_dir)
+        result = simulator.run_simulation(repo_path, workflow=workflow)
+
+        # Print summary
+        simulator.print_summary(result)
+
+        click.echo(click.style("\n✅ Simulation complete!", fg="green", bold=True))
+        click.echo(f"\nResults saved to: {simulator.output_dir}")
+        click.echo("\nNext steps:")
+        click.echo("1. Review the generated prompts in the markdown report")
+        click.echo("2. Identify prompts that need improvement")
+        click.echo("3. Update the prompt templates in src/codebase_reviewer/prompts/templates/")
+        click.echo("4. Re-run the simulation to verify improvements")
+
+    except Exception as e:  # pylint: disable=broad-except
+        click.echo(click.style(f"\n✗ Error: {str(e)}", fg="red"), err=True)
+        import traceback
+
+        traceback.print_exc()
         sys.exit(1)
 
 
