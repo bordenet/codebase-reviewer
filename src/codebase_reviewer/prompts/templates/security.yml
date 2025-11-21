@@ -1,0 +1,96 @@
+# Security & Safety Analysis Prompts
+# Phase: Security Assessment
+# Focus: Security vulnerabilities, error handling, and safety checks
+
+prompts:
+  - id: "security.1"
+    title: "Security Vulnerability Assessment"
+    objective: "Identify potential security vulnerabilities and unsafe practices in the codebase"
+    tasks:
+      - "Scan for common security vulnerabilities (SQL injection, XSS, CSRF, etc.)"
+      - "Check for hardcoded credentials, API keys, or sensitive data"
+      - "Review authentication and authorization mechanisms"
+      - "Identify insecure cryptographic practices"
+      - "Check for unsafe deserialization or eval() usage"
+      - "Review file upload/download security"
+      - "Assess input validation and sanitization"
+      - "Check for security headers and CORS configuration"
+    deliverable: |
+      **Security Assessment Report**
+
+      ## Critical Security Issues
+      [List any critical vulnerabilities found]
+
+      ## Medium Priority Issues
+      [List medium-priority security concerns]
+
+      ## Low Priority Issues
+      [List minor security improvements]
+
+      ## Security Best Practices
+      [Recommendations for improving security posture]
+
+      ## Compliance Considerations
+      [Any relevant compliance requirements (GDPR, HIPAA, etc.)]
+
+  - id: "security.2"
+    title: "Error Handling & Resilience Verification"
+    objective: "Verify error handling patterns and system resilience"
+    tasks:
+      - "Review error handling patterns across the codebase"
+      - "Check for proper exception handling and logging"
+      - "Identify areas where errors are silently swallowed"
+      - "Verify graceful degradation strategies"
+      - "Check for proper resource cleanup (file handles, connections, etc.)"
+      - "Review retry logic and circuit breaker patterns"
+      - "Assess error messages for information leakage"
+      - "Verify proper handling of edge cases and boundary conditions"
+    deliverable: |
+      **Error Handling Analysis**
+
+      ## Error Handling Patterns
+      [Document common error handling patterns used]
+
+      ## Issues Found
+      - **Missing Error Handling**: [List areas lacking proper error handling]
+      - **Silent Failures**: [List places where errors are ignored]
+      - **Resource Leaks**: [List potential resource leak scenarios]
+
+      ## Resilience Assessment
+      [Evaluate system resilience and fault tolerance]
+
+      ## Recommendations
+      [Specific improvements for error handling and resilience]
+
+  - id: "security.3"
+    title: "Dependency Security Audit"
+    objective: "Assess security of third-party dependencies and supply chain"
+    tasks:
+      - "Review all third-party dependencies for known vulnerabilities"
+      - "Check dependency versions against security advisories"
+      - "Identify outdated or unmaintained dependencies"
+      - "Review dependency licenses for compliance"
+      - "Assess dependency update strategy"
+      - "Check for dependency confusion vulnerabilities"
+      - "Review package lock files for integrity"
+      - "Identify opportunities to reduce dependency footprint"
+    deliverable: |
+      **Dependency Security Report**
+
+      ## Vulnerable Dependencies
+      [List dependencies with known vulnerabilities]
+
+      ## Outdated Dependencies
+      [List dependencies that should be updated]
+
+      ## License Issues
+      [Any licensing concerns or incompatibilities]
+
+      ## Supply Chain Risks
+      [Assessment of supply chain security risks]
+
+      ## Recommendations
+      - **Immediate Actions**: [Critical updates needed]
+      - **Short-term**: [Updates to plan for]
+      - **Long-term**: [Strategic dependency management improvements]
+

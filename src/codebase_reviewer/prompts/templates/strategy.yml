@@ -1,0 +1,199 @@
+# Principal Engineer Strategy Prompts
+# Phase: Strategic Planning & Mentorship
+# Focus: Long-term improvements, documentation, instrumentation, and team guidance
+
+prompts:
+  - id: "strategy.1"
+    title: "Living Documentation Strategy"
+    objective: "Develop strategy for maintaining up-to-date, useful documentation"
+    tasks:
+      - "Assess current documentation coverage and quality"
+      - "Identify documentation gaps for critical functionality"
+      - "Evaluate documentation tooling and infrastructure"
+      - "Review API documentation completeness"
+      - "Assess architecture decision records (ADRs)"
+      - "Check for outdated or misleading documentation"
+      - "Evaluate documentation discoverability"
+      - "Recommend documentation-as-code practices"
+    deliverable: |
+      **Living Documentation Strategy**
+
+      ## Current State
+      - **Coverage**: [What's documented vs. what's not]
+      - **Quality**: [Assessment of existing documentation]
+      - **Tooling**: [Current documentation tools and processes]
+
+      ## Gaps & Issues
+      - **Missing Documentation**: [Critical undocumented areas]
+      - **Outdated Content**: [Documentation that needs updates]
+      - **Discoverability**: [How easy it is to find documentation]
+
+      ## Recommended Approach
+      - **Documentation-as-Code**: [Integrate docs with codebase]
+      - **Automated Generation**: [Use tools to generate docs from code]
+      - **Review Process**: [Include docs in code review]
+      - **Templates**: [Standard templates for different doc types]
+
+      ## Implementation Plan
+      1. **Immediate**: [Quick wins for documentation]
+      2. **Short-term**: [Documentation infrastructure improvements]
+      3. **Long-term**: [Cultural and process changes]
+
+  - id: "strategy.2"
+    title: "Observability & Instrumentation Strategy"
+    objective: "Plan comprehensive observability and monitoring approach"
+    tasks:
+      - "Assess current logging practices and coverage"
+      - "Review metrics collection and monitoring"
+      - "Evaluate distributed tracing capabilities"
+      - "Check error tracking and alerting"
+      - "Assess performance monitoring"
+      - "Review log aggregation and analysis tools"
+      - "Identify blind spots in observability"
+      - "Recommend instrumentation improvements"
+    deliverable: |
+      **Observability Strategy**
+
+      ## Current Observability
+      - **Logging**: [Current logging approach and coverage]
+      - **Metrics**: [What metrics are collected]
+      - **Tracing**: [Distributed tracing capabilities]
+      - **Alerting**: [Current alerting setup]
+
+      ## Gaps & Blind Spots
+      [Areas lacking visibility]
+
+      ## Recommended Instrumentation
+      - **Structured Logging**: [Implement structured logging]
+      - **Key Metrics**: [Critical metrics to track]
+      - **Distributed Tracing**: [Tracing strategy for microservices]
+      - **Error Tracking**: [Centralized error tracking]
+      - **Performance Monitoring**: [APM and profiling]
+
+      ## Tooling Recommendations
+      [Specific tools and platforms to consider]
+
+      ## Implementation Roadmap
+      1. **Phase 1**: [Foundation - basic instrumentation]
+      2. **Phase 2**: [Enhancement - advanced observability]
+      3. **Phase 3**: [Optimization - proactive monitoring]
+
+  - id: "strategy.3"
+    title: "Test Coverage & Quality Strategy"
+    objective: "Develop comprehensive testing strategy and improve test quality"
+    tasks:
+      - "Assess current test coverage (unit, integration, e2e)"
+      - "Identify critical paths lacking tests"
+      - "Evaluate test quality and maintainability"
+      - "Review test execution time and flakiness"
+      - "Assess test data management"
+      - "Evaluate testing infrastructure and CI/CD"
+      - "Identify opportunities for test automation"
+      - "Recommend testing best practices"
+    deliverable: |
+      **Testing Strategy**
+
+      ## Current Test Coverage
+      - **Unit Tests**: [Coverage and quality]
+      - **Integration Tests**: [Coverage and quality]
+      - **E2E Tests**: [Coverage and quality]
+      - **Overall Coverage**: [Percentage and critical gaps]
+
+      ## Test Quality Issues
+      - **Flaky Tests**: [Tests that fail intermittently]
+      - **Slow Tests**: [Tests that slow down CI/CD]
+      - **Brittle Tests**: [Tests that break easily]
+
+      ## Critical Gaps
+      [Functionality that lacks adequate testing]
+
+      ## Recommended Approach
+      - **Test Pyramid**: [Balance of unit/integration/e2e tests]
+      - **Test Data**: [Strategy for test data management]
+      - **Mocking**: [When and how to use mocks]
+      - **Coverage Goals**: [Realistic coverage targets]
+
+      ## Implementation Plan
+      1. **Immediate**: [Critical test gaps to fill]
+      2. **Short-term**: [Test infrastructure improvements]
+      3. **Long-term**: [Testing culture and practices]
+
+  - id: "strategy.4"
+    title: "Technical Debt & Refactoring Roadmap"
+    objective: "Create prioritized plan for addressing technical debt"
+    tasks:
+      - "Catalog known technical debt items"
+      - "Assess impact and urgency of each debt item"
+      - "Estimate effort required for remediation"
+      - "Identify quick wins vs. long-term projects"
+      - "Prioritize based on business value and risk"
+      - "Create incremental refactoring plan"
+      - "Recommend debt prevention strategies"
+      - "Define metrics for tracking debt reduction"
+    deliverable: |
+      **Technical Debt Roadmap**
+
+      ## Debt Inventory
+      [Categorized list of technical debt items]
+
+      ## Prioritization Matrix
+      | Item | Impact | Effort | Priority | Timeline |
+      |------|--------|--------|----------|----------|
+      | ...  | ...    | ...    | ...      | ...      |
+
+      ## Quick Wins
+      [High-value, low-effort improvements]
+
+      ## Major Refactoring Projects
+      [Larger efforts requiring dedicated time]
+
+      ## Incremental Approach
+      [How to chip away at debt alongside feature work]
+
+      ## Prevention Strategy
+      - **Code Review**: [Standards to prevent new debt]
+      - **Architecture Review**: [Process for major changes]
+      - **Metrics**: [Track debt accumulation]
+
+      ## Success Metrics
+      [How to measure progress on debt reduction]
+
+  - id: "strategy.5"
+    title: "Team Mentorship & Best Practices Guide"
+    objective: "Provide guidance for coaching team on code quality and best practices"
+    tasks:
+      - "Identify common code quality issues in the codebase"
+      - "Document best practices for the team's tech stack"
+      - "Create examples of good vs. bad patterns"
+      - "Recommend code review guidelines"
+      - "Suggest pair programming or mob programming opportunities"
+      - "Identify areas where team training would help"
+      - "Recommend knowledge sharing practices"
+      - "Create onboarding guide for new developers"
+    deliverable: |
+      **Mentorship & Best Practices Guide**
+
+      ## Common Issues & Solutions
+      [Patterns to avoid and better alternatives]
+
+      ## Best Practices
+      - **Code Style**: [Consistent coding standards]
+      - **Architecture**: [Architectural patterns to follow]
+      - **Testing**: [Testing best practices]
+      - **Security**: [Security guidelines]
+      - **Performance**: [Performance considerations]
+
+      ## Code Review Guidelines
+      [What to look for in code reviews]
+
+      ## Learning Opportunities
+      - **Training Needs**: [Skills gaps to address]
+      - **Pair Programming**: [Good opportunities for pairing]
+      - **Knowledge Sharing**: [Topics for tech talks or docs]
+
+      ## Onboarding Guide
+      [How to get new developers up to speed]
+
+      ## Continuous Improvement
+      [Process for evolving practices over time]
+

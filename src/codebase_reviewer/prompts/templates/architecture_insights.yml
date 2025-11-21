@@ -1,0 +1,143 @@
+# Architecture Insights Prompts
+# Phase: Deep Architecture Analysis
+# Focus: Call graphs, hotspots, duplication, and structural analysis
+
+prompts:
+  - id: "arch.1"
+    title: "Call Graph & Dependency Tracing"
+    objective: "Map critical execution paths and dependency relationships"
+    tasks:
+      - "Identify main entry points and critical execution paths"
+      - "Trace call graphs for key functionality"
+      - "Map dependencies between modules and components"
+      - "Identify circular dependencies"
+      - "Analyze depth and complexity of call chains"
+      - "Find tightly coupled components"
+      - "Identify unused or dead code paths"
+      - "Map external API and service dependencies"
+    deliverable: |
+      **Call Graph Analysis**
+
+      ## Critical Execution Paths
+      [Document main execution flows]
+
+      ## Dependency Map
+      [Visual or textual representation of key dependencies]
+
+      ## Circular Dependencies
+      [List any circular dependencies found]
+
+      ## Coupling Analysis
+      - **Tightly Coupled**: [Components with high coupling]
+      - **Loosely Coupled**: [Well-isolated components]
+
+      ## Dead Code
+      [Unused functions, classes, or modules]
+
+      ## Recommendations
+      [Suggestions for improving dependency structure]
+
+  - id: "arch.2"
+    title: "Git Hotspots & Change Analysis"
+    objective: "Identify frequently changed files and potential problem areas"
+    tasks:
+      - "Analyze git history to find frequently modified files"
+      - "Identify files with high churn rate"
+      - "Correlate file changes with bug fixes"
+      - "Find files touched by many different developers"
+      - "Identify files that change together (temporal coupling)"
+      - "Analyze commit message patterns for problem indicators"
+      - "Find areas with frequent merge conflicts"
+      - "Identify technical debt accumulation patterns"
+    deliverable: |
+      **Git Hotspot Analysis**
+
+      ## High-Churn Files
+      [Files changed most frequently]
+
+      ## Bug-Prone Areas
+      [Files with high correlation to bug fixes]
+
+      ## Temporal Coupling
+      [Files that frequently change together]
+
+      ## Merge Conflict Zones
+      [Areas with frequent conflicts]
+
+      ## Developer Ownership
+      [Files with unclear or distributed ownership]
+
+      ## Recommendations
+      - **Refactoring Priorities**: [Files that need attention]
+      - **Ownership**: [Suggestions for code ownership]
+      - **Process Improvements**: [Ways to reduce churn]
+
+  - id: "arch.3"
+    title: "Code Duplication & Similarity Analysis"
+    objective: "Identify duplicated code and opportunities for consolidation"
+    tasks:
+      - "Scan for exact code duplication"
+      - "Identify similar code patterns that could be abstracted"
+      - "Find copy-paste programming instances"
+      - "Analyze duplication across different modules"
+      - "Identify repeated business logic"
+      - "Find duplicated configuration or constants"
+      - "Assess impact of duplication on maintainability"
+      - "Prioritize duplication by severity and impact"
+    deliverable: |
+      **Duplication Analysis Report**
+
+      ## Exact Duplicates
+      [Code blocks that are identical]
+
+      ## Similar Code Patterns
+      [Code that could be abstracted or unified]
+
+      ## Cross-Module Duplication
+      [Duplication across different parts of the system]
+
+      ## Impact Assessment
+      - **High Impact**: [Duplication in critical paths]
+      - **Medium Impact**: [Duplication in frequently changed code]
+      - **Low Impact**: [Minor duplication]
+
+      ## Consolidation Opportunities
+      [Specific recommendations for reducing duplication]
+
+      ## Estimated Effort
+      [Rough estimate of effort to address duplication]
+
+  - id: "arch.4"
+    title: "Cohesion & Coupling Boundary Analysis"
+    objective: "Assess module cohesion and coupling at architectural boundaries"
+    tasks:
+      - "Analyze cohesion within modules and classes"
+      - "Measure coupling between architectural layers"
+      - "Identify violations of architectural boundaries"
+      - "Check adherence to separation of concerns"
+      - "Assess API boundary design"
+      - "Review data flow across boundaries"
+      - "Identify leaky abstractions"
+      - "Evaluate interface segregation"
+    deliverable: |
+      **Cohesion & Coupling Analysis**
+
+      ## Cohesion Assessment
+      - **High Cohesion**: [Well-focused modules]
+      - **Low Cohesion**: [Modules doing too many things]
+
+      ## Coupling Assessment
+      - **Tight Coupling**: [Problematic dependencies]
+      - **Appropriate Coupling**: [Acceptable dependencies]
+
+      ## Boundary Violations
+      [Cases where architectural boundaries are crossed inappropriately]
+
+      ## Leaky Abstractions
+      [Abstractions that expose implementation details]
+
+      ## Recommendations
+      - **Refactoring**: [Specific areas to improve cohesion/coupling]
+      - **Architectural Changes**: [Larger structural improvements]
+      - **Interface Design**: [API improvements]
+

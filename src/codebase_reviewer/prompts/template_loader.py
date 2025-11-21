@@ -97,6 +97,46 @@ class PromptTemplateLoader:
         self.templates_dir = Path(templates_dir)
         self._templates_cache: Dict[int, List[PromptTemplate]] = {}
 
+    def load_template_file(self, template_filename: str) -> List[PromptTemplate]:
+        """Load templates from a specific template file.
+
+        Args:
+            template_filename: Name of the template file (e.g., "security.yml", "phase0.yml")
+
+        Returns:
+            List of PromptTemplate instances from the file
+
+        Raises:
+            PromptTemplateError: If template file cannot be loaded or is invalid
+        """
+        template_file = self.templates_dir / template_filename
+
+        if not template_file.exists():
+            raise PromptTemplateError(
+                f"Template file not found: {template_file}. " f"Expected templates in {self.templates_dir}"
+            )
+
+        try:
+            with open(template_file, "r", encoding="utf-8") as f:
+                data = yaml.safe_load(f)
+        except yaml.YAMLError as e:
+            raise PromptTemplateError(f"Invalid YAML in {template_file}: {e}") from e
+        except OSError as e:
+            raise PromptTemplateError(f"Error reading {template_file}: {e}") from e
+
+        if not data or "prompts" not in data:
+            raise PromptTemplateError(f"Template file {template_file} missing 'prompts' key")
+
+        templates = []
+        for prompt_data in data["prompts"]:
+            try:
+                template = PromptTemplate(**prompt_data)
+                templates.append(template)
+            except (TypeError, ValueError) as e:
+                raise PromptTemplateError(f"Invalid prompt template in {template_file}: {e}") from e
+
+        return templates
+
     def load_phase_templates(self, phase: int) -> List[PromptTemplate]:
         """Load all templates for a specific phase.
 
