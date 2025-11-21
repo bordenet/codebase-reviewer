@@ -60,13 +60,13 @@ repos:
         always_run: true
         stages: [pre-commit]
 
-  # Run pytest tests
+  # Run pytest tests with coverage
   - repo: local
     hooks:
       - id: pytest
         name: pytest
         entry: .venv/bin/python
-        args: ['-m', 'pytest', 'tests/', '-v', '--tb=short']
+        args: ['-m', 'pytest', 'tests/', '-v', '--tb=short', '--cov=src/codebase_reviewer', '--cov-report=term-missing:skip-covered', '--cov-fail-under=80']
         language: system
         types: [python]
         require_serial: true
