@@ -1,6 +1,6 @@
 """Phase 3: Development Workflow prompt generation."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from codebase_reviewer.models import Prompt, RepositoryAnalysis
 from codebase_reviewer.prompts.template_loader import PromptTemplateLoader
@@ -38,7 +38,7 @@ class Phase3Generator:
 
         return prompts
 
-    def _build_context(self, template, analysis: RepositoryAnalysis) -> Dict[str, Any]:
+    def _build_context(self, template, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context dictionary for a template."""
         if template.id == "3.1":
             return self._build_setup_validation_context(analysis)
@@ -48,7 +48,7 @@ class Phase3Generator:
             return self._build_cicd_context(analysis)
         return {}
 
-    def _build_setup_validation_context(self, analysis: RepositoryAnalysis) -> Dict[str, Any]:
+    def _build_setup_validation_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for setup validation prompt."""
         docs = analysis.documentation
         validation = analysis.validation
@@ -56,11 +56,13 @@ class Phase3Generator:
         return {
             "documented_setup": (
                 {
-                    "prerequisites": docs.setup_instructions.prerequisites,
-                    "build_steps": docs.setup_instructions.build_steps,
-                    "env_vars": docs.setup_instructions.environment_vars,
+                    "prerequisites": (
+                        docs.setup_instructions.prerequisites if docs and docs.setup_instructions else []
+                    ),
+                    "build_steps": (docs.setup_instructions.build_steps if docs and docs.setup_instructions else []),
+                    "env_vars": (docs.setup_instructions.environment_vars if docs and docs.setup_instructions else []),
                 }
-                if docs.setup_instructions
+                if docs and docs.setup_instructions
                 else None
             ),
             "validation_results": (
@@ -72,16 +74,16 @@ class Phase3Generator:
                     }
                     for r in validation.setup_drift
                 ]
-                if validation.setup_drift
+                if validation and validation.setup_drift
                 else []
             ),
-            "undocumented_features": validation.undocumented_features,
+            "undocumented_features": (validation.undocumented_features if validation else []),
         }
 
-    def _build_testing_context(self, analysis: RepositoryAnalysis) -> Dict[str, Any]:
+    def _build_testing_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for testing strategy prompt."""
         return {"repository_path": analysis.repository_path}
 
-    def _build_cicd_context(self, analysis: RepositoryAnalysis) -> Dict[str, Any]:
+    def _build_cicd_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for CI/CD review prompt."""
         return {"repository_path": analysis.repository_path}

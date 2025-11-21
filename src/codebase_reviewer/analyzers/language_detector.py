@@ -53,7 +53,12 @@ class LanguageDetector:
                 percentage = (lines / total_lines) * 100
                 if percentage >= 1.0:  # Only include languages with >= 1% usage
                     languages.append(
-                        Language(name=lang_name, percentage=round(percentage, 2), file_count=extension_counts[ext], line_count=lines)
+                        Language(
+                            name=lang_name,
+                            percentage=round(percentage, 2),
+                            file_count=extension_counts[ext],
+                            line_count=lines,
+                        )
                     )
 
         return languages
@@ -168,4 +173,3 @@ class LanguageDetector:
             ".mypy_cache",
         ]
         return not any(excl in path_str for excl in excluded)
-

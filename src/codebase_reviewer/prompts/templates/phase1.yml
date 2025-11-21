@@ -44,4 +44,3 @@ prompts:
       - "total_count"
       - "documented_prerequisites"
     conditional: "has_dependencies"
-
