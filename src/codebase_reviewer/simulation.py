@@ -287,4 +287,3 @@ class LLMSimulator:
         for i, response in enumerate(result.responses, 1):
             print(f"  {i}. {response.metadata.get('prompt_name', 'Unknown')} ({response.prompt_id})")
         print("=" * 80 + "\n")
-
