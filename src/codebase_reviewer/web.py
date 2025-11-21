@@ -8,6 +8,7 @@ from flask import Flask, jsonify, render_template, request, send_file
 
 from codebase_reviewer.orchestrator import AnalysisOrchestrator
 from codebase_reviewer.prompt_generator import PromptGenerator
+from codebase_reviewer.prompts.workflow_loader import WorkflowLoader
 
 # Get template directory
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
@@ -183,6 +184,65 @@ def download_prompts():
         f.write(content)
 
     return send_file(path, mimetype=mimetype, as_attachment=True, download_name=filename)
+
+
+@app.route("/api/workflows", methods=["GET"])
+def list_workflows():
+    """List all available workflows."""
+    try:
+        loader = WorkflowLoader()
+        workflows = loader.list_workflows()
+        return jsonify({"workflows": workflows})
+    except Exception as e:  # pylint: disable=broad-except
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/workflows/<workflow_name>", methods=["GET"])
+def get_workflow(workflow_name: str):
+    """Get a specific workflow definition."""
+    try:
+        loader = WorkflowLoader()
+        workflow = loader.load(workflow_name)
+
+        # Convert to dict for JSON serialization
+        workflow_dict = {
+            "name": workflow.name,
+            "description": workflow.description,
+            "version": workflow.version,
+            "sections": [
+                {
+                    "id": section.id,
+                    "title": section.title,
+                    "description": section.description,
+                    "prompts": [
+                        {
+                            "template": prompt.template if prompt.template else None,
+                            "custom": (
+                                {
+                                    "id": prompt.custom.id,
+                                    "title": prompt.custom.title,
+                                    "prompt": prompt.custom.prompt,
+                                    "objective": prompt.custom.objective,
+                                    "tasks": prompt.custom.tasks,
+                                    "deliverable": prompt.custom.deliverable,
+                                }
+                                if prompt.custom
+                                else None
+                            ),
+                        }
+                        for prompt in section.prompts
+                    ],
+                }
+                for section in workflow.sections
+            ],
+            "settings": workflow.settings,
+        }
+
+        return jsonify(workflow_dict)
+    except FileNotFoundError:
+        return jsonify({"error": f"Workflow '{workflow_name}' not found"}), 404
+    except Exception as e:  # pylint: disable=broad-except
+        return jsonify({"error": str(e)}), 500
 
 
 def run_server(host="127.0.0.1", port=3000, debug=False):
