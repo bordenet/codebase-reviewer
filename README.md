@@ -369,19 +369,38 @@ codebase-reviewer/
 │       ├── __init__.py
 │       ├── __main__.py
 │       ├── cli.py                 # Command-line interface
+│       ├── web.py                 # Flask web interface
 │       ├── models.py              # Data models
 │       ├── orchestrator.py        # Analysis orchestrator
 │       ├── prompt_generator.py    # Prompt generation
-│       └── analyzers/
+│       ├── analyzers/             # Analysis modules
+│       │   ├── __init__.py
+│       │   ├── code.py            # Code analyzer
+│       │   ├── constants.py       # Constants
+│       │   ├── documentation.py   # Documentation analyzer
+│       │   ├── parsing_utils.py   # Parsing utilities
+│       │   └── validation.py      # Validation engine
+│       └── prompts/               # Prompt templates
 │           ├── __init__.py
-│           ├── documentation.py   # Documentation analyzer
-│           ├── code.py            # Code analyzer
-│           └── validation.py      # Validation engine
+│           ├── export.py          # Export utilities
+│           ├── phase0.py          # Phase 0 prompts
+│           ├── phase1.py          # Phase 1 prompts
+│           ├── phase2.py          # Phase 2 prompts
+│           ├── phase3.py          # Phase 3 prompts
+│           └── phase4.py          # Phase 4 prompts
 ├── tests/                         # Test suite
+│   └── test_basic.py
+├── docs/                          # Documentation
+│   ├── PRD.md                     # Product requirements
+│   ├── DESIGN.md                  # Technical design
+│   └── CLAUDE.md                  # AI assistant guidelines
+├── .github/
+│   └── workflows/
+│       └── ci.yml                 # CI/CD pipeline
 ├── requirements.txt               # Dependencies
 ├── setup.py                       # Package setup
-├── PRD.md                         # Product requirements
-├── DESIGN.md                      # Technical design
+├── .pre-commit-config.yaml        # Pre-commit hooks
+├── .coveragerc                    # Coverage configuration
 └── README.md                      # This file
 ```
 
