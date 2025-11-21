@@ -102,6 +102,21 @@ class PhaseGenerator:
             "3.3": self._build_cicd_context,
             # Phase 4: Interactive Remediation
             "4.1": self._build_remediation_context,
+            # Security templates
+            "security.1": self._build_security_context,
+            "security.2": self._build_error_handling_context,
+            "security.3": self._build_dependency_security_context,
+            # Architecture insights templates
+            "arch.1": self._build_call_graph_context,
+            "arch.2": self._build_git_hotspots_context,
+            "arch.3": self._build_duplication_context,
+            "arch.4": self._build_cohesion_coupling_context,
+            # Strategy templates
+            "strategy.1": self._build_documentation_strategy_context,
+            "strategy.2": self._build_observability_strategy_context,
+            "strategy.3": self._build_testing_strategy_context,
+            "strategy.4": self._build_tech_debt_context,
+            "strategy.5": self._build_mentorship_context,
         }
 
     # ========== Phase 0 Context Builders ==========
@@ -342,3 +357,57 @@ class PhaseGenerator:
             },
             "top_issues": all_issues[:15],
         }
+
+    # ========== Security Context Builders ==========
+
+    def _build_security_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
+        """Build context for security vulnerability assessment."""
+        return self._build_quality_context(analysis)  # Reuse quality context for now
+
+    def _build_error_handling_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
+        """Build context for error handling verification."""
+        return self._build_quality_context(analysis)  # Reuse quality context for now
+
+    def _build_dependency_security_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
+        """Build context for dependency security audit."""
+        return self._build_dependency_context(analysis)  # Reuse dependency context for now
+
+    # ========== Architecture Insights Context Builders ==========
+
+    def _build_call_graph_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
+        """Build context for call graph and dependency tracing."""
+        return self._build_dependency_context(analysis)  # Reuse dependency context for now
+
+    def _build_git_hotspots_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
+        """Build context for git hotspots analysis."""
+        return self._build_quality_context(analysis)  # Reuse quality context for now
+
+    def _build_duplication_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
+        """Build context for code duplication analysis."""
+        return self._build_quality_context(analysis)  # Reuse quality context for now
+
+    def _build_cohesion_coupling_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
+        """Build context for cohesion and coupling analysis."""
+        return self._build_architecture_validation_context(analysis)  # Reuse architecture context for now
+
+    # ========== Strategy Context Builders ==========
+
+    def _build_documentation_strategy_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
+        """Build context for living documentation strategy."""
+        return self._build_architecture_docs_context(analysis)  # Reuse docs context for now
+
+    def _build_observability_strategy_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
+        """Build context for observability and instrumentation strategy."""
+        return self._build_observability_context(analysis)  # Reuse observability context for now
+
+    def _build_testing_strategy_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
+        """Build context for test coverage and quality strategy."""
+        return self._build_testing_context(analysis)  # Reuse testing context for now
+
+    def _build_tech_debt_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
+        """Build context for technical debt and refactoring roadmap."""
+        return self._build_remediation_context(analysis)  # Reuse remediation context for now
+
+    def _build_mentorship_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
+        """Build context for team mentorship and best practices guide."""
+        return self._build_quality_context(analysis)  # Reuse quality context for now

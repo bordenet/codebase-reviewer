@@ -58,8 +58,16 @@ class PromptGenerator:
                 if prompt_ref.template:
                     # Resolve template reference
                     template_file, prompt_id = self.workflow_loader.resolve_template_reference(prompt_ref.template)
-                    phase_num = int(template_file.replace("phase", "").replace(".yml", ""))
-                    prompts = self.generator.generate(phase_num, repo_analysis)
+
+                    # Check if it's a phase template or a named template
+                    if template_file.startswith("phase") and template_file.endswith(".yml"):
+                        # Phase template (e.g., phase0.yml)
+                        phase_num = int(template_file.replace("phase", "").replace(".yml", ""))
+                        prompts = self.generator.generate(phase_num, repo_analysis)
+                    else:
+                        # Named template (e.g., security.yml, architecture_insights.yml)
+                        prompts = self._generate_from_template_file(template_file, repo_analysis)
+
                     # Find the specific prompt by ID if specified
                     if prompt_id:
                         matching = [p for p in prompts if p.prompt_id == prompt_id]
@@ -89,6 +97,62 @@ class PromptGenerator:
             phase3=[],
             phase4=[],
         )
+
+    def _generate_from_template_file(self, template_filename: str, repo_analysis: RepositoryAnalysis) -> list:
+        """Generate prompts from a named template file.
+
+        Args:
+            template_filename: Name of the template file (e.g., "security.yml")
+            repo_analysis: Complete repository analysis
+
+        Returns:
+            List of Prompt instances
+        """
+        # Load templates from the file
+        templates = self.generator.loader.load_template_file(template_filename)
+        prompts = []
+
+        for template in templates:
+            # Get context builder for this template
+            context_builder = self.generator._context_builders.get(template.id)
+            if not context_builder:
+                # Skip if no context builder registered
+                continue
+
+            # Build context
+            context = context_builder(repo_analysis)
+            if context is None:
+                continue
+
+            # Create prompt
+            prompt = Prompt(
+                prompt_id=template.id,
+                phase=0,  # Will be organized later
+                title=template.title,
+                objective=template.objective,
+                tasks=template.tasks,
+                context=self._format_context(template.context, context),
+                deliverable=template.deliverable,
+            )
+            prompts.append(prompt)
+
+        return prompts
+
+    def _format_context(self, context_template: str, context_data: dict) -> str:
+        """Format a context template with data.
+
+        Args:
+            context_template: Template string with {placeholders}
+            context_data: Dictionary of values to substitute
+
+        Returns:
+            Formatted context string
+        """
+        try:
+            return context_template.format(**context_data)
+        except KeyError:
+            # If some keys are missing, return template as-is
+            return context_template
 
     def export_prompts_markdown(self, prompts: PromptCollection) -> str:
         """Export prompts to markdown format."""
