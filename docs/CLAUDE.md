@@ -122,6 +122,80 @@ Example:
 https://github.com/matt/codebase-reviewer/compare/main...feature-branch?expand=1
 ```
 
+## Shell Script Standards
+
+**CRITICAL**: This repository MUST be friction-free for adopters. If setup is painful, the repo is worthless.
+
+### Philosophy:
+
+We ALWAYS rely on high-quality shell scripts to:
+1. **Install dependencies** (`scripts/setup-*.sh`)
+2. **Run the application** (`start-web.sh`, `setup.sh`)
+
+### Shell Script Requirements:
+
+Every shell script MUST:
+
+1. **Be self-contained and robust**
+   - Kill abandoned sessions tying up ports
+   - Set up virtual environments automatically
+   - Install dependencies without user intervention
+   - Handle errors gracefully with clear messages
+   - Provide colored, informative output
+
+2. **Follow our style guide**
+   ```bash
+   #!/usr/bin/env bash
+   set -euo pipefail  # Fail fast, catch errors
+
+   # Colors for output
+   RED='\033[0;31m'
+   GREEN='\033[0;32m'
+   YELLOW='\033[1;33m'
+   BLUE='\033[0;34m'
+   NC='\033[0m' # No Color
+
+   log_info() { echo -e "${BLUE}ℹ${NC} $*"; }
+   log_success() { echo -e "${GREEN}✓${NC} $*"; }
+   log_warning() { echo -e "${YELLOW}⚠${NC} $*"; }
+   log_error() { echo -e "${RED}✗${NC} $*" >&2; }
+   ```
+
+3. **Handle port conflicts intelligently**
+   - Check if port is in use
+   - Kill stale processes (with user awareness)
+   - Find alternative ports automatically
+   - Use sensible defaults (avoid system ports like 5000 on macOS)
+
+4. **Provide excellent UX**
+   - Clear progress indicators
+   - Helpful error messages
+   - Show URLs where services are running
+   - Explain what's happening at each step
+
+5. **Be macOS-aware**
+   - Use BSD-compatible commands (not GNU)
+   - Handle Apple Silicon paths (`/opt/homebrew/`)
+   - Avoid ports used by macOS services (5000 = AirPlay)
+   - Test with `lsof` for port checking
+
+### Example: Running the Web App
+
+The `start-web.sh` script MUST:
+1. ✅ Set up the virtual environment
+2. ✅ Kill old abandoned sessions on the target port
+3. ✅ Build/install the app
+4. ✅ Start the server on an available port
+5. ✅ Open the web browser automatically
+6. ✅ Provide clear instructions for stopping
+
+**One command to rule them all:**
+```bash
+./start-web.sh
+```
+
+No manual venv activation. No port conflicts. No confusion. Just works.
+
 ## Pre-Commit Hooks
 
 This repository uses pre-commit hooks to enforce quality standards. All commits must pass:
