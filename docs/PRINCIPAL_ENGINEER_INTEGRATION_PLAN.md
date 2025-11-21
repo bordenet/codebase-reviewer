@@ -1,7 +1,7 @@
 # Principal Engineer Review Integration Plan
 
-**Date**: 2025-11-21  
-**Status**: PROPOSED  
+**Date**: 2025-11-21
+**Status**: PROPOSED
 **Goal**: Integrate Perplexity.ai's Principal Engineer review methodology into our existing architecture
 
 ---
@@ -78,7 +78,7 @@ workflow:
   name: "Principal Engineer Strategic Review"
   version: "1.0"
   description: "Comprehensive codebase assessment using Perplexity.ai methodology"
-  
+
   # Map to existing phases where possible
   phases:
     - id: "reconnaissance"
@@ -86,10 +86,10 @@ workflow:
       steps:
         - prompt_template: "phase0.yml#0.1"  # Reuse existing README analysis
           title: "Scan architecture docs & README"
-          
+
         - prompt_template: "phase1.yml#1.1"  # Reuse existing dependency mapping
           title: "Map critical modules & dependencies"
-          
+
         - prompt_template: "NEW"  # Requires new template
           title: "Run static analysis/lint tools"
           custom_prompt: |
@@ -198,4 +198,3 @@ codebase-reviewer analyze /path/to/repo --workflow security_audit
 2. Do we need a workflow marketplace/sharing mechanism?
 3. Should we support workflow composition (inherit from base workflows)?
 4. How do we handle workflow versioning and migration?
-

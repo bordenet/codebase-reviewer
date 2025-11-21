@@ -1,7 +1,7 @@
 # Implementation Recommendation: Principal Engineer Review Integration
 
-**Date**: 2025-11-21  
-**Recommendation**: **Option B - Workflow System** (with pragmatic phasing)  
+**Date**: 2025-11-21
+**Recommendation**: **Option B - Workflow System** (with pragmatic phasing)
 **Rationale**: Best long-term architecture, aligns with existing YAML-driven design
 
 ---
@@ -48,7 +48,7 @@ Our recent refactoring **already moved in this direction**:
 - Modify: `src/codebase_reviewer/cli.py` (add `--workflow` option)
 - Modify: `src/codebase_reviewer/prompt_generator.py` (add workflow support)
 
-**Complexity**: LOW  
+**Complexity**: LOW
 **Risk**: LOW (backward compatible)
 
 ---
@@ -66,7 +66,7 @@ Our recent refactoring **already moved in this direction**:
 - `src/codebase_reviewer/prompts/templates/architecture_insights.yml` (call graphs, hotspots)
 - `src/codebase_reviewer/prompts/templates/strategy.yml` (instrumentation, mentoring)
 
-**Complexity**: MEDIUM  
+**Complexity**: MEDIUM
 **Risk**: LOW (additive only)
 
 ---
@@ -85,7 +85,7 @@ Our recent refactoring **already moved in this direction**:
 - New file: `src/codebase_reviewer/workflow_state.py` (~150 lines)
 - Modify: `src/codebase_reviewer/web.py` (add workflow UI)
 
-**Complexity**: HIGH  
+**Complexity**: HIGH
 **Risk**: MEDIUM (new abstraction)
 
 ---
@@ -101,7 +101,7 @@ workflow:
   name: "Principal Engineer Strategic Review"
   version: "1.0"
   description: "Perplexity.ai methodology for principal engineers"
-  
+
   # Simple linear execution (no dependencies yet)
   sections:
     - id: "reconnaissance"
@@ -110,7 +110,7 @@ workflow:
         - template: "phase0.yml#0.1"  # Scan docs & README
         - template: "phase1.yml#1.1"  # Map dependencies
         - template: "phase2.yml#2.1"  # Static analysis
-    
+
     - id: "hygiene"
       title: "Baseline Hygiene Checks"
       prompts:
@@ -121,10 +121,10 @@ workflow:
             id: "comment_check"
             title: "Check code comments"
             prompt: |
-              Detect comments that are outdated, missing, or inconsistent 
-              with the code logic, and recommend areas needing documentation 
+              Detect comments that are outdated, missing, or inconsistent
+              with the code logic, and recommend areas needing documentation
               improvements.
-    
+
     # ... more sections
 ```
 
@@ -164,30 +164,30 @@ class WorkflowDefinition(BaseModel):
 
 class WorkflowLoader:
     """Loads and validates workflow YAML files."""
-    
+
     def __init__(self, workflows_dir: Optional[Path] = None):
         """Initialize with workflows directory."""
         if workflows_dir is None:
             workflows_dir = Path(__file__).parent / "workflows"
         self.workflows_dir = workflows_dir
         self._cache: Dict[str, WorkflowDefinition] = {}
-    
+
     def load(self, workflow_name: str) -> WorkflowDefinition:
         """Load a workflow by name."""
         if workflow_name in self._cache:
             return self._cache[workflow_name]
-        
+
         workflow_path = self.workflows_dir / f"{workflow_name}.yml"
         if not workflow_path.exists():
             raise FileNotFoundError(f"Workflow not found: {workflow_name}")
-        
+
         with open(workflow_path, 'r', encoding='utf-8') as f:
             data = yaml.safe_load(f)
-        
+
         workflow = WorkflowDefinition(**data['workflow'])
         self._cache[workflow_name] = workflow
         return workflow
-    
+
     def list_workflows(self) -> List[str]:
         """List all available workflows."""
         return [
@@ -210,7 +210,7 @@ class WorkflowLoader:
 def analyze(repository_path, output, workflow):
     """Analyze a repository."""
     # ... existing code ...
-    
+
     # NEW: Load workflow if specified
     if workflow != "default":
         from codebase_reviewer.prompts.workflow_loader import WorkflowLoader
@@ -239,7 +239,7 @@ All new files will comply with 400-line limit:
 | `architecture_insights.yml` | ~120 | ✅ Under limit |
 | `strategy.yml` | ~150 | ✅ Under limit |
 
-**Total new code**: ~1,220 lines across 7 files  
+**Total new code**: ~1,220 lines across 7 files
 **Average file size**: 174 lines ✅
 
 ---
@@ -284,4 +284,3 @@ All new files will comply with 400-line limit:
 3. Should workflows be user-editable or read-only?
 4. Do we want a workflow marketplace/sharing mechanism?
 5. Should we support parallel step execution in Phase 3?
-

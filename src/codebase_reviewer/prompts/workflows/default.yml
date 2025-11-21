@@ -51,4 +51,3 @@ workflow:
         - template: "phase4.yml#4.1"
         - template: "phase4.yml#4.2"
         - template: "phase4.yml#4.3"
-
