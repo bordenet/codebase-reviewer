@@ -313,8 +313,8 @@ class PhaseGenerator:
 
     def _build_testing_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for testing strategy prompt."""
-        import os
         import glob
+        import os
 
         repo_path = analysis.repository_path
 
@@ -336,7 +336,7 @@ class PhaseGenerator:
             test_frameworks.append("unittest")
 
         # Organize tests by directory
-        test_dirs = {}
+        test_dirs: Dict[str, List[str]] = {}
         for test_file in test_files:
             test_dir = os.path.dirname(test_file) or "root"
             if test_dir not in test_dirs:
