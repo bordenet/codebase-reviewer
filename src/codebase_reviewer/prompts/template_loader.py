@@ -130,7 +130,7 @@ class PromptTemplateLoader:
         templates = []
         for prompt_data in data["prompts"]:
             try:
-                template = PromptTemplate(**prompt_data)
+                template = PromptTemplate(prompt_data)
                 templates.append(template)
             except (TypeError, ValueError) as e:
                 raise PromptTemplateError(f"Invalid prompt template in {template_file}: {e}") from e

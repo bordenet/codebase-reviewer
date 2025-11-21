@@ -124,16 +124,8 @@ class PromptGenerator:
             if context is None:
                 continue
 
-            # Create prompt
-            prompt = Prompt(
-                prompt_id=template.id,
-                phase=0,  # Will be organized later
-                title=template.title,
-                objective=template.objective,
-                tasks=template.tasks,
-                context=self._format_context(template.context, context),
-                deliverable=template.deliverable,
-            )
+            # Convert template to prompt with context
+            prompt = template.to_prompt(context, phase=0)
             prompts.append(prompt)
 
         return prompts
