@@ -37,8 +37,15 @@ def cli():
     default="both",
     help="Output format for prompts",
 )
+@click.option(
+    "--workflow",
+    "-w",
+    type=str,
+    default="default",
+    help="Workflow to use (default, principal_engineer, etc.)",
+)
 @click.option("--quiet", "-q", is_flag=True, help="Suppress progress output")
-def analyze(repo_path, output, prompts_output, format, quiet):  # pylint: disable=redefined-builtin
+def analyze(repo_path, output, prompts_output, format, workflow, quiet):  # pylint: disable=redefined-builtin
     """Analyze a codebase and generate AI review prompts."""
     try:
         # Resolve absolute path
@@ -60,7 +67,7 @@ def analyze(repo_path, output, prompts_output, format, quiet):  # pylint: disabl
             if not quiet:
                 click.echo(f"  {message}")
 
-        analysis = orchestrator.run_full_analysis(repo_path, progress_callback=progress_callback)
+        analysis = orchestrator.run_full_analysis(repo_path, progress_callback=progress_callback, workflow=workflow)
 
         # Save analysis results if requested
         if output:
