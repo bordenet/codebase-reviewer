@@ -1,6 +1,6 @@
 """Phase 2: Implementation Deep-Dive prompt generation."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from codebase_reviewer.models import Prompt, RepositoryAnalysis, Severity
 from codebase_reviewer.prompts.template_loader import PromptTemplateLoader
@@ -38,7 +38,7 @@ class Phase2Generator:
 
         return prompts
 
-    def _build_context(self, template, analysis: RepositoryAnalysis) -> Dict[str, Any]:
+    def _build_context(self, template, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context dictionary for a template."""
         if template.id == "2.1":
             return self._build_quality_context(analysis)
@@ -46,9 +46,12 @@ class Phase2Generator:
             return self._build_observability_context(analysis)
         return {}
 
-    def _build_quality_context(self, analysis: RepositoryAnalysis) -> Dict[str, Any]:
+    def _build_quality_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for code quality assessment prompt."""
         code = analysis.code
+        if not code:
+            return None
+
         quality_issues = code.quality_issues
 
         todos = [i for i in quality_issues if "TODO" in i.title or "FIXME" in i.title]
@@ -61,6 +64,6 @@ class Phase2Generator:
             "sample_security_issues": [{"title": s.title, "description": s.description} for s in security_issues[:5]],
         }
 
-    def _build_observability_context(self, analysis: RepositoryAnalysis) -> Dict[str, Any]:
+    def _build_observability_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for observability review prompt."""
         return {"repository_path": analysis.repository_path}

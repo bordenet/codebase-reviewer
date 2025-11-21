@@ -67,4 +67,3 @@ prompts:
       - "environment_vars"
       - "documented_in"
     conditional: "has_setup_instructions"
-

@@ -61,4 +61,3 @@ prompts:
       - "3.1"
     context_requirements:
       - "repository_path"
-

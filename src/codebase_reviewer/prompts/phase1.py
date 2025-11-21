@@ -1,6 +1,6 @@
 """Phase 1: Architecture Analysis prompt generation."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from codebase_reviewer.models import Prompt, RepositoryAnalysis
 from codebase_reviewer.prompts.template_loader import PromptTemplateLoader
@@ -44,10 +44,12 @@ class Phase1Generator:
     def _check_conditional(self, conditional: str, analysis: RepositoryAnalysis) -> bool:
         """Check if conditional requirement is met."""
         if conditional == "has_dependencies":
-            return analysis.code and analysis.code.dependencies is not None and len(analysis.code.dependencies) > 0
+            return bool(
+                analysis.code and analysis.code.dependencies is not None and len(analysis.code.dependencies) > 0
+            )
         return False
 
-    def _build_context(self, template, analysis: RepositoryAnalysis) -> Dict[str, Any]:
+    def _build_context(self, template, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context dictionary for a template."""
         if template.id == "1.1":
             return self._build_architecture_validation_context(analysis)
@@ -55,7 +57,7 @@ class Phase1Generator:
             return self._build_dependency_context(analysis)
         return {}
 
-    def _build_architecture_validation_context(self, analysis: RepositoryAnalysis) -> Dict[str, Any]:
+    def _build_architecture_validation_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for architecture validation prompt."""
         code = analysis.code
         docs = analysis.documentation
@@ -64,19 +66,20 @@ class Phase1Generator:
         return {
             "claimed_architecture": (
                 {
-                    "pattern": docs.claimed_architecture.pattern,
-                    "layers": docs.claimed_architecture.layers,
-                    "components": docs.claimed_architecture.components,
+                    "pattern": docs.claimed_architecture.pattern if docs else None,
+                    "layers": docs.claimed_architecture.layers if docs else [],
+                    "components": docs.claimed_architecture.components if docs else [],
                 }
-                if docs.claimed_architecture
+                if docs and docs.claimed_architecture
                 else None
             ),
             "actual_structure": {
                 "languages": [
-                    {"name": l.name, "percentage": l.percentage} for l in (code.structure.languages if code.structure else [])
+                    {"name": l.name, "percentage": l.percentage}
+                    for l in (code.structure.languages if code and code.structure else [])
                 ],
-                "frameworks": [f.name for f in (code.structure.frameworks if code.structure else [])],
-                "entry_points": [ep.path for ep in (code.structure.entry_points if code.structure else [])],
+                "frameworks": [f.name for f in (code.structure.frameworks if code and code.structure else [])],
+                "entry_points": [ep.path for ep in (code.structure.entry_points if code and code.structure else [])],
             },
             "validation_results": (
                 [
@@ -92,12 +95,12 @@ class Phase1Generator:
             ),
         }
 
-    def _build_dependency_context(self, analysis: RepositoryAnalysis) -> Dict[str, Any]:
+    def _build_dependency_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for dependency analysis prompt."""
         code = analysis.code
         docs = analysis.documentation
 
-        if not code.dependencies:
+        if not code or not code.dependencies:
             return None
 
         return {
@@ -111,5 +114,7 @@ class Phase1Generator:
                 for d in code.dependencies[:50]
             ],
             "total_count": len(code.dependencies),
-            "documented_prerequisites": docs.setup_instructions.prerequisites if docs.setup_instructions else [],
+            "documented_prerequisites": (
+                docs.setup_instructions.prerequisites if docs and docs.setup_instructions else []
+            ),
         }

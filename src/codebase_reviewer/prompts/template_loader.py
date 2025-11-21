@@ -117,8 +117,7 @@ class PromptTemplateLoader:
 
         if not template_file.exists():
             raise PromptTemplateError(
-                f"Template file not found: {template_file}. "
-                f"Expected templates in {self.templates_dir}"
+                f"Template file not found: {template_file}. " f"Expected templates in {self.templates_dir}"
             )
 
         try:
@@ -131,8 +130,7 @@ class PromptTemplateLoader:
 
         if not isinstance(data, dict) or "prompts" not in data:
             raise PromptTemplateError(
-                f"Invalid template structure in {template_file}. "
-                "Expected top-level 'prompts' key."
+                f"Invalid template structure in {template_file}. " "Expected top-level 'prompts' key."
             )
 
         templates = []
@@ -141,8 +139,7 @@ class PromptTemplateLoader:
                 templates.append(PromptTemplate(prompt_data))
             except PromptTemplateError as e:
                 raise PromptTemplateError(
-                    f"Error in template {prompt_data.get('id', 'unknown')} "
-                    f"in {template_file}: {e}"
+                    f"Error in template {prompt_data.get('id', 'unknown')} " f"in {template_file}: {e}"
                 ) from e
 
         # Cache the loaded templates
@@ -165,4 +162,3 @@ class PromptTemplateLoader:
     def clear_cache(self) -> None:
         """Clear the templates cache. Useful for testing or reloading."""
         self._templates_cache.clear()
-

@@ -116,4 +116,3 @@ class QualityChecker:
                     continue
 
         return issues
-

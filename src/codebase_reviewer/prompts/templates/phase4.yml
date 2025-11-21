@@ -24,4 +24,3 @@ prompts:
       - "total_issues"
       - "issues_by_severity"
       - "top_issues"
-

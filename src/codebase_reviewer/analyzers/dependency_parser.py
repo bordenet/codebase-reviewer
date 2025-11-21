@@ -133,7 +133,9 @@ class DependencyParser:
                     name, version = match.groups()
                     if name != "python":
                         dependencies.append(
-                            DependencyInfo(name=name, version=version, dependency_type="runtime", source_file=str(file_path.name))
+                            DependencyInfo(
+                                name=name, version=version, dependency_type="runtime", source_file=str(file_path.name)
+                            )
                         )
 
         return dependencies
@@ -147,4 +149,3 @@ class DependencyParser:
         """Parse go.mod file."""
         # Simplified parsing
         return []
-

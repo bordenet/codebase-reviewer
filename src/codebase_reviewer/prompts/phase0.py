@@ -1,6 +1,6 @@
 """Phase 0: Documentation Review prompt generation."""
 
-from typing import Dict, List, Any
+from typing import Any, Dict, List, Optional
 
 from codebase_reviewer.models import Prompt, RepositoryAnalysis
 from codebase_reviewer.prompts.template_loader import PromptTemplateLoader
@@ -64,7 +64,7 @@ class Phase0Generator:
 
         return False
 
-    def _build_context(self, template, analysis: RepositoryAnalysis) -> Dict[str, Any]:
+    def _build_context(self, template, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context dictionary for a template.
 
         Args:
@@ -88,7 +88,7 @@ class Phase0Generator:
 
         return {}
 
-    def _build_readme_context(self, docs) -> Dict[str, Any]:
+    def _build_readme_context(self, docs) -> Optional[Dict[str, Any]]:
         """Build context for README analysis prompt."""
         readme_docs = [d for d in docs.discovered_docs if d.doc_type == "primary"]
         readme_content = readme_docs[0].content if readme_docs else "No README found"
@@ -99,7 +99,7 @@ class Phase0Generator:
             "total_docs_found": len(docs.discovered_docs),
         }
 
-    def _build_architecture_context(self, docs) -> Dict[str, Any]:
+    def _build_architecture_context(self, docs) -> Optional[Dict[str, Any]]:
         """Build context for architecture documentation prompt."""
         arch_docs = [d for d in docs.discovered_docs if d.doc_type == "architecture"]
         if not arch_docs:
@@ -110,10 +110,10 @@ class Phase0Generator:
         return {
             "architecture_docs": arch_content,
             "doc_count": len(arch_docs),
-            "claimed_pattern": docs.claimed_architecture.pattern if docs.claimed_architecture else None,
+            "claimed_pattern": (docs.claimed_architecture.pattern if docs.claimed_architecture else None),
         }
 
-    def _build_setup_context(self, docs) -> Dict[str, Any]:
+    def _build_setup_context(self, docs) -> Optional[Dict[str, Any]]:
         """Build context for setup documentation prompt."""
         if not docs.setup_instructions:
             return None
