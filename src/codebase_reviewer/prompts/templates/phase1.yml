@@ -12,7 +12,38 @@ prompts:
       - "Identify undocumented components or services"
       - "Flag any significant documentation inaccuracies"
       - "Assess overall architecture quality and appropriateness"
-    deliverable: "Architecture validation report with discrepancies highlighted and recommendations"
+    deliverable: |
+      **Architecture Validation Report**
+
+      ## Claimed vs. Actual Architecture
+      - **Claimed Pattern**: [e.g., microservices, monolith, layered]
+      - **Actual Pattern**: [What the code actually implements]
+      - **Match Status**: ✅ Match / ⚠️ Partial / ❌ Mismatch
+
+      ## Component Validation
+      For each claimed component:
+      - **Component Name**: [From documentation]
+      - **Status**: ✅ Found / ❌ Missing / ⚠️ Partial
+      - **Location**: [Actual file/directory path]
+      - **Discrepancies**: [Any differences from documentation]
+
+      ## Technology Stack Validation
+      - **Claimed Technologies**: [List from docs]
+      - **Actual Technologies**: [List from code analysis]
+      - **Missing**: [Technologies claimed but not found]
+      - **Undocumented**: [Technologies used but not documented]
+
+      ## Recommendations
+      1. [Specific action items to align code and documentation]
+      2. [Architecture improvements if needed]
+
+      **Example:**
+      ```
+      ## Component Validation
+      - **DocumentationAnalyzer**: ✅ Found at `src/analyzers/documentation.py`
+      - **CacheLayer**: ❌ Missing (claimed in README but not implemented)
+      - **APIGateway**: ⚠️ Partial (exists but uses Flask instead of documented FastAPI)
+      ```
     ai_model_hints:
       complexity: "high"
       requires_code_analysis: true

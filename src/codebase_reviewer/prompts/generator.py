@@ -1,5 +1,7 @@
 """Unified prompt generator using template-based configuration."""
 
+import glob
+import os
 from typing import Any, Callable, Dict, List, Optional
 
 from codebase_reviewer.models import Prompt, RepositoryAnalysis, Severity
@@ -175,16 +177,49 @@ class PhaseGenerator:
         code = analysis.code
         docs = analysis.documentation
         validation = analysis.validation
+        repo_path = analysis.repository_path
+
+        # Discover actual Python modules and packages (exclude venv, .git, etc.)
+        exclude_dirs = {".venv", "venv", ".git", "__pycache__", ".pytest_cache", ".mypy_cache", "node_modules"}
+        python_files = []
+        for root, dirs, files in os.walk(repo_path):
+            # Remove excluded directories from search
+            dirs[:] = [d for d in dirs if d not in exclude_dirs]
+            for file in files:
+                if file.endswith(".py"):
+                    file_path = os.path.join(root, file)
+                    python_files.append(os.path.relpath(file_path, repo_path))
+
+        # Identify packages (directories with __init__.py)
+        packages = []
+        for root, dirs, files in os.walk(repo_path):
+            # Remove excluded directories from search
+            dirs[:] = [d for d in dirs if d not in exclude_dirs]
+            if "__init__.py" in files:
+                pkg_path = os.path.relpath(root, repo_path)
+                packages.append(pkg_path)
+
+        # Identify main modules (top-level directories in src/)
+        main_modules = []
+        src_path = os.path.join(repo_path, "src")
+        if os.path.exists(src_path):
+            for item in os.listdir(src_path):
+                item_path = os.path.join(src_path, item)
+                if os.path.isdir(item_path) and not item.startswith("_"):
+                    main_modules.append(item)
+
+        # Count files by type
+        file_counts = {"python": len(python_files), "packages": len(packages), "modules": len(main_modules)}
 
         return {
             "claimed_architecture": (
                 {
-                    "pattern": docs.claimed_architecture.pattern if docs else None,
-                    "layers": docs.claimed_architecture.layers if docs else [],
-                    "components": docs.claimed_architecture.components if docs else [],
+                    "pattern": docs.claimed_architecture.pattern if docs and docs.claimed_architecture else None,
+                    "layers": docs.claimed_architecture.layers if docs and docs.claimed_architecture else [],
+                    "components": docs.claimed_architecture.components if docs and docs.claimed_architecture else [],
                 }
                 if docs and docs.claimed_architecture
-                else None
+                else {"pattern": None, "layers": [], "components": []}
             ),
             "actual_structure": {
                 "languages": [
@@ -193,6 +228,10 @@ class PhaseGenerator:
                 ],
                 "frameworks": [f.name for f in (code.structure.frameworks if code and code.structure else [])],
                 "entry_points": [ep.path for ep in (code.structure.entry_points if code and code.structure else [])],
+                "main_modules": main_modules,
+                "packages": packages[:10],  # Limit to first 10 for readability
+                "file_counts": file_counts,
+                "sample_files": python_files[:15],  # Show first 15 Python files
             },
             "validation_results": (
                 [
@@ -254,14 +293,71 @@ class PhaseGenerator:
 
     def _build_observability_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for observability review prompt."""
-        return {"repository_path": analysis.repository_path}
+        import re
+
+        repo_path = analysis.repository_path
+        exclude_dirs = {".venv", "venv", ".git", "__pycache__", ".pytest_cache", ".mypy_cache", "node_modules"}
+
+        # Find all Python files
+        python_files = []
+        for root, dirs, files in os.walk(repo_path):
+            dirs[:] = [d for d in dirs if d not in exclude_dirs]
+            for file in files:
+                if file.endswith(".py"):
+                    file_path = os.path.join(root, file)
+                    python_files.append(file_path)
+
+        # Scan for logging patterns
+        logging_imports = []
+        logging_calls = []
+        print_statements = []
+        exception_handlers = []
+
+        for py_file in python_files[:30]:  # Limit to first 30 files
+            try:
+                with open(py_file, "r", encoding="utf-8") as f:
+                    content = f.read()
+                    rel_path = os.path.relpath(py_file, repo_path)
+
+                    # Check for logging imports
+                    if re.search(r"import logging|from logging", content):
+                        logging_imports.append(rel_path)
+
+                    # Count logging calls
+                    log_calls = len(re.findall(r"logging\.(debug|info|warning|error|critical|exception)", content))
+                    if log_calls > 0:
+                        logging_calls.append({"file": rel_path, "count": log_calls})
+
+                    # Count print statements
+                    print_count = len(re.findall(r"\bprint\(", content))
+                    if print_count > 0:
+                        print_statements.append({"file": rel_path, "count": print_count})
+
+                    # Count exception handlers
+                    except_count = len(re.findall(r"\bexcept\s+", content))
+                    if except_count > 0:
+                        exception_handlers.append({"file": rel_path, "count": except_count})
+
+            except (IOError, UnicodeDecodeError):
+                pass
+
+        return {
+            "repository_path": repo_path,
+            "files_analyzed": len(python_files[:30]),
+            "logging_imports_count": len(logging_imports),
+            "files_with_logging": logging_calls[:10],
+            "files_with_print": print_statements[:10],
+            "files_with_exception_handling": exception_handlers[:10],
+            "has_structured_logging": len(logging_imports) > 0,
+            "print_vs_logging_ratio": (
+                len(print_statements) / max(len(logging_calls), 1) if logging_calls else "N/A (no logging)"
+            ),
+        }
 
     # ========== Phase 3 Context Builders ==========
 
     def _build_setup_validation_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for setup validation prompt."""
-        import os
-
         docs = analysis.documentation
         validation = analysis.validation
         repo_path = analysis.repository_path
@@ -434,11 +530,143 @@ class PhaseGenerator:
 
     def _build_call_graph_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for call graph and dependency tracing."""
-        return self._build_dependency_context(analysis)  # Reuse dependency context for now
+        import ast
+        import re
+
+        repo_path = analysis.repository_path
+        exclude_dirs = {".venv", "venv", ".git", "__pycache__", ".pytest_cache", ".mypy_cache", "node_modules"}
+
+        # Find all Python files
+        python_files = []
+        for root, dirs, files in os.walk(repo_path):
+            dirs[:] = [d for d in dirs if d not in exclude_dirs]
+            for file in files:
+                if file.endswith(".py"):
+                    file_path = os.path.join(root, file)
+                    python_files.append(os.path.relpath(file_path, repo_path))
+
+        # Analyze imports in each file
+        internal_imports: Dict[str, List[str]] = {}
+        external_imports: Dict[str, List[str]] = {}
+
+        for py_file in python_files[:30]:  # Limit to first 30 files for performance
+            try:
+                file_path = os.path.join(repo_path, py_file)
+                with open(file_path, "r", encoding="utf-8") as f:
+                    content = f.read()
+
+                # Parse imports using AST
+                try:
+                    tree = ast.parse(content)
+                    imports = []
+                    for node in ast.walk(tree):
+                        if isinstance(node, ast.Import):
+                            for alias in node.names:
+                                imports.append(alias.name)
+                        elif isinstance(node, ast.ImportFrom):
+                            if node.module:
+                                imports.append(node.module)
+
+                    # Separate internal vs external imports
+                    internal = [imp for imp in imports if imp.startswith("codebase_reviewer") or imp.startswith("src.")]
+                    external = [
+                        imp for imp in imports if not imp.startswith("codebase_reviewer") and not imp.startswith("src.")
+                    ]
+
+                    if internal:
+                        internal_imports[py_file] = internal
+                    if external:
+                        external_imports[py_file] = external[:10]  # Limit external imports
+
+                except SyntaxError:
+                    # Skip files with syntax errors
+                    pass
+
+            except (IOError, UnicodeDecodeError):
+                # Skip files that can't be read
+                pass
+
+        # Count most common internal imports
+        all_internal = []
+        for imports in internal_imports.values():
+            all_internal.extend(imports)
+
+        from collections import Counter
+
+        internal_counts = Counter(all_internal).most_common(10)
+
+        return {
+            "total_python_files": len(python_files),
+            "files_analyzed": min(30, len(python_files)),
+            "internal_dependencies": dict(list(internal_imports.items())[:10]),  # Show first 10 files
+            "most_imported_internal": [{"module": mod, "count": count} for mod, count in internal_counts],
+            "external_dependencies_sample": dict(list(external_imports.items())[:5]),  # Show 5 examples
+        }
 
     def _build_git_hotspots_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for git hotspots analysis."""
-        return self._build_quality_context(analysis)  # Reuse quality context for now
+        try:
+            from collections import Counter
+
+            import git
+
+            repo_path = analysis.repository_path
+
+            try:
+                repo = git.Repo(repo_path)
+            except git.InvalidGitRepositoryError:
+                return {"error": "Not a git repository", "repository_path": repo_path}
+
+            # Analyze commits (last 100 commits)
+            commits = list(repo.iter_commits("HEAD", max_count=100))
+
+            # Track file changes
+            file_changes: Counter = Counter()
+            commit_messages = []
+
+            for commit in commits:
+                # Get files changed in this commit
+                if commit.parents:
+                    diffs = commit.parents[0].diff(commit)
+                    for diff in diffs:
+                        if diff.a_path and diff.a_path.endswith(".py"):
+                            file_changes[diff.a_path] += 1
+                        if diff.b_path and diff.b_path.endswith(".py"):
+                            file_changes[diff.b_path] += 1
+
+                # Collect commit messages for pattern analysis
+                msg = (
+                    commit.message
+                    if isinstance(commit.message, str)
+                    else commit.message.decode("utf-8", errors="ignore")
+                )
+                commit_messages.append(msg.split("\n")[0][:100])  # First line, max 100 chars
+
+            # Get most frequently changed files
+            hotspots = file_changes.most_common(15)
+
+            # Analyze commit message patterns
+            bug_fix_commits = [
+                msg for msg in commit_messages if any(word in msg.lower() for word in ["fix", "bug", "error", "issue"])
+            ]
+            refactor_commits = [
+                msg
+                for msg in commit_messages
+                if any(word in msg.lower() for word in ["refactor", "cleanup", "improve"])
+            ]
+
+            return {
+                "total_commits_analyzed": len(commits),
+                "hotspot_files": [{"file": file, "change_count": count} for file, count in hotspots],
+                "bug_fix_commit_count": len(bug_fix_commits),
+                "refactor_commit_count": len(refactor_commits),
+                "recent_commit_messages": commit_messages[:10],
+            }
+
+        except ImportError:
+            return {"error": "GitPython not available", "repository_path": analysis.repository_path}
+        except Exception as e:
+            return {"error": f"Git analysis failed: {str(e)}", "repository_path": analysis.repository_path}
 
     def _build_duplication_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for code duplication analysis."""
