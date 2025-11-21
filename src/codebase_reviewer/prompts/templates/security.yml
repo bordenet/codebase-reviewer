@@ -19,19 +19,36 @@ prompts:
       **Security Assessment Report**
 
       ## Critical Security Issues
-      [List any critical vulnerabilities found]
+      For each issue, provide:
+      - **File/Location**: [Exact file and line number]
+      - **Vulnerability Type**: [OWASP Top 10 category, e.g., A03:2021 - Injection]
+      - **CWE Reference**: [e.g., CWE-89: SQL Injection]
+      - **Description**: [What the vulnerability is]
+      - **Impact**: [Potential consequences]
+      - **Remediation**: [Specific fix needed]
 
       ## Medium Priority Issues
-      [List medium-priority security concerns]
+      [Same format as above]
 
       ## Low Priority Issues
-      [List minor security improvements]
+      [Same format as above]
 
       ## Security Best Practices
       [Recommendations for improving security posture]
 
       ## Compliance Considerations
       [Any relevant compliance requirements (GDPR, HIPAA, etc.)]
+
+      **Example Format:**
+      ```
+      ### Critical: SQL Injection in User Login
+      - **File**: `src/auth/login.py:45`
+      - **Type**: A03:2021 - Injection (OWASP Top 10)
+      - **CWE**: CWE-89 (SQL Injection)
+      - **Description**: User input directly concatenated into SQL query
+      - **Impact**: Attacker could bypass authentication or access sensitive data
+      - **Remediation**: Use parameterized queries or ORM
+      ```
 
   - id: "security.2"
     title: "Error Handling & Resilience Verification"

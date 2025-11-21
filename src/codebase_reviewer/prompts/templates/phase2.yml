@@ -12,7 +12,39 @@ prompts:
       - "Evaluate error handling patterns"
       - "Assess code organization and modularity"
       - "Identify anti-patterns or code smells"
-    deliverable: "Code quality report with prioritized remediation recommendations"
+    deliverable: |
+      **Code Quality Report**
+
+      ## Technical Debt Summary
+      - **Total Issues**: [Count]
+      - **Critical**: [Count] - Immediate attention needed
+      - **High**: [Count] - Address soon
+      - **Medium**: [Count] - Plan for future sprint
+      - **Low**: [Count] - Nice to have
+
+      ## Issue Categories
+      For each category, provide:
+      - **Category**: [e.g., Security, Error Handling, Code Smells]
+      - **Count**: [Number of issues]
+      - **Severity**: [Critical/High/Medium/Low]
+      - **Examples**: [Top 3 specific instances with file:line]
+      - **Remediation**: [General approach to fix]
+
+      ## Top Priority Issues
+      1. **[Issue Title]**
+         - **File**: `path/to/file.py:123`
+         - **Severity**: Critical/High/Medium/Low
+         - **Description**: [What's wrong]
+         - **Impact**: [Why it matters]
+         - **Fix**: [How to resolve]
+
+      ## Code Smells & Anti-Patterns
+      [List common patterns that should be refactored]
+
+      ## Recommendations
+      - **Quick Wins**: [Issues that can be fixed quickly]
+      - **Refactoring Needed**: [Larger structural changes]
+      - **Process Improvements**: [Prevent future issues]
     ai_model_hints:
       complexity: "high"
       requires_security_knowledge: true
