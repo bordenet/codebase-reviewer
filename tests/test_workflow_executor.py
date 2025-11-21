@@ -54,9 +54,9 @@ def test_execute_default_workflow(executor, repo_analysis):
     assert progress.total_prompts > 0
 
 
-def test_execute_principal_engineer_workflow(executor, repo_analysis):
-    """Test executing the principal engineer workflow."""
-    prompts, progress = executor.execute("principal_engineer", repo_analysis)
+def test_execute_reviewer_criteria_workflow(executor, repo_analysis):
+    """Test executing the reviewer criteria workflow."""
+    prompts, progress = executor.execute("reviewer_criteria", repo_analysis)
 
     assert isinstance(prompts, list)
     assert isinstance(progress, WorkflowProgress)

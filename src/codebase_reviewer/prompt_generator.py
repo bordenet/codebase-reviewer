@@ -20,7 +20,7 @@ class PromptGenerator:
 
         Args:
             repo_analysis: Complete repository analysis
-            workflow: Workflow name to use (default, principal_engineer, etc.)
+            workflow: Workflow name to use (default, reviewer_criteria, etc.)
 
         Returns:
             PromptCollection with prompts for all phases

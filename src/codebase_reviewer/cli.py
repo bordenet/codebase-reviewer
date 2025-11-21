@@ -42,7 +42,7 @@ def cli():
     "-w",
     type=str,
     default="default",
-    help="Workflow to use (default, principal_engineer, etc.)",
+    help="Workflow to use (default, reviewer_criteria, etc.)",
 )
 @click.option("--quiet", "-q", is_flag=True, help="Suppress progress output")
 def analyze(repo_path, output, prompts_output, format, workflow, quiet):  # pylint: disable=redefined-builtin
