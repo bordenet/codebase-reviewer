@@ -36,7 +36,7 @@ class AnalysisOrchestrator:
         Args:
             repo_path: Path to repository root
             progress_callback: Optional callback for progress updates
-            workflow: Workflow name to use (default, principal_engineer, etc.)
+            workflow: Workflow name to use (default, reviewer_criteria, etc.)
 
         Returns:
             Complete RepositoryAnalysis

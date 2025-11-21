@@ -31,13 +31,13 @@ def test_load_default_workflow():
     assert len(workflow.sections) == 5  # 5 phases
 
 
-def test_load_principal_engineer_workflow():
-    """Test loading the principal engineer workflow."""
+def test_load_reviewer_criteria_workflow():
+    """Test loading the reviewer criteria workflow."""
     loader = WorkflowLoader()
-    workflow = loader.load("principal_engineer")
+    workflow = loader.load("reviewer_criteria")
 
     assert isinstance(workflow, WorkflowDefinition)
-    assert workflow.name == "Principal Engineer Strategic Review"
+    assert workflow.name == "Comprehensive Review Criteria"
     assert workflow.version == "1.0"
     assert len(workflow.sections) == 6  # 6 sections
 
@@ -75,7 +75,7 @@ def test_list_workflows():
 
     assert isinstance(workflows, list)
     assert "default" in workflows
-    assert "principal_engineer" in workflows
+    assert "reviewer_criteria" in workflows
 
 
 def test_load_nonexistent_workflow():
@@ -119,7 +119,7 @@ def test_get_all_prompt_references():
 def test_workflow_with_custom_prompts():
     """Test workflow with custom prompts."""
     loader = WorkflowLoader()
-    workflow = loader.load("principal_engineer")
+    workflow = loader.load("reviewer_criteria")
 
     # Check that some sections have custom prompts
     has_custom = False

@@ -1,10 +1,10 @@
-# Principal Engineer Strategic Review Workflow
+# Comprehensive Code Review Criteria Workflow
 # Based on Perplexity.ai methodology for principal-level codebase assessment
 
 workflow:
-  name: "Principal Engineer Strategic Review"
+  name: "Comprehensive Review Criteria"
   version: "1.0"
-  description: "Comprehensive codebase assessment using Perplexity.ai methodology for principal engineers"
+  description: "Comprehensive codebase assessment using principal engineer-level review criteria"
 
   settings:
     parallel_execution: false
