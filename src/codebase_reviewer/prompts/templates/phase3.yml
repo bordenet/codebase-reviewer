@@ -1,0 +1,64 @@
+# Phase 3: Development Workflow Prompt Templates
+# These templates define prompts for validating development workflow and practices
+
+prompts:
+  - id: "3.1"
+    title: "Validate Setup and Build Instructions"
+    objective: "Verify documented setup instructions are accurate and complete"
+    tasks:
+      - "Trace documented setup steps to actual configuration files"
+      - "Identify missing prerequisites not documented"
+      - "Flag outdated version requirements"
+      - "Note environment variables used but not documented"
+      - "Identify undocumented build steps or scripts"
+      - "Assess overall setup documentation quality"
+    deliverable: "Setup documentation accuracy report with specific corrections needed"
+    ai_model_hints:
+      complexity: "medium"
+    dependencies:
+      - "0.3"
+      - "1.2"
+    context_requirements:
+      - "documented_setup"
+      - "validation_results"
+      - "undocumented_features"
+
+  - id: "3.2"
+    title: "Testing Strategy and Coverage Review"
+    objective: "Assess testing practices, coverage, and quality"
+    tasks:
+      - "Identify test types present (unit, integration, e2e)"
+      - "Evaluate test organization and naming conventions"
+      - "Assess test coverage (estimate based on test file count)"
+      - "Identify testing framework and tools used"
+      - "Evaluate test quality and maintainability"
+      - "Identify gaps in test coverage"
+    deliverable: "Testing assessment with recommendations for improvement"
+    ai_model_hints:
+      complexity: "medium"
+      requires_testing_expertise: true
+    dependencies:
+      - "1.1"
+    context_requirements:
+      - "repository_path"
+
+  - id: "3.3"
+    title: "CI/CD and Deployment Pipeline Review"
+    objective: "Evaluate continuous integration and deployment practices"
+    tasks:
+      - "Identify CI/CD tools and configuration"
+      - "Assess build and test automation"
+      - "Evaluate deployment process and documentation"
+      - "Check for environment-specific configurations"
+      - "Assess rollback and recovery procedures"
+      - "Identify gaps in automation"
+    deliverable: "CI/CD assessment with recommendations for improvement"
+    ai_model_hints:
+      complexity: "medium"
+      requires_devops_knowledge: true
+    dependencies:
+      - "0.3"
+      - "3.1"
+    context_requirements:
+      - "repository_path"
+

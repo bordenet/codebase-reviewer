@@ -1,122 +1,127 @@
 """Phase 0: Documentation Review prompt generation."""
 
-from typing import List
+from typing import Dict, List, Any
 
 from codebase_reviewer.models import Prompt, RepositoryAnalysis
+from codebase_reviewer.prompts.template_loader import PromptTemplateLoader
 
 
 class Phase0Generator:
-    """Generates Phase 0 prompts for documentation review."""
+    """Generates Phase 0 prompts for documentation review using templates."""
+
+    def __init__(self):
+        """Initialize the generator with template loader."""
+        self.loader = PromptTemplateLoader()
+        self.phase = 0
 
     def generate(self, analysis: RepositoryAnalysis) -> List[Prompt]:
-        """Generate Phase 0 documentation review prompts."""
+        """Generate Phase 0 documentation review prompts from templates.
+
+        Args:
+            analysis: Repository analysis results
+
+        Returns:
+            List of Prompt instances for Phase 0
+        """
+        if not analysis.documentation:
+            return []
+
+        templates = self.loader.load_phase_templates(self.phase)
         prompts: List[Prompt] = []
 
-        if not analysis.documentation:
-            return prompts
+        for template in templates:
+            # Check conditional requirements
+            if template.conditional and not self._check_conditional(template.conditional, analysis):
+                continue
 
+            # Build context for this template
+            context = self._build_context(template, analysis)
+            if context is None:
+                continue
+
+            prompts.append(template.to_prompt(context, self.phase))
+
+        return prompts
+
+    def _check_conditional(self, conditional: str, analysis: RepositoryAnalysis) -> bool:
+        """Check if conditional requirement is met.
+
+        Args:
+            conditional: Conditional expression (e.g., "has_architecture_docs")
+            analysis: Repository analysis results
+
+        Returns:
+            True if condition is met, False otherwise
+        """
         docs = analysis.documentation
+        if not docs:
+            return False
 
-        # Prompt 0.1: README Analysis
+        if conditional == "has_architecture_docs":
+            return any(d.doc_type == "architecture" for d in docs.discovered_docs)
+        elif conditional == "has_setup_instructions":
+            return docs.setup_instructions is not None
+
+        return False
+
+    def _build_context(self, template, analysis: RepositoryAnalysis) -> Dict[str, Any]:
+        """Build context dictionary for a template.
+
+        Args:
+            template: PromptTemplate instance
+            analysis: Repository analysis results
+
+        Returns:
+            Context dictionary or None if context cannot be built
+        """
+        docs = analysis.documentation
+        if not docs:
+            return None
+
+        # Build context based on template ID
+        if template.id == "0.1":
+            return self._build_readme_context(docs)
+        elif template.id == "0.2":
+            return self._build_architecture_context(docs)
+        elif template.id == "0.3":
+            return self._build_setup_context(docs)
+
+        return {}
+
+    def _build_readme_context(self, docs) -> Dict[str, Any]:
+        """Build context for README analysis prompt."""
         readme_docs = [d for d in docs.discovered_docs if d.doc_type == "primary"]
         readme_content = readme_docs[0].content if readme_docs else "No README found"
 
-        prompts.append(
-            Prompt(
-                prompt_id="0.1",
-                phase=0,
-                title="README Analysis & Claims Extraction",
-                context={
-                    "readme_content": readme_content[:5000],
-                    "readme_path": readme_docs[0].path if readme_docs else "N/A",
-                    "total_docs_found": len(docs.discovered_docs),
-                },
-                objective="Extract and catalog all claims about project architecture, features, and setup from the README",
-                tasks=[
-                    "Identify the stated project purpose and scope",
-                    "List all claimed technologies and frameworks",
-                    "Extract documented architecture pattern (if any)",
-                    "Note all setup/installation claims",
-                    "Catalog documented features and capabilities",
-                    "Identify any architectural diagrams or descriptions",
-                    "Note what version of languages/frameworks are claimed",
-                ],
-                deliverable="Structured list of testable claims with source locations for validation against code",
-                ai_model_hints={
-                    "estimated_tokens": len(readme_content) // 4,
-                    "complexity": "medium",
-                    "requires_code_analysis": False,
-                },
-                dependencies=[],
-            )
-        )
+        return {
+            "readme_content": readme_content[:5000],
+            "readme_path": readme_docs[0].path if readme_docs else "N/A",
+            "total_docs_found": len(docs.discovered_docs),
+        }
 
-        # Prompt 0.2: Architecture Documentation Review
+    def _build_architecture_context(self, docs) -> Dict[str, Any]:
+        """Build context for architecture documentation prompt."""
         arch_docs = [d for d in docs.discovered_docs if d.doc_type == "architecture"]
-        if arch_docs:
-            arch_content = "\n\n---\n\n".join(f"## {d.path}\n{d.content[:3000]}" for d in arch_docs[:3])
+        if not arch_docs:
+            return None
 
-            prompts.append(
-                Prompt(
-                    prompt_id="0.2",
-                    phase=0,
-                    title="Architecture Documentation Analysis",
-                    context={
-                        "architecture_docs": arch_content,
-                        "doc_count": len(arch_docs),
-                        "claimed_pattern": (docs.claimed_architecture.pattern if docs.claimed_architecture else None),
-                    },
-                    objective="Understand the documented system architecture and design decisions",
-                    tasks=[
-                        "Identify the architectural style (monolith, microservices, etc.)",
-                        "List all documented components and their responsibilities",
-                        "Extract documented data flows and communication patterns",
-                        "Note documented technology choices and rationale",
-                        "Identify documented architectural constraints",
-                        "Extract any documented architectural decision records (ADRs)",
-                    ],
-                    deliverable="Comprehensive architectural understanding for validation against actual code",
-                    ai_model_hints={
-                        "estimated_tokens": len(arch_content) // 4,
-                        "complexity": "high",
-                        "requires_domain_knowledge": True,
-                    },
-                    dependencies=["0.1"],
-                )
-            )
+        arch_content = "\n\n---\n\n".join(f"## {d.path}\n{d.content[:3000]}" for d in arch_docs[:3])
 
-        # Prompt 0.3: Setup Documentation Review
-        if docs.setup_instructions:
-            setup = docs.setup_instructions
+        return {
+            "architecture_docs": arch_content,
+            "doc_count": len(arch_docs),
+            "claimed_pattern": docs.claimed_architecture.pattern if docs.claimed_architecture else None,
+        }
 
-            prompts.append(
-                Prompt(
-                    prompt_id="0.3",
-                    phase=0,
-                    title="Setup & Build Documentation Review",
-                    context={
-                        "prerequisites": setup.prerequisites,
-                        "build_steps": setup.build_steps,
-                        "environment_vars": setup.environment_vars,
-                        "documented_in": setup.documented_in,
-                    },
-                    objective="Understand the documented development workflow and prerequisites",
-                    tasks=[
-                        "List all documented prerequisite requirements (tools, versions, etc.)",
-                        "Document the claimed build process step-by-step",
-                        "Identify all mentioned environment variables and their purposes",
-                        "Note deployment procedures if described",
-                        "Identify testing instructions",
-                        "Flag any missing or unclear setup steps",
-                    ],
-                    deliverable="Development workflow checklist for validation against actual config files",
-                    ai_model_hints={
-                        "estimated_tokens": 1500,
-                        "complexity": "medium",
-                        "requires_code_analysis": False,
-                    },
-                    dependencies=["0.1"],
-                )
-            )
+    def _build_setup_context(self, docs) -> Dict[str, Any]:
+        """Build context for setup documentation prompt."""
+        if not docs.setup_instructions:
+            return None
 
-        return prompts
+        setup = docs.setup_instructions
+        return {
+            "prerequisites": setup.prerequisites,
+            "build_steps": setup.build_steps,
+            "environment_vars": setup.environment_vars,
+            "documented_in": setup.documented_in,
+        }

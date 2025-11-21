@@ -1,88 +1,66 @@
 """Phase 2: Implementation Deep-Dive prompt generation."""
 
-from typing import List
+from typing import Any, Dict, List
 
 from codebase_reviewer.models import Prompt, RepositoryAnalysis, Severity
+from codebase_reviewer.prompts.template_loader import PromptTemplateLoader
 
 
 class Phase2Generator:
-    """Generates Phase 2 prompts for implementation analysis."""
+    """Generates Phase 2 prompts for implementation analysis using templates."""
+
+    def __init__(self):
+        """Initialize the generator with template loader."""
+        self.loader = PromptTemplateLoader()
+        self.phase = 2
 
     def generate(self, analysis: RepositoryAnalysis) -> List[Prompt]:
-        """Generate Phase 2 implementation deep-dive prompts."""
+        """Generate Phase 2 implementation deep-dive prompts from templates.
+
+        Args:
+            analysis: Repository analysis results
+
+        Returns:
+            List of Prompt instances for Phase 2
+        """
+        if not analysis.code:
+            return []
+
+        templates = self.loader.load_phase_templates(self.phase)
         prompts: List[Prompt] = []
 
-        if not analysis.code:
-            return prompts
+        for template in templates:
+            context = self._build_context(template, analysis)
+            if context is None:
+                continue
 
+            prompts.append(template.to_prompt(context, self.phase))
+
+        return prompts
+
+    def _build_context(self, template, analysis: RepositoryAnalysis) -> Dict[str, Any]:
+        """Build context dictionary for a template."""
+        if template.id == "2.1":
+            return self._build_quality_context(analysis)
+        elif template.id == "2.2":
+            return self._build_observability_context(analysis)
+        return {}
+
+    def _build_quality_context(self, analysis: RepositoryAnalysis) -> Dict[str, Any]:
+        """Build context for code quality assessment prompt."""
         code = analysis.code
         quality_issues = code.quality_issues
 
-        # Categorize issues
         todos = [i for i in quality_issues if "TODO" in i.title or "FIXME" in i.title]
         security_issues = [i for i in quality_issues if i.severity == Severity.HIGH]
 
-        # Prompt 2.1: Code Quality Assessment
-        prompts.append(
-            Prompt(
-                prompt_id="2.1",
-                phase=2,
-                title="Code Quality and Technical Debt Assessment",
-                context={
-                    "todo_count": len(todos),
-                    "sample_todos": [{"title": t.title, "description": t.description} for t in todos[:10]],
-                    "security_issues_count": len(security_issues),
-                    "sample_security_issues": [
-                        {"title": s.title, "description": s.description} for s in security_issues[:5]
-                    ],
-                },
-                objective="Assess code quality, identify technical debt, and security concerns",
-                tasks=[
-                    "Review TODO/FIXME comments for patterns and urgency",
-                    "Assess potential security issues (hardcoded secrets, etc.)",
-                    "Identify areas with high technical debt",
-                    "Evaluate error handling patterns",
-                    "Assess code organization and modularity",
-                    "Identify anti-patterns or code smells",
-                ],
-                deliverable="Code quality report with prioritized remediation recommendations",
-                ai_model_hints={
-                    "estimated_tokens": 2000,
-                    "complexity": "high",
-                    "requires_security_knowledge": True,
-                },
-                dependencies=["1.1"],
-                critical_findings=security_issues if security_issues else None,
-            )
-        )
+        return {
+            "todo_count": len(todos),
+            "sample_todos": [{"title": t.title, "description": t.description} for t in todos[:10]],
+            "security_issues_count": len(security_issues),
+            "sample_security_issues": [{"title": s.title, "description": s.description} for s in security_issues[:5]],
+        }
 
-        # Prompt 2.2: Observability Assessment
-        prompts.append(
-            Prompt(
-                prompt_id="2.2",
-                phase=2,
-                title="Observability and Operational Maturity",
-                context={
-                    "repository_path": analysis.repository_path,
-                    "frameworks": ([f.name for f in code.structure.frameworks] if code.structure else []),
-                },
-                objective="Assess logging, monitoring, and operational maturity of the codebase",
-                tasks=[
-                    "Evaluate logging practices (coverage, consistency, level usage)",
-                    "Identify monitoring and metrics instrumentation",
-                    "Check for error tracking integration (Sentry, etc.)",
-                    "Assess configuration management approach",
-                    "Identify deployment and infrastructure code",
-                    "Evaluate operational readiness (health checks, etc.)",
-                ],
-                deliverable="Observability assessment with gaps and recommendations",
-                ai_model_hints={
-                    "estimated_tokens": 1500,
-                    "complexity": "medium",
-                    "requires_devops_knowledge": True,
-                },
-                dependencies=["1.1"],
-            )
-        )
-
-        return prompts
+    def _build_observability_context(self, analysis: RepositoryAnalysis) -> Dict[str, Any]:
+        """Build context for observability review prompt."""
+        return {"repository_path": analysis.repository_path}

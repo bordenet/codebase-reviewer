@@ -1,0 +1,47 @@
+# Phase 1: Architecture Analysis Prompt Templates
+# These templates define prompts for validating documented architecture against actual code
+
+prompts:
+  - id: "1.1"
+    title: "Validate Documented Architecture Against Actual Code"
+    objective: "Verify if actual code structure matches documented architecture claims"
+    tasks:
+      - "Compare claimed architectural pattern vs actual implementation"
+      - "Verify documented modules/layers exist in code"
+      - "Check if technology stack matches documentation"
+      - "Identify undocumented components or services"
+      - "Flag any significant documentation inaccuracies"
+      - "Assess overall architecture quality and appropriateness"
+    deliverable: "Architecture validation report with discrepancies highlighted and recommendations"
+    ai_model_hints:
+      complexity: "high"
+      requires_code_analysis: true
+    dependencies:
+      - "0.1"
+      - "0.2"
+    context_requirements:
+      - "claimed_architecture"
+      - "actual_structure"
+      - "validation_results"
+
+  - id: "1.2"
+    title: "Dependency Analysis and Health Check"
+    objective: "Analyze project dependencies for health, security, and documentation accuracy"
+    tasks:
+      - "Review all external dependencies and their purposes"
+      - "Identify any outdated or deprecated dependencies"
+      - "Check for potential security concerns"
+      - "Verify dependencies match documented prerequisites"
+      - "Identify missing dependency documentation"
+      - "Assess dependency management practices"
+    deliverable: "Dependency health report with recommendations for updates or documentation"
+    ai_model_hints:
+      complexity: "medium"
+    dependencies:
+      - "0.3"
+    context_requirements:
+      - "dependencies"
+      - "total_count"
+      - "documented_prerequisites"
+    conditional: "has_dependencies"
+

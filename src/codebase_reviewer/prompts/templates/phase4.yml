@@ -1,0 +1,27 @@
+# Phase 4: Interactive Remediation Prompt Templates
+# These templates define prompts for interactive issue prioritization and remediation
+
+prompts:
+  - id: "4.1"
+    title: "Interactive Issue Prioritization"
+    objective: "Work with user to prioritize identified issues for remediation"
+    tasks:
+      - "Present all issues organized by severity and category"
+      - "Ask user about their priorities (security, documentation, quality, etc.)"
+      - "Discuss effort estimates for top issues"
+      - "Help identify quick wins vs. major refactoring needs"
+      - "Create prioritized action plan based on user input"
+      - "Suggest grouping related issues into themes"
+    deliverable: "Prioritized, actionable remediation plan ready for execution"
+    ai_model_hints:
+      complexity: "medium"
+      requires_user_interaction: true
+    dependencies:
+      - "1.1"
+      - "2.1"
+      - "3.1"
+    context_requirements:
+      - "total_issues"
+      - "issues_by_severity"
+      - "top_issues"
+
