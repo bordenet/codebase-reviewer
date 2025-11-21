@@ -260,8 +260,27 @@ class PhaseGenerator:
 
     def _build_setup_validation_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for setup validation prompt."""
+        import os
+
         docs = analysis.documentation
         validation = analysis.validation
+        repo_path = analysis.repository_path
+
+        # Check for setup/build files
+        setup_files = []
+        for filename in ["requirements.txt", "setup.py", "pyproject.toml", "Pipfile", "environment.yml", "Dockerfile"]:
+            filepath = os.path.join(repo_path, filename)
+            if os.path.exists(filepath):
+                setup_files.append(filename)
+
+        # Extract Python version from various sources
+        python_version = None
+        if "setup.py" in setup_files:
+            # Could parse setup.py for python_requires
+            pass
+        if "pyproject.toml" in setup_files:
+            # Could parse pyproject.toml for python version
+            pass
 
         return {
             "documented_setup": (
@@ -273,8 +292,10 @@ class PhaseGenerator:
                     "env_vars": (docs.setup_instructions.environment_vars if docs and docs.setup_instructions else []),
                 }
                 if docs and docs.setup_instructions
-                else None
+                else {"prerequisites": [], "build_steps": [], "env_vars": []}
             ),
+            "setup_files_found": setup_files,
+            "dependencies_count": len(analysis.code.dependencies) if analysis.code else 0,
             "validation_results": (
                 [
                     {
@@ -292,7 +313,44 @@ class PhaseGenerator:
 
     def _build_testing_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for testing strategy prompt."""
-        return {"repository_path": analysis.repository_path}
+        import os
+        import glob
+
+        repo_path = analysis.repository_path
+
+        # Find test files
+        test_patterns = ["**/test_*.py", "**/*_test.py", "**/tests/**/*.py"]
+        test_files = []
+        for pattern in test_patterns:
+            test_files.extend(glob.glob(os.path.join(repo_path, pattern), recursive=True))
+
+        # Deduplicate and get relative paths
+        test_files = list(set([os.path.relpath(f, repo_path) for f in test_files]))
+
+        # Detect test framework
+        test_frameworks = []
+        dependencies = analysis.code.dependencies if analysis.code else []
+        if any("pytest" in dep.name.lower() for dep in dependencies):
+            test_frameworks.append("pytest")
+        if any("unittest" in dep.name.lower() for dep in dependencies):
+            test_frameworks.append("unittest")
+
+        # Organize tests by directory
+        test_dirs = {}
+        for test_file in test_files:
+            test_dir = os.path.dirname(test_file) or "root"
+            if test_dir not in test_dirs:
+                test_dirs[test_dir] = []
+            test_dirs[test_dir].append(os.path.basename(test_file))
+
+        return {
+            "repository_path": repo_path,
+            "test_files": test_files[:20],  # Limit to first 20 for brevity
+            "test_file_count": len(test_files),
+            "test_frameworks": test_frameworks,
+            "test_organization": test_dirs,
+            "has_tests": len(test_files) > 0,
+        }
 
     def _build_cicd_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for CI/CD review prompt."""

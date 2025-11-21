@@ -27,6 +27,15 @@ workflow:
             id: "static_analysis_summary"
             title: "Run static analysis/lint tools"
             objective: "Generate a summary report identifying major code quality issues, anti-patterns, and code smells"
+            tasks:
+              - "Analyze linting results (pylint, flake8, etc.) for high-severity issues"
+              - "Identify common anti-patterns specific to the detected language/framework"
+              - "Detect code smells that indicate architectural problems (god classes, feature envy, etc.)"
+              - "Flag violations of language-specific best practices (PEP 8 for Python, etc.)"
+              - "Categorize issues by severity (Critical/High/Medium/Low)"
+              - "Identify patterns of repeated issues across multiple files"
+              - "Assess overall code quality score and trends"
+            deliverable: "Prioritized list of quality issues with severity ratings, affected files, and remediation recommendations"
             prompt: |
               Generate a summary report identifying major code quality issues,
               anti-patterns, and code smells from static analysis results.
@@ -57,6 +66,16 @@ workflow:
             id: "comment_quality"
             title: "Check code comments"
             objective: "Detect comments that are outdated, missing, or inconsistent with code logic"
+            tasks:
+              - "Identify comments that contradict actual code behavior"
+              - "Find TODO/FIXME/HACK comments and assess their status (outdated, vague, or actionable)"
+              - "Detect complex code sections lacking explanatory comments"
+              - "Flag over-commented trivial code that adds noise"
+              - "Check for inconsistent comment styles (docstrings vs inline, formatting)"
+              - "Verify docstrings match function signatures and behavior"
+              - "Identify missing module-level and class-level documentation"
+              - "Assess comment-to-code ratio and quality"
+            deliverable: "Categorized list of comment issues (contradictory, missing, outdated, noisy) with specific file locations and improvement recommendations"
             prompt: |
               Detect comments that are outdated, missing, or inconsistent with the code logic,
               and recommend areas needing documentation improvements.
