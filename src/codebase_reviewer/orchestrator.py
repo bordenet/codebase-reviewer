@@ -22,6 +22,7 @@ class AnalysisOrchestrator:
         self,
         repo_path: str,
         progress_callback: Optional[Callable[[str], None]] = None,
+        workflow: str = "default",
     ) -> RepositoryAnalysis:
         """
         Execute complete analysis pipeline.
@@ -35,6 +36,7 @@ class AnalysisOrchestrator:
         Args:
             repo_path: Path to repository root
             progress_callback: Optional callback for progress updates
+            workflow: Workflow name to use (default, principal_engineer, etc.)
 
         Returns:
             Complete RepositoryAnalysis
@@ -73,7 +75,7 @@ class AnalysisOrchestrator:
         report_progress(f"  Drift severity: {validation_results.drift_severity.value}")
 
         # Step 4: Generate prompts incorporating validation findings
-        report_progress("Generating AI prompts...")
+        report_progress(f"Generating AI prompts (workflow: {workflow})...")
         repo_analysis = RepositoryAnalysis(
             repository_path=repo_path,
             documentation=doc_analysis,
@@ -83,9 +85,9 @@ class AnalysisOrchestrator:
             timestamp=datetime.now(),
         )
 
-        prompts = self.prompt_generator.generate_all_phases(repo_analysis)
+        prompts = self.prompt_generator.generate_all_phases(repo_analysis, workflow=workflow)
         total_prompts = len(prompts.all_prompts())
-        report_progress(f"  Generated {total_prompts} AI prompts across 5 phases")
+        report_progress(f"  Generated {total_prompts} AI prompts")
 
         # Calculate duration
         duration = time.time() - start_time

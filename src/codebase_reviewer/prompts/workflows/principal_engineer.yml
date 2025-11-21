@@ -1,0 +1,291 @@
+# Principal Engineer Strategic Review Workflow
+# Based on Perplexity.ai methodology for principal-level codebase assessment
+
+workflow:
+  name: "Principal Engineer Strategic Review"
+  version: "1.0"
+  description: "Comprehensive codebase assessment using Perplexity.ai methodology for principal engineers"
+
+  settings:
+    parallel_execution: false
+    fail_fast: false
+    cache_results: true
+
+  sections:
+    - id: "reconnaissance"
+      title: "1. High-Level Reconnaissance"
+      description: "Scan architecture, map dependencies, and run static analysis"
+      prompts:
+        # Scan architecture docs & README
+        - template: "phase0.yml#0.1"
+
+        # Map critical modules & dependencies
+        - template: "phase1.yml#1.1"
+
+        # Run static analysis/lint tools
+        - custom:
+            id: "static_analysis_summary"
+            title: "Run static analysis/lint tools"
+            objective: "Generate a summary report identifying major code quality issues, anti-patterns, and code smells"
+            prompt: |
+              Generate a summary report identifying major code quality issues,
+              anti-patterns, and code smells from static analysis results.
+
+              Focus on:
+              - High-severity issues that impact maintainability
+              - Common anti-patterns in the detected language/framework
+              - Code smells that indicate deeper architectural problems
+              - Patterns that violate best practices
+
+              Deliverable: Prioritized list of quality issues with severity ratings
+
+    - id: "hygiene"
+      title: "2. Baseline Hygiene Checks"
+      description: "Survey tests, review build/CI, bookmark entry points, check comments"
+      prompts:
+        # Survey test coverage and testability
+        - template: "phase3.yml#3.1"
+
+        # Review build, dependency, and CI configurations
+        - template: "phase3.yml#3.2"
+
+        # Bookmark entry points and critical flows
+        - template: "phase1.yml#1.2"
+
+        # Check code comments
+        - custom:
+            id: "comment_quality"
+            title: "Check code comments"
+            objective: "Detect comments that are outdated, missing, or inconsistent with code logic"
+            prompt: |
+              Detect comments that are outdated, missing, or inconsistent with the code logic,
+              and recommend areas needing documentation improvements.
+
+              Analyze:
+              - Comments that contradict the actual code behavior
+              - TODO/FIXME comments that are outdated or vague
+              - Missing comments in complex or critical code sections
+              - Over-commented trivial code (noise)
+              - Inconsistent comment styles
+
+              Deliverable: List of comment issues with recommendations for improvement
+
+    - id: "safety_security"
+      title: "3. Core Safety and Security"
+      description: "Identify anti-patterns, verify error handling, assess security"
+      prompts:
+        # Identify anti-patterns & smells
+        - template: "phase2.yml#2.2"
+
+        # Verify error handling in hot paths
+        - custom:
+            id: "error_handling"
+            title: "Verify error handling in hot paths"
+            objective: "Assess error handling and exception management in core execution paths"
+            prompt: |
+              Assess error handling and exception management in the core execution paths;
+              identify missing or inadequate error recovery.
+
+              Focus on:
+              - Critical paths with no error handling
+              - Swallowed exceptions (empty catch blocks)
+              - Generic exception catching that masks specific errors
+              - Missing validation of external inputs
+              - Lack of graceful degradation strategies
+
+              Deliverable: Error handling gaps with risk assessment
+
+        # Assess security of public interfaces
+        - custom:
+            id: "security_assessment"
+            title: "Assess security of public interfaces"
+            objective: "Review public-facing APIs or interfaces for common security vulnerabilities"
+            prompt: |
+              Review public-facing APIs or interfaces for common security vulnerabilities
+              or missing access controls.
+
+              Check for:
+              - Missing authentication/authorization
+              - Input validation gaps (injection vulnerabilities)
+              - Sensitive data exposure
+              - Missing rate limiting
+              - CORS misconfigurations
+              - Insecure defaults
+
+              Deliverable: Security vulnerability report with severity ratings
+
+    - id: "architecture_insights"
+      title: "4. Architecture Insights"
+      description: "Visualize dependencies, trace call graphs, review history, check duplication"
+      prompts:
+        # Visualize module and dependency graphs
+        - template: "phase1.yml#1.1"
+
+        # Trace call graphs for data/control flow
+        - custom:
+            id: "call_graph_tracing"
+            title: "Trace call graphs for data/control flow"
+            objective: "Map key call chains and data flows through core modules"
+            prompt: |
+              Map key call chains and data flows through core modules to clarify
+              system behavior under typical scenarios.
+
+              Analyze:
+              - Entry points to critical business logic
+              - Data transformation pipelines
+              - Control flow through major features
+              - Cross-module communication patterns
+              - Circular dependencies in call chains
+
+              Deliverable: Call graph visualization or description of critical flows
+
+        # Review version control history for hotspots
+        - custom:
+            id: "git_hotspots"
+            title: "Review version control history for hotspots"
+            objective: "Analyze commit history to identify frequently changed files indicating instability"
+            prompt: |
+              Analyze commit history to identify frequently changed files or modules
+              indicating instability or technical debt.
+
+              Look for:
+              - Files with high churn rate (frequent changes)
+              - Modules touched in many bug fix commits
+              - Areas with many authors (coordination complexity)
+              - Recent refactoring attempts
+              - Correlation between churn and bug density
+
+              Deliverable: Hotspot analysis with stability metrics
+
+        # Check for redundant or duplicated code
+        - template: "phase2.yml#2.3"
+
+    - id: "coverage_modeling"
+      title: "5. Coverage & Modeling"
+      description: "Audit integrations, inspect boundaries, summarize complex code, compare tests to criticality"
+      prompts:
+        # Audit integrations and data models
+        - template: "phase1.yml#1.3"
+
+        # Inspect boundaries: cohesion, coupling, leakage
+        - custom:
+            id: "boundary_analysis"
+            title: "Inspect boundaries: cohesion, coupling, leakage"
+            objective: "Evaluate module boundary adherence by analyzing coupling and cohesion metrics"
+            prompt: |
+              Evaluate module boundary adherence by analyzing coupling and cohesion metrics;
+              highlight boundary leakage or violations.
+
+              Assess:
+              - High coupling between modules (tight dependencies)
+              - Low cohesion within modules (unrelated responsibilities)
+              - Abstraction leakage (internal details exposed)
+              - Circular dependencies between modules
+              - Violation of dependency inversion principle
+
+              Deliverable: Boundary health report with refactoring recommendations
+
+        # Use GenAI/code summarizers on complex regions
+        - custom:
+            id: "complex_code_summary"
+            title: "Use GenAI/code summarizers on complex regions"
+            objective: "Summarize complex or dense code regions, surfacing hidden logic and edge cases"
+            prompt: |
+              Summarize complex or dense code regions, surfacing hidden logic,
+              dependencies, or edge cases.
+
+              Target:
+              - Functions with high cyclomatic complexity
+              - Deeply nested conditionals
+              - Long methods (>50 lines)
+              - Code with many dependencies
+              - Algorithms with non-obvious behavior
+
+              Deliverable: Plain-language summaries of complex code sections
+
+        # Compare tests to code criticality
+        - custom:
+            id: "test_criticality_mapping"
+            title: "Compare tests to code criticality"
+            objective: "Cross-reference test coverage with business-critical modules"
+            prompt: |
+              Cross-reference test coverage with business-critical modules;
+              flag critical areas that lack adequate tests.
+
+              Identify:
+              - High-risk code with low test coverage
+              - Business-critical paths without integration tests
+              - Edge cases not covered by tests
+              - Flaky or unreliable tests in critical areas
+              - Missing negative test cases
+
+              Deliverable: Test gap analysis prioritized by business impact
+
+    - id: "strategy"
+      title: "6. Principal Engineer Strategy"
+      description: "Cross-reference with design docs, establish living maps, instrument hot paths, prioritize debt, propose improvements, mentor"
+      prompts:
+        # Cross-reference code with design docs
+        - template: "phase0.yml#0.2"
+
+        # Establish living dependency and privilege maps
+        - custom:
+            id: "living_documentation"
+            title: "Establish living dependency and privilege maps"
+            objective: "Generate or update documentation for dependency graphs and privilege boundaries"
+            prompt: |
+              Generate or update documentation for dependency graphs and privilege
+              boundaries within the codebase.
+
+              Create:
+              - Up-to-date dependency diagrams (module relationships)
+              - Privilege/permission boundaries (who can access what)
+              - Data flow diagrams for critical paths
+              - Integration points with external systems
+              - Living architecture documentation
+
+              Deliverable: Documentation artifacts that can be maintained alongside code
+
+        # Instrument and profile hot paths
+        - custom:
+            id: "instrumentation_strategy"
+            title: "Instrument and profile hot paths"
+            objective: "Suggest instrumentation strategies to gather runtime metrics for critical code paths"
+            prompt: |
+              Suggest instrumentation strategies to gather runtime metrics for
+              identified critical or high-traffic code paths.
+
+              Recommend:
+              - Key performance indicators (KPIs) to track
+              - Logging points for debugging
+              - Metrics collection (latency, throughput, errors)
+              - Distributed tracing integration points
+              - Profiling strategies for performance bottlenecks
+
+              Deliverable: Instrumentation plan with specific recommendations
+
+        # Prioritize and document technical debt
+        - template: "phase4.yml#4.1"
+
+        # Propose focused, incremental improvements
+        - template: "phase4.yml#4.2"
+
+        # Mentor and scale review practices
+        - custom:
+            id: "mentoring_guidance"
+            title: "Mentor and scale review practices"
+            objective: "Provide guidelines on coaching peers to adopt best practices in code reviews"
+            prompt: |
+              Provide guidelines or actionable advice on coaching peers to adopt
+              best practices in code reviews and assessments.
+
+              Include:
+              - Code review checklist for the team
+              - Common pitfalls to watch for
+              - How to give constructive feedback
+              - Scaling review practices across teams
+              - Knowledge sharing strategies
+              - Onboarding new reviewers
+
+              Deliverable: Mentoring guide and review best practices document
+

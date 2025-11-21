@@ -1,0 +1,54 @@
+# Default Workflow: Documentation-First 5-Phase Review
+# This workflow maintains backward compatibility with the original 5-phase approach
+
+workflow:
+  name: "Default Documentation-First Review"
+  version: "1.0"
+  description: "Original 5-phase documentation-first codebase review methodology"
+
+  settings:
+    parallel_execution: false
+    fail_fast: false
+    cache_results: true
+
+  sections:
+    - id: "phase0"
+      title: "Phase 0: Documentation Review"
+      description: "Analyze all documentation and extract testable claims"
+      prompts:
+        - template: "phase0.yml#0.1"
+        - template: "phase0.yml#0.2"
+        - template: "phase0.yml#0.3"
+
+    - id: "phase1"
+      title: "Phase 1: Architecture Analysis"
+      description: "Understand system structure, patterns, and dependencies"
+      prompts:
+        - template: "phase1.yml#1.1"
+        - template: "phase1.yml#1.2"
+        - template: "phase1.yml#1.3"
+
+    - id: "phase2"
+      title: "Phase 2: Implementation Deep-Dive"
+      description: "Analyze code quality, patterns, and anti-patterns"
+      prompts:
+        - template: "phase2.yml#2.1"
+        - template: "phase2.yml#2.2"
+        - template: "phase2.yml#2.3"
+
+    - id: "phase3"
+      title: "Phase 3: Development Workflow"
+      description: "Review testing, CI/CD, and development practices"
+      prompts:
+        - template: "phase3.yml#3.1"
+        - template: "phase3.yml#3.2"
+        - template: "phase3.yml#3.3"
+
+    - id: "phase4"
+      title: "Phase 4: Interactive Remediation"
+      description: "Prioritize issues and plan improvements"
+      prompts:
+        - template: "phase4.yml#4.1"
+        - template: "phase4.yml#4.2"
+        - template: "phase4.yml#4.3"
+
