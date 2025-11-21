@@ -4,11 +4,7 @@ import pytest
 
 from codebase_reviewer.models import RepositoryAnalysis
 from codebase_reviewer.prompts.generator import PhaseGenerator
-from codebase_reviewer.prompts.workflow_executor import (
-    PromptStatus,
-    WorkflowExecutor,
-    WorkflowProgress,
-)
+from codebase_reviewer.prompts.workflow_executor import PromptStatus, WorkflowExecutor, WorkflowProgress
 from codebase_reviewer.prompts.workflow_loader import WorkflowLoader
 
 
@@ -129,4 +125,3 @@ def test_workflow_progress_completion_percentage_partial():
     progress = WorkflowProgress(total_prompts=10, completed=5)
 
     assert progress.completion_percentage == 50.0
-
