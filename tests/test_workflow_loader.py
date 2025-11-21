@@ -1,13 +1,15 @@
 """Tests for workflow loader."""
 
-import pytest
 from pathlib import Path
+
+import pytest
+
 from codebase_reviewer.prompts.workflow_loader import (
-    WorkflowLoader,
-    WorkflowDefinition,
-    WorkflowSection,
-    WorkflowPrompt,
     CustomPrompt,
+    WorkflowDefinition,
+    WorkflowLoader,
+    WorkflowPrompt,
+    WorkflowSection,
 )
 
 
@@ -160,4 +162,3 @@ def test_workflow_section_structure():
             assert isinstance(prompt, WorkflowPrompt)
             # Either template or custom, not both
             assert (prompt.template is not None) != (prompt.custom is not None)
-

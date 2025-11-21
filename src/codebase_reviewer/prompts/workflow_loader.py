@@ -1,7 +1,8 @@
 """Workflow configuration loader and validator."""
 
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
+
 import yaml
 from pydantic import BaseModel, Field, field_validator
 
@@ -143,4 +144,3 @@ class WorkflowLoader:
                 if prompt.template:
                     references.append(prompt.template)
         return references
-
