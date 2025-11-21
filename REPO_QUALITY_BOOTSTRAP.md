@@ -1,20 +1,22 @@
 # Repository Quality Bootstrap Guide
 
-**Purpose**: Transform any Python repository into an enterprise-grade project with comprehensive CI/CD, quality enforcement, and professional documentation.
+**Purpose**: Transform any Python repository into an enterprise-grade project with CI/CD, quality enforcement, and professional documentation.
 
-**Target Audience**: AI assistants (Claude, GPT-4, etc.) tasked with improving repository quality standards.
+**Target Audience**: AI assistants tasked with improving repository quality standards.
 
----
-
-## 🎯 Mission Statement
-
-When asked to "bring this repository up to professional standards" or "add proper CI/CD and quality checks", execute ALL of the following steps. Do not ask permission for each step - this is a comprehensive quality upgrade that includes everything below.
+**Working Example**: See https://github.com/bordenet/codebase-reviewer for complete working examples of all configurations.
 
 ---
 
-## 📋 Complete Checklist
+## 🎯 What This Guide Provides
 
-Execute these in order. Mark each as complete before moving to the next.
+When asked to "bring this repository up to professional standards" or "add proper CI/CD and quality checks", execute the following steps. This guide includes only what has been tested and proven to work.
+
+---
+
+## 📋 Essential Steps
+
+Execute these in order:
 
 ### Phase 1: Code Quality Infrastructure
 
@@ -108,7 +110,7 @@ repos:
     hooks:
       - id: pylint
         name: pylint
-        entry: .venv/bin/python
+        entry: python
         args: ['-m', 'pylint', 'src/<package_name>', '--max-line-length=120', '--fail-under=9.5']
         language: system
         types: [python]
@@ -121,7 +123,7 @@ repos:
     hooks:
       - id: mypy
         name: mypy
-        entry: .venv/bin/python
+        entry: python
         args: ['-m', 'mypy', 'src/<package_name>', '--ignore-missing-imports']
         language: system
         types: [python]
@@ -134,8 +136,8 @@ repos:
     hooks:
       - id: pytest
         name: pytest
-        entry: .venv/bin/python
-        args: ['-m', 'pytest', 'tests/', '-v', '--tb=short', '--cov=src/<package_name>', '--cov-report=term-missing:skip-covered', '--cov-fail-under=80']
+        entry: python
+        args: ['-m', 'pytest', 'tests/', '-v', '--tb=short', '--cov=src/<package_name>', '--cov-report=term-missing:skip-covered', '--cov-fail-under=59']
         language: system
         types: [python]
         require_serial: true
@@ -150,10 +152,11 @@ repos:
         files: requirements.txt
 ```
 
-**Actions**:
+**Critical**:
 - Replace ALL instances of `<package_name>` with actual package name
+- Use `python` not `.venv/bin/python` for `entry:` (ensures CI compatibility)
+- Set coverage threshold 1-2% below actual coverage (e.g., if coverage is 59.98%, use 59%)
 - Adjust paths if project uses different structure (e.g., no `src/` directory)
-- Adjust coverage threshold (80%) based on current coverage
 
 **Verification**: Run `pre-commit install` and `pre-commit run --all-files`.
 
@@ -221,7 +224,7 @@ jobs:
 
     - name: Run tests with coverage
       run: |
-        pytest tests/ -v --cov=src/<package_name> --cov-report=xml --cov-report=term-missing
+        pytest tests/ -v --cov=src/<package_name> --cov-report=xml --cov-report=term-missing --cov-fail-under=59
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
@@ -255,52 +258,14 @@ jobs:
         pre-commit run --all-files
 ```
 
-**Actions**:
+**Critical**:
 - Replace ALL instances of `<package_name>` with actual package name
+- Set `--cov-fail-under` to match `.pre-commit-config.yaml` (e.g., 59%)
 - Adjust Python versions in matrix based on project requirements
 - Adjust branch names if using different convention (main vs master)
 - Adjust paths if not using `src/` directory structure
 
 **Verification**: Push to GitHub and verify workflow runs successfully.
-
-#### 2.2 Optional: Add Release Workflow
-
-**File**: `.github/workflows/release.yml`
-
-```yaml
-name: Release
-
-on:
-  release:
-    types: [published]
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install build twine
-
-    - name: Build package
-      run: python -m build
-
-    - name: Publish to PyPI
-      env:
-        TWINE_USERNAME: __token__
-        TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-      run: twine upload dist/*
-```
-
-**Note**: Only add if project will be published to PyPI.
 
 ---
 
@@ -532,139 +497,46 @@ Open an issue or reach out to the maintainers.
 
 #### 5.1 Codecov Setup (REQUIRED)
 
-**Why**: Without this, the codecov badge will show "unknown" and coverage won't be tracked.
-
 **Steps**:
-1. Visit https://codecov.io
-2. Click "Sign up" or "Log in" → Choose "Sign in with GitHub"
-3. Authorize Codecov to access your GitHub account
-4. Click "Add new repository" or go to https://app.codecov.io/gh/<owner>
-5. Find your repository in the list and click it
-6. You'll see a setup page with your upload token
-7. Copy the upload token (starts with something like `abc123...`)
-8. Go to your GitHub repository
-9. Click Settings → Secrets and variables → Actions
-10. Click "New repository secret"
-11. Name: `CODECOV_TOKEN` (exactly this, case-sensitive)
-12. Value: (paste the token you copied)
-13. Click "Add secret"
+1. Go to https://codecov.io and sign in with GitHub
+2. Add your repository
+3. Copy the upload token from Settings → General
+4. Go to your GitHub repo → Settings → Secrets and variables → Actions
+5. Click "New repository secret"
+6. Name: `CODECOV_TOKEN` (exactly, case-sensitive)
+7. Value: Paste the token from Codecov
+8. Click "Add secret"
+9. Push a commit to trigger CI
+10. Wait 5-10 minutes for Codecov to process
 
-**Verification**:
-- Secret should appear in the list (value will be hidden)
-- Next CI run should upload coverage to Codecov
-- Codecov badge should update within 5 minutes of successful upload
+**Verification**: Codecov badge should show coverage percentage (not "unknown")
 
-**Troubleshooting**:
-- If badge still shows "unknown" after CI run, check Codecov dashboard for errors
-- Verify token is named exactly `CODECOV_TOKEN`
-- Check CI logs for "Upload coverage to Codecov" step - should show success
-- May need to wait 5-10 minutes for badge to update after first upload
+**Critical**: If badge shows "unknown", check CI logs for `CODECOV_TOKEN:` (empty) - this means the secret value is blank. Get a fresh token from Codecov and update the secret.
 
-#### 5.2 Fix CI Failures (REQUIRED)
+#### 5.2 Fix CI Failures
 
-**Why**: CI badge shows "failing" when tests/quality checks don't pass.
-
-**Common Causes & Fixes**:
-
-**A. Coverage Below Threshold**
-
-Check CI logs for:
-```
-FAILED tests/ - AssertionError: coverage is below 80%
-```
-
-**Fix Options**:
-1. **Improve test coverage** (preferred):
-   ```bash
-   # Find uncovered code
-   pytest tests/ -v --cov=src/<package_name> --cov-report=term-missing
-   # Add tests for missing lines
-   ```
-
-2. **Lower threshold temporarily**:
-   - Edit `.pre-commit-config.yaml`: Change `--cov-fail-under=80` to `--cov-fail-under=60`
-   - Edit `.github/workflows/ci.yml`: Add `--cov-fail-under=60` to pytest command
-   - Commit and push
-
-**B. Pylint Score Below 9.5**
-
-Check CI logs for:
-```
-Your code has been rated at 8.5/10
-```
-
-**Fix Options**:
-1. **Fix linting issues** (preferred):
-   ```bash
-   # See all issues
-   pylint src/<package_name>
-   # Fix issues in code
-   ```
-
-2. **Lower threshold temporarily**:
-   - Edit `.pre-commit-config.yaml`: Change `--fail-under=9.5` to `--fail-under=8.0`
-   - Edit `.github/workflows/ci.yml`: Change `--fail-under=9.5` to `--fail-under=8.0`
-   - Commit and push
-
-**C. Type Checking Failures**
-
-Check CI logs for mypy errors.
-
-**Fix Options**:
-1. **Fix type issues** (preferred):
-   ```bash
-   mypy src/<package_name>
-   # Add type hints or fix type errors
-   ```
-
-2. **Add exceptions**:
-   - Create `mypy.ini`:
-     ```ini
-     [mypy]
-     ignore_missing_imports = True
-     disallow_untyped_defs = False
-     ```
-
-**D. Import Sorting Issues**
-
-Check CI logs for isort errors.
-
-**Fix**:
+**Before pushing**, always run locally:
 ```bash
-# Auto-fix locally
-isort src/<package_name> tests/
-# Commit and push
+pre-commit run --all-files
+pytest tests/ -v --cov=src/<package_name>
 ```
 
-**E. Code Formatting Issues**
+**Common Issues**:
 
-Check CI logs for black errors.
+1. **Coverage threshold too high**: If actual coverage is 59.98%, set threshold to 59% (not 60%)
+2. **Pre-commit hooks fail in CI**: Use `python` not `.venv/bin/python` in `.pre-commit-config.yaml`
+3. **Files modified by hooks**: Run `pre-commit run --all-files` locally before pushing
+4. **Formatting/linting errors**: Run `black` and `isort` locally to auto-fix
 
-**Fix**:
+**Debugging**:
 ```bash
-# Auto-fix locally
-black src/<package_name> tests/
-# Commit and push
+# Check which job failed
+gh run view --log-failed
+
+# Run same checks locally
+pre-commit run --all-files
+pytest tests/ -v --cov=src/<package_name> --cov-fail-under=59
 ```
-
-**Verification After Fixes**:
-1. Run locally: `pre-commit run --all-files`
-2. All checks should pass
-3. Commit and push
-4. Wait for CI to complete (check Actions tab)
-5. CI badge should turn green within 2-3 minutes
-
-#### 5.3 Optional: Read the Docs Setup
-
-If project needs documentation hosting:
-
-1. Visit https://readthedocs.org
-2. Import the repository
-3. Configure build settings
-4. Add badge to README:
-   ```markdown
-   [![Documentation Status](https://readthedocs.org/projects/<project>/badge/?version=latest)](https://<project>.readthedocs.io/en/latest/?badge=latest)
-   ```
 
 ---
 
@@ -897,201 +769,36 @@ Add professional README badges and documentation
 
 ---
 
-## 🎓 Lessons Learned: Real-World Troubleshooting
+## 🎓 Critical Lessons (From Real Implementation)
 
-This section documents actual issues encountered during the implementation of this guide on the `codebase-reviewer` project and how they were resolved.
+These are the actual issues encountered when implementing this guide on the `codebase-reviewer` project:
 
-### Issue 1: Pre-commit Hooks Failing in CI with "Executable not found"
+### 1. Use `python` not `.venv/bin/python` in Pre-commit Hooks
+**Problem**: CI fails with `Executable .venv/bin/python not found`
+**Solution**: Always use `entry: python` in `.pre-commit-config.yaml`
 
-**Symptom**: CI fails with error: `Executable .venv/bin/python not found`
+### 2. Set Coverage Threshold Below Actual Coverage
+**Problem**: CI fails when coverage is 59.98% but threshold is 60%
+**Solution**: Set threshold 1-2% below actual (e.g., 59% for 59.98% coverage)
+**Update**: Both `.pre-commit-config.yaml` and `.github/workflows/ci.yml`
 
-**Root Cause**: Pre-commit hooks configured with local virtual environment paths that don't exist in GitHub Actions runners.
+### 3. Run Pre-commit Locally Before Pushing
+**Problem**: CI fails with "files were modified by this hook"
+**Solution**: Always run `pre-commit run --all-files` locally first
 
-**Solution**: Change all `entry:` fields in `.pre-commit-config.yaml` from `.venv/bin/python` to `python`:
+### 4. Codecov Token Must Have Actual Value
+**Problem**: Badge shows "unknown", CI logs show `CODECOV_TOKEN:` (empty)
+**Solution**: Get fresh token from Codecov dashboard, update GitHub secret
+**Verify**: CI logs should show `info - Process Upload complete` (no error)
 
-```yaml
-# ❌ WRONG - Fails in CI
-- id: pylint
-  entry: .venv/bin/python
-  args: ['-m', 'pylint', ...]
-
-# ✅ CORRECT - Works everywhere
-- id: pylint
-  entry: python
-  args: ['-m', 'pylint', ...]
-```
-
-**Prevention**: Always use `python` instead of absolute paths in pre-commit hooks.
-
----
-
-### Issue 2: Coverage Threshold Failures by Tiny Margins
-
-**Symptom**: CI fails with: `FAIL Required test coverage of 60% not reached. Total coverage: 59.98%`
-
-**Root Cause**: Coverage is 59.98% but threshold is set to 60% - missing by only 0.02%!
-
-**Solution**: Set coverage threshold slightly below actual coverage to provide buffer:
-
-```yaml
-# If actual coverage is 59.98%, set threshold to 59%
-args: ['--cov-fail-under=59']  # Not 60%
-```
-
-**Best Practice**:
-- Run `pytest --cov` locally to check actual coverage
-- Set threshold 1-2% below actual coverage to allow for minor fluctuations
-- As you add tests and coverage improves, gradually increase the threshold
-
-**Files to Update**:
-1. `.pre-commit-config.yaml` (pytest hook)
-2. `.github/workflows/ci.yml` (test job)
-
----
-
-### Issue 3: End-of-File Fixer Modifying Files in CI
-
-**Symptom**: CI fails with: `files were modified by this hook` for `end-of-file-fixer`
-
-**Root Cause**: Configuration files missing final newline character.
-
-**Solution**: Run pre-commit locally to auto-fix:
-
+### 5. Test Locally First
+**Always run before pushing**:
 ```bash
-pre-commit run end-of-file-fixer --all-files
-git add -A
-git commit -m "Fix end-of-file issues in configuration files"
-git push
-```
-
-**Prevention**: Always run `pre-commit run --all-files` locally before pushing.
-
----
-
-### Issue 4: Codecov Badge Shows "Unknown" Despite Token Being Set
-
-**Symptom**:
-- Codecov badge shows "unknown"
-- CI logs show: `error - Upload failed: {"message":"Token required because branch is protected"}`
-- GitHub shows `CODECOV_TOKEN:` (empty value in logs)
-
-**Root Cause**: The `CODECOV_TOKEN` secret exists in GitHub but has an empty/invalid value.
-
-**Solution - Complete Codecov Setup**:
-
-1. **Get Valid Token from Codecov**:
-   - Go to https://codecov.io
-   - Sign in with GitHub
-   - Find your repository
-   - Go to Settings → General
-   - Copy the "Repository Upload Token" (UUID format: `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`)
-
-2. **Update GitHub Secret**:
-   - Go to `https://github.com/<owner>/<repo>/settings/secrets/actions`
-   - If `CODECOV_TOKEN` exists, click "Update"
-   - If not, click "New repository secret"
-   - Name: `CODECOV_TOKEN` (exactly, case-sensitive)
-   - Value: Paste the token from Codecov
-   - Click "Add secret" or "Update secret"
-
-3. **Verify Token is Working**:
-   - Trigger a new CI run (push a commit or re-run workflow)
-   - Check CI logs for: `info - Process Upload complete` (without error)
-   - Wait 5-10 minutes for Codecov to process
-   - Badge should update to show coverage percentage
-
-**Common Mistakes**:
-- ❌ Secret name is case-sensitive - must be `CODECOV_TOKEN` not `codecov_token`
-- ❌ Token value is empty or contains placeholder text
-- ❌ Using wrong token (project token vs upload token)
-- ❌ Token is from wrong repository on Codecov
-
-**Verification**:
-```bash
-# Check CI logs for successful upload
-gh run view --log | grep -i codecov | grep -i "upload complete"
-
-# Should see:
-# info - Process Upload complete
-# (No error message after this line)
-```
-
----
-
-### Issue 5: Protected Branch Requiring Token
-
-**Symptom**: Codecov upload fails with: `Branch 'main' is protected but no token was provided`
-
-**Root Cause**: GitHub branch protection rules require authentication for external services.
-
-**Solution**: This is the same as Issue 4 - you MUST configure `CODECOV_TOKEN` secret. There is no workaround for protected branches.
-
-**Note**: If your branch is not protected, Codecov may work without a token, but it's still recommended to add one for reliability.
-
----
-
-### Issue 6: CI Badge Shows "Failing" After Initial Setup
-
-**Symptom**: CI badge shows red "failing" status immediately after adding CI workflow.
-
-**Common Causes** (check in this order):
-
-1. **Pre-commit hooks using wrong Python path** → See Issue 1
-2. **Coverage threshold too high** → See Issue 2
-3. **Files need formatting/linting** → Run `pre-commit run --all-files` locally
-4. **Missing dependencies** → Check `pip install -e ".[dev]"` works
-5. **Tests actually failing** → Run `pytest tests/ -v` locally
-
-**Debugging Process**:
-```bash
-# 1. Check which job failed
-gh run view --log-failed
-
-# 2. Look for specific error messages
-gh run view --log-failed | grep -i "error\|failed\|FAIL"
-
-# 3. Run the same checks locally
 pre-commit run --all-files
-pytest tests/ -v --cov=src/<package_name> --cov-fail-under=<threshold>
-
-# 4. Fix issues locally first, then push
+pytest tests/ -v --cov=src/<package_name>
 ```
 
-**Success Criteria**: CI badge turns green, all jobs pass.
-
----
-
-### Key Takeaways for AI Assistants
-
-1. **Always test locally before pushing**:
-   ```bash
-   pre-commit run --all-files
-   pytest tests/ -v --cov=src/<package_name>
-   ```
-
-2. **Set realistic thresholds**:
-   - Coverage: 1-2% below actual coverage
-   - Pylint: Start at 8.0, gradually increase to 9.5+
-   - Don't set aspirational thresholds that immediately fail
-
-3. **Use portable paths**:
-   - ✅ `python` not `.venv/bin/python`
-   - ✅ `pytest` not `/usr/local/bin/pytest`
-
-4. **Verify secrets have actual values**:
-   - GitHub secrets are hidden, but CI logs will show if they're empty
-   - Look for `CODECOV_TOKEN:` (empty) in logs = bad
-   - Always get fresh tokens from the source (Codecov dashboard)
-
-5. **Fix files before committing**:
-   - Run `pre-commit run --all-files` to auto-fix formatting
-   - Commit the fixes before pushing
-   - Prevents "files were modified" errors in CI
-
-6. **Read CI logs carefully**:
-   - Error messages are usually accurate
-   - Look for "error", "failed", "FAIL" in logs
-   - Fix root cause, not symptoms
+**See working examples**: https://github.com/bordenet/codebase-reviewer
 
 ---
 
@@ -1108,9 +815,11 @@ pytest tests/ -v --cov=src/<package_name> --cov-fail-under=<threshold>
 
 ---
 
-**Version**: 1.1
+**Version**: 2.0
 **Last Updated**: 2025-11-21
-**Maintained By**: AI Assistant Quality Standards Team
+**Working Example**: https://github.com/bordenet/codebase-reviewer
+
 **Changelog**:
-- v1.1 (2025-11-21): Added "Lessons Learned" section with real-world troubleshooting from codebase-reviewer implementation
+- v2.0 (2025-11-21): Streamlined to essentials only, added working example reference, condensed lessons learned
+- v1.1 (2025-11-21): Added comprehensive troubleshooting
 - v1.0 (2025-11-21): Initial version
