@@ -1,8 +1,8 @@
 # Workflow Integration Proposal: Configuration-Driven Review Steps
 
-**Version**: 1.0  
-**Date**: 2025-11-21  
-**Status**: PROPOSAL  
+**Version**: 1.0
+**Date**: 2025-11-21
+**Status**: PROPOSAL
 
 ## Executive Summary
 
@@ -110,13 +110,13 @@ workflow:
   name: "Principal Engineer Strategic Review"
   version: "1.0"
   description: "Comprehensive codebase assessment for principal engineers"
-  
+
   # Global settings
   settings:
     parallel_execution: true
     fail_fast: false
     cache_results: true
-    
+
   # Accordion sections (collapsible groups)
   sections:
     - id: "reconnaissance"
@@ -132,7 +132,7 @@ workflow:
             extract_claims: true
           outputs:
             - "documentation_analysis"
-            
+
         - id: "map_dependencies"
           type: "dependency_mapper"
           title: "Map critical modules & dependencies"
@@ -143,7 +143,7 @@ workflow:
             depth: 3
           outputs:
             - "dependency_graph"
-            
+
         - id: "static_analysis"
           type: "quality_check"
           title: "Run static analysis/lint tools"
