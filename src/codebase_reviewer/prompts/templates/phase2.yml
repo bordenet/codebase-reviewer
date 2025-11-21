@@ -1,0 +1,45 @@
+# Phase 2: Implementation Deep-Dive Prompt Templates
+# These templates define prompts for code quality and implementation analysis
+
+prompts:
+  - id: "2.1"
+    title: "Code Quality and Technical Debt Assessment"
+    objective: "Assess code quality, identify technical debt, and security concerns"
+    tasks:
+      - "Review TODO/FIXME comments for patterns and urgency"
+      - "Assess potential security issues (hardcoded secrets, etc.)"
+      - "Identify areas with high technical debt"
+      - "Evaluate error handling patterns"
+      - "Assess code organization and modularity"
+      - "Identify anti-patterns or code smells"
+    deliverable: "Code quality report with prioritized remediation recommendations"
+    ai_model_hints:
+      complexity: "high"
+      requires_security_knowledge: true
+    dependencies:
+      - "1.1"
+    context_requirements:
+      - "todo_count"
+      - "sample_todos"
+      - "security_issues_count"
+      - "sample_security_issues"
+
+  - id: "2.2"
+    title: "Logging and Observability Review"
+    objective: "Evaluate logging practices and observability readiness"
+    tasks:
+      - "Assess logging coverage and consistency"
+      - "Identify areas lacking proper error logging"
+      - "Evaluate log levels and message quality"
+      - "Check for structured logging practices"
+      - "Assess monitoring and metrics instrumentation"
+      - "Identify observability gaps"
+    deliverable: "Observability assessment with gaps and recommendations"
+    ai_model_hints:
+      complexity: "medium"
+      requires_devops_knowledge: true
+    dependencies:
+      - "1.1"
+    context_requirements:
+      - "repository_path"
+
