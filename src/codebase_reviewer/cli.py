@@ -288,9 +288,9 @@ def prompts(repo_path, phase):
 @click.option(
     "--port",
     "-p",
-    default=5000,
+    default=3000,
     type=int,
-    help="Port to bind to (default: 5000)",
+    help="Port to bind to (default: 3000)",
 )
 @click.option("--debug", is_flag=True, help="Run in debug mode")
 def web(host, port, debug):

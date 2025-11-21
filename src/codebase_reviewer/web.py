@@ -185,7 +185,7 @@ def download_prompts():
     return send_file(path, mimetype=mimetype, as_attachment=True, download_name=filename)
 
 
-def run_server(host="127.0.0.1", port=5000, debug=False):
+def run_server(host="127.0.0.1", port=3000, debug=False):
     """Run the web server."""
     print(f"\n🚀 Codebase Reviewer Web Interface")
     print(f"   Starting server at http://{host}:{port}")

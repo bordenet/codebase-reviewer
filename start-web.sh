@@ -50,9 +50,9 @@ log_error() {
 # Kill any process using the specified port
 kill_port() {
     local port=$1
-    
+
     log_info "Checking for processes on port $port..."
-    
+
     # Find PIDs using the port (works on macOS and Linux)
     local pids
     if command -v lsof &>/dev/null; then
@@ -61,17 +61,17 @@ kill_port() {
         # Fallback for systems without lsof
         pids=$(netstat -vanp tcp 2>/dev/null | grep ".$port " | awk '{print $9}' | grep -v '\*' || true)
     fi
-    
+
     if [[ -n "$pids" ]]; then
         log_warning "Found processes using port $port: $pids"
         log_warning "Killing stale processes..."
-        
+
         for pid in $pids; do
             if kill -9 "$pid" 2>/dev/null; then
                 log_success "Killed process $pid"
             fi
         done
-        
+
         # Wait a moment for port to be released
         sleep 1
     else
@@ -82,7 +82,7 @@ kill_port() {
 # Check if a port is available
 is_port_available() {
     local port=$1
-    
+
     if command -v lsof &>/dev/null; then
         ! lsof -ti tcp:"$port" &>/dev/null
     else
@@ -94,18 +94,18 @@ is_port_available() {
 find_available_port() {
     local port=$DEFAULT_PORT
     local attempts=0
-    
+
     while [[ $attempts -lt $MAX_PORT_ATTEMPTS ]]; do
         if is_port_available "$port"; then
             echo "$port"
             return 0
         fi
-        
+
         log_warning "Port $port is in use, trying next port..."
         port=$((port + 1))
         attempts=$((attempts + 1))
     done
-    
+
     log_error "Could not find an available port after $MAX_PORT_ATTEMPTS attempts"
     return 1
 }
@@ -173,27 +173,27 @@ ensure_setup() {
 main() {
     # Change to script directory
     cd "$SCRIPT_DIR"
-    
+
     echo ""
     log_info "Codebase Reviewer - Web UI Startup"
     echo ""
 
     # Ensure setup is complete
     ensure_setup
-    
+
     # Try to kill any stale processes on default port
     kill_port "$DEFAULT_PORT"
-    
+
     # Find an available port
     local port
     if ! port=$(find_available_port); then
         exit 1
     fi
-    
+
     if [[ "$port" != "$DEFAULT_PORT" ]]; then
         log_warning "Using alternate port: $port (default $DEFAULT_PORT was unavailable)"
     fi
-    
+
     # Set up cleanup trap
     trap cleanup EXIT INT TERM
 
@@ -216,4 +216,3 @@ main() {
 # ============================================================================
 
 main "$@"
-
