@@ -44,7 +44,7 @@ Understand the current state of prompts in the target project.
    # For one-pager
    cd /Users/matt/GitHub/Personal/one-pager
    ls -la prompts/
-   
+
    # For product-requirements-assistant
    cd /Users/matt/GitHub/Personal/product-requirements-assistant
    find . -name "*prompt*" -o -name "*template*" | grep -v node_modules | grep -v .git
@@ -259,9 +259,9 @@ Score outputs against defined quality criteria.
 2. **Evaluate Each Test Case**
 
    For each simulation result:
-   
+
    a. **Read the output carefully**
-   
+
    b. **Score each criterion**
       - Use 1-5 scale for scored criteria
       - Use Pass/Fail for binary checks
@@ -660,6 +660,3 @@ The AI agent will then guide you through each phase systematically.
 ---
 
 **End of Instructions**
-
-
-

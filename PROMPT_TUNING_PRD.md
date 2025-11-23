@@ -1,7 +1,7 @@
 # PRD: Generalized LLM Prompt Tuning System
 
-**Version**: 1.0  
-**Date**: 2025-11-21  
+**Version**: 1.0
+**Date**: 2025-11-21
 **Status**: Draft
 
 ---
@@ -154,4 +154,3 @@ Create a **generalized prompt tuning workflow** that can be applied to any proje
 2. ⏳ Implement for one-pager project
 3. ⏳ Implement for product-requirements-assistant project
 4. ⏳ Document generalized workflow for future projects
-

@@ -129,7 +129,7 @@ Generate a crisp, professional one-pager document.
 ```
 Generate a crisp, professional one-pager document.
 
-**CRITICAL CONSTRAINT**: The final document MUST fit on a single page 
+**CRITICAL CONSTRAINT**: The final document MUST fit on a single page
 when printed (maximum 600 words). Be ruthlessly concise.
 ```
 
@@ -212,4 +212,3 @@ Refer to:
 ---
 
 **Ready to start? Pick a project and let's go!** 🚀
-
