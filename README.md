@@ -450,5 +450,3 @@ To extend this tool:
 ## License
 
 MIT License - see LICENSE file
-
-
