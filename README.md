@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/bordenet/codebase-reviewer/actions/workflows/ci.yml/badge.svg)](https://github.com/bordenet/codebase-reviewer/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/bordenet/codebase-reviewer/branch/main/graph/badge.svg)](https://codecov.io/gh/bordenet/codebase-reviewer)
+[![Coverage](https://img.shields.io/badge/coverage-54.8%25-yellow.svg)](https://github.com/bordenet/codebase-reviewer)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -446,6 +447,24 @@ To extend this tool:
 3. Add documentation patterns: Modify `DOCUMENTATION_PATTERNS` in `documentation.py`
 4. Custom validation rules: Extend `ValidationEngine` class
 5. Custom prompts: Modify `PromptGenerator` methods
+
+---
+
+## Code Coverage
+
+Codebase Reviewer maintains **54.8% test coverage** with ongoing improvements. The coverage visualization below shows detailed coverage by module:
+
+[![Coverage Grid](https://codecov.io/gh/bordenet/codebase-reviewer/graphs/tree.svg)](https://codecov.io/gh/bordenet/codebase-reviewer)
+
+**What this means:**
+- **Green**: Well-tested code (>80% coverage)
+- **Yellow**: Moderate coverage (60-80%)
+- **Red**: Needs more tests (<60%)
+- **Size**: Larger boxes = more lines of code
+
+Click the image to explore detailed coverage reports on Codecov, including line-by-line coverage, branch coverage, and historical trends.
+
+---
 
 ## License
 
