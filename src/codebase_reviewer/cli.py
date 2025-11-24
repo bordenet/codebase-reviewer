@@ -17,6 +17,10 @@ from codebase_reviewer.phase2.runner import Phase2Runner
 from codebase_reviewer.phase2.validator import Phase2Validator
 from codebase_reviewer.interactive.workflow import InteractiveWorkflow
 from codebase_reviewer.metaprompt.generator import MetaPromptGenerator
+from codebase_reviewer.analyzers.code import CodeAnalyzer
+from codebase_reviewer.exporters.json_exporter import JSONExporter
+from codebase_reviewer.exporters.html_exporter import HTMLExporter
+from codebase_reviewer.exporters.sarif_exporter import SARIFExporter
 
 
 @click.group()
@@ -722,6 +726,90 @@ def evolve(
 
     except Exception as e:
         click.echo(f"\n❌ Error: {e}", err=True)
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+
+
+@cli.command()
+@click.argument("repo_path", type=click.Path(exists=True))
+@click.option(
+    "--output",
+    "-o",
+    type=click.Path(),
+    required=True,
+    help="Output file path",
+)
+@click.option(
+    "--format",
+    "-f",
+    type=click.Choice(["json", "html", "sarif", "markdown"]),
+    default="json",
+    help="Output format (default: json)",
+)
+def analyze(repo_path, output, format):
+    """Run code analysis and export results in specified format.
+
+    This command analyzes the codebase for security issues, code quality problems,
+    and generates comprehensive reports in various formats.
+
+    Examples:
+        codebase-reviewer analyze . --output report.json --format json
+        codebase-reviewer analyze /path/to/repo --output report.html --format html
+        codebase-reviewer analyze . --output results.sarif --format sarif
+    """
+    try:
+        click.echo(f"🔍 Analyzing codebase at: {repo_path}")
+        click.echo(f"📊 Output format: {format}")
+
+        # Run analysis
+        analyzer = CodeAnalyzer()
+        analysis = analyzer.analyze(repo_path)
+
+        # Export based on format
+        if format == "json":
+            exporter = JSONExporter()
+            exporter.export(analysis, output)
+            click.echo(f"✅ JSON report saved to: {output}")
+
+        elif format == "html":
+            exporter = HTMLExporter()
+            exporter.export(analysis, output, title=f"Code Analysis - {Path(repo_path).name}")
+            click.echo(f"✅ HTML report saved to: {output}")
+
+        elif format == "sarif":
+            exporter = SARIFExporter()
+            exporter.export(analysis, output, repository_root=repo_path)
+            click.echo(f"✅ SARIF report saved to: {output}")
+
+        elif format == "markdown":
+            from codebase_reviewer.generators.documentation import DocumentationGenerator
+            generator = DocumentationGenerator()
+            markdown = generator.generate(analysis, repo_path)
+            with open(output, 'w', encoding='utf-8') as f:
+                f.write(markdown)
+            click.echo(f"✅ Markdown report saved to: {output}")
+
+        # Print summary
+        total_issues = len(analysis.quality_issues) if analysis.quality_issues else 0
+        critical = len([i for i in analysis.quality_issues if i.severity.value == "critical"]) if analysis.quality_issues else 0
+        high = len([i for i in analysis.quality_issues if i.severity.value == "high"]) if analysis.quality_issues else 0
+
+        click.echo(f"\n📈 Summary:")
+        click.echo(f"  Total issues: {total_issues}")
+        click.echo(f"  🔴 Critical: {critical}")
+        click.echo(f"  🟠 High: {high}")
+
+        # Exit code based on critical issues
+        if critical > 0:
+            click.echo(click.style("\n❌ Quality gate failed: Critical issues found", fg="red"))
+            sys.exit(1)
+        else:
+            click.echo(click.style("\n✅ Quality gate passed", fg="green"))
+            sys.exit(0)
+
+    except Exception as e:
+        click.echo(click.style(f"\n✗ Error: {str(e)}", fg="red"), err=True)
         import traceback
         traceback.print_exc()
         sys.exit(1)

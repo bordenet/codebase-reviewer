@@ -1,0 +1,123 @@
+name: Codebase Review
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    name: Code Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install pytest pytest-cov
+
+      - name: Run tests
+        run: |
+          python -m pytest tests/ -v --cov=src/codebase_reviewer --cov-report=xml --cov-report=term
+
+      - name: Run code analysis
+        id: analysis
+        run: |
+          python -m codebase_reviewer.cli analyze . --output analysis-results.json --format json
+          python -m codebase_reviewer.cli analyze . --output results.sarif --format sarif
+        continue-on-error: true
+
+      - name: Upload SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: results.sarif
+          category: codebase-reviewer
+
+      - name: Upload analysis results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: analysis-results
+          path: |
+            analysis-results.json
+            results.sarif
+
+      - name: Check quality gate
+        run: |
+          python -c "
+          import json
+          import sys
+          
+          with open('analysis-results.json') as f:
+              data = json.load(f)
+          
+          critical = data['summary']['critical_issues']
+          high = data['summary']['high_issues']
+          
+          print(f'Critical issues: {critical}')
+          print(f'High severity issues: {high}')
+          
+          # Quality gate: fail if critical issues found
+          if critical > 0:
+              print('❌ Quality gate failed: Critical issues found')
+              sys.exit(1)
+          
+          # Warning if high issues found
+          if high > 5:
+              print('⚠️  Warning: More than 5 high severity issues found')
+          
+          print('✅ Quality gate passed')
+          "
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const data = JSON.parse(fs.readFileSync('analysis-results.json', 'utf8'));
+            
+            const body = `## 🔍 Code Analysis Results
+            
+            **Summary:**
+            - 📁 Total Files: ${data.summary.total_files}
+            - 🔴 Critical Issues: ${data.summary.critical_issues}
+            - 🟠 High Issues: ${data.summary.high_issues}
+            - 🟡 Total Issues: ${data.summary.total_issues}
+            
+            ${data.summary.critical_issues > 0 ? '❌ Quality gate failed: Critical issues found' : '✅ Quality gate passed'}
+            
+            See the [Security tab](${context.payload.repository.html_url}/security/code-scanning) for detailed findings.
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+
