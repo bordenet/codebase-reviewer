@@ -1,0 +1,899 @@
+# OWASP Top 10 Security Rules
+# Comprehensive security rules covering OWASP Top 10 2021
+
+rules:
+  # SQL Injection Rules (10 rules)
+  - id: sql-injection-string-concat
+    name: SQL Injection via String Concatenation
+    description: Potential SQL injection vulnerability due to string concatenation in SQL query
+    severity: critical
+    pattern: "(execute|query|exec|executemany|cursor\\.execute|db\\.execute|connection\\.execute|session\\.execute)\\s*\\([^)]*[\\+\\&]\\s*[\"']"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - php
+      - ruby
+      - java
+      - csharp
+      - go
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-89
+    effort_minutes: 60
+    remediation: Use parameterized queries or prepared statements
+    code_example: Use query placeholders instead of concatenation
+
+  - id: sql-injection-format-string
+    name: SQL Injection via Format String
+    description: Potential SQL injection vulnerability due to format string in SQL query
+    severity: critical
+    pattern: "(execute|query|exec|executemany|cursor\\.execute|db\\.execute|connection\\.execute|session\\.execute)\\s*\\([^)]*(%s|%d|\\.format|f[\"'])"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - php
+      - ruby
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-89
+    effort_minutes: 60
+    remediation: Use parameterized queries instead of format strings
+    code_example: Use query placeholders
+
+  - id: sql-injection-raw-query
+    name: Raw SQL Query with User Input
+    description: Raw SQL query that may contain user input
+    severity: high
+    pattern: "(raw|rawQuery|executeSql|execSQL)\\s*\\([\"'].*SELECT.*WHERE"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - kotlin
+      - swift
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-89
+    effort_minutes: 45
+    remediation: Use ORM methods or parameterized queries
+    code_example: Avoid raw SQL queries
+
+  - id: sql-injection-like-clause
+    name: SQL Injection in LIKE Clause
+    description: Potential SQL injection in LIKE clause with string concatenation
+    severity: high
+    pattern: "LIKE\\s*[\"']%.*[\\+\\&]"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - php
+      - ruby
+      - java
+      - csharp
+      - go
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-89
+    effort_minutes: 45
+    remediation: Use parameterized queries for LIKE clauses
+    code_example: Use placeholders in LIKE patterns
+
+  - id: sql-injection-order-by
+    name: SQL Injection in ORDER BY Clause
+    description: Potential SQL injection in ORDER BY clause
+    severity: high
+    pattern: "ORDER\\s+BY\\s+.*[\\+\\&]"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - php
+      - ruby
+      - java
+      - csharp
+      - go
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-89
+    effort_minutes: 45
+    remediation: Validate and whitelist column names for ORDER BY
+    code_example: Use whitelisted column names
+
+  - id: sql-injection-union
+    name: Potential SQL Injection with UNION
+    description: SQL query with UNION that may be vulnerable to injection
+    severity: critical
+    pattern: "UNION\\s+(ALL\\s+)?SELECT.*[\\+\\&]"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - php
+      - ruby
+      - java
+      - csharp
+      - go
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-89
+    effort_minutes: 60
+    remediation: Avoid dynamic UNION queries
+    code_example: Use strict whitelisting
+
+  - id: sql-injection-delete
+    name: SQL Injection in DELETE Statement
+    description: Potential SQL injection in DELETE statement
+    severity: critical
+    pattern: "DELETE\\s+FROM.*WHERE.*[\\+\\&]"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - php
+      - ruby
+      - java
+      - csharp
+      - go
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-89
+    effort_minutes: 60
+    remediation: Use parameterized queries for DELETE
+    code_example: Use placeholders
+
+  - id: sql-injection-update
+    name: SQL Injection in UPDATE Statement
+    description: Potential SQL injection in UPDATE statement
+    severity: critical
+    pattern: "UPDATE.*SET.*[\\+\\&]"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - php
+      - ruby
+      - java
+      - csharp
+      - go
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-89
+    effort_minutes: 60
+    remediation: Use parameterized queries for UPDATE
+    code_example: Use placeholders
+
+  - id: sql-injection-insert
+    name: SQL Injection in INSERT Statement
+    description: Potential SQL injection in INSERT statement
+    severity: critical
+    pattern: "INSERT\\s+INTO.*VALUES.*[\\+\\&]"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - php
+      - ruby
+      - java
+      - csharp
+      - go
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-89
+    effort_minutes: 60
+    remediation: Use parameterized queries for INSERT
+    code_example: Use placeholders
+
+  - id: sql-injection-stored-procedure
+    name: SQL Injection in Stored Procedure Call
+    description: Potential SQL injection in stored procedure call
+    severity: high
+    pattern: "(EXEC|EXECUTE|CALL)\\s+\\w+.*[\\+\\&]"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - php
+      - ruby
+      - java
+      - csharp
+      - go
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-89
+    effort_minutes: 45
+    remediation: Use parameterized stored procedure calls
+    code_example: Use callproc with parameters
+
+  # XSS Rules (8 rules)
+  - id: xss-innerhtml
+    name: XSS via innerHTML
+    description: Potential XSS vulnerability using innerHTML with user input
+    severity: high
+    pattern: "\\.innerHTML\\s*=\\s*(?![\"']\\s*[\"'])"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-79
+    effort_minutes: 30
+    remediation: Use textContent instead of innerHTML or sanitize with DOMPurify
+    code_example: element.textContent = userInput
+
+  - id: xss-dangerously-set-inner-html
+    name: XSS via dangerouslySetInnerHTML
+    description: Potential XSS vulnerability using dangerouslySetInnerHTML in React
+    severity: high
+    pattern: 'dangerouslySetInnerHTML\s*=\s*\{\{?\s*__html:'
+    languages:
+      - javascript
+      - typescript
+      - jsx
+      - tsx
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-79
+    effort_minutes: 30
+    remediation: Avoid dangerouslySetInnerHTML or sanitize with DOMPurify
+    code_example: Use regular JSX instead
+
+  - id: xss-document-write
+    name: XSS via document.write
+    description: Potential XSS vulnerability using document.write
+    severity: high
+    pattern: 'document\.write(ln)?\s*\('
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-79
+    effort_minutes: 30
+    remediation: Use DOM manipulation methods instead
+    code_example: Use createElement and appendChild
+
+  - id: xss-eval
+    name: XSS via eval
+    description: Potential XSS vulnerability using eval with user input
+    severity: critical
+    pattern: '\beval\s*\('
+    languages:
+      - javascript
+      - typescript
+      - python
+      - php
+      - ruby
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-95
+    effort_minutes: 45
+    remediation: Never use eval with user input
+    code_example: Use JSON.parse for data
+
+  - id: xss-v-html
+    name: XSS via v-html in Vue
+    description: Potential XSS vulnerability using v-html directive in Vue.js
+    severity: high
+    pattern: "v-html\\s*=\\s*[\"']"
+    languages:
+      - javascript
+      - typescript
+      - vue
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-79
+    effort_minutes: 30
+    remediation: Use text interpolation or sanitize
+    code_example: Use double braces for text
+
+  - id: xss-render-html
+    name: XSS via HTML Rendering
+    description: Potential XSS vulnerability rendering HTML from user input
+    severity: high
+    pattern: '(render_template|render|safe|mark_safe|html_safe|raw)\s*\('
+    languages:
+      - python
+      - ruby
+      - php
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-79
+    effort_minutes: 30
+    remediation: Use template auto-escaping
+    code_example: Enable auto-escaping in templates
+
+  - id: xss-jquery-html
+    name: XSS via jQuery html()
+    description: Potential XSS vulnerability using jQuery html() with user input
+    severity: high
+    pattern: "\\$\\([^)]*\\)\\.html\\s*\\("
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-79
+    effort_minutes: 30
+    remediation: Use jQuery text() instead
+    code_example: Use .text() method
+
+  - id: xss-location-href
+    name: XSS via location.href
+    description: Potential XSS vulnerability using location.href with user input
+    severity: high
+    pattern: "(location|window\\.location)(\\.href)?\\s*=\\s*(?![\"'](https?://|/))"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-79
+    effort_minutes: 30
+    remediation: Validate and sanitize URLs
+    code_example: Check URL protocol before assignment
+
+  # Hardcoded Secrets Rules (15 rules)
+  - id: hardcoded-password
+    name: Hardcoded Password
+    description: Hardcoded password found in source code
+    severity: critical
+    pattern: "(password|passwd|pwd)\\s*=\\s*[\"'][^\"']{3,}[\"']"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - csharp
+      - go
+      - ruby
+      - php
+    owasp_category: A07:2021 - Identification and Authentication Failures
+    cwe_id: CWE-798
+    effort_minutes: 15
+    remediation: Use environment variables or secure secret management
+    code_example: password = os.environ.get('DB_PASSWORD')
+
+  - id: hardcoded-api-key
+    name: Hardcoded API Key
+    description: Hardcoded API key found in source code
+    severity: critical
+    pattern: "(api[_-]?key|apikey|api[_-]?secret)\\s*=\\s*[\"'][A-Za-z0-9_\\-]{20,}[\"']"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - csharp
+      - go
+      - ruby
+      - php
+    owasp_category: A07:2021 - Identification and Authentication Failures
+    cwe_id: CWE-798
+    effort_minutes: 15
+    remediation: Use environment variables or secret management services
+    code_example: api_key = os.environ.get('API_KEY')
+
+  - id: hardcoded-aws-key
+    name: Hardcoded AWS Access Key
+    description: Hardcoded AWS access key found in source code
+    severity: critical
+    pattern: "(AKIA|A3T|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - csharp
+      - go
+      - ruby
+      - php
+      - yaml
+      - json
+    owasp_category: A07:2021 - Identification and Authentication Failures
+    cwe_id: CWE-798
+    effort_minutes: 30
+    remediation: Use IAM roles or AWS Secrets Manager
+    code_example: Use IAM roles for authentication
+
+  - id: hardcoded-private-key
+    name: Hardcoded Private Key
+    description: Hardcoded private key found in source code
+    severity: critical
+    pattern: '-----BEGIN (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----'
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - csharp
+      - go
+      - ruby
+      - php
+      - pem
+    owasp_category: A07:2021 - Identification and Authentication Failures
+    cwe_id: CWE-798
+    effort_minutes: 60
+    remediation: Use secure key management systems
+    code_example: Load keys from secure storage
+
+  - id: hardcoded-jwt-secret
+    name: Hardcoded JWT Secret
+    description: Hardcoded JWT secret found in source code
+    severity: critical
+    pattern: "(jwt[_-]?secret|jwt[_-]?key)\\s*=\\s*[\"'][^\"']{10,}[\"']"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - csharp
+      - go
+      - ruby
+      - php
+    owasp_category: A07:2021 - Identification and Authentication Failures
+    cwe_id: CWE-798
+    effort_minutes: 30
+    remediation: Use environment variables or secret management
+    code_example: jwt_secret = os.environ.get('JWT_SECRET')
+
+  - id: hardcoded-database-url
+    name: Hardcoded Database URL with Credentials
+    description: Hardcoded database URL containing credentials
+    severity: critical
+    pattern: "(mysql|postgresql|mongodb|redis)://[^:]+:[^@]+@"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - csharp
+      - go
+      - ruby
+      - php
+    owasp_category: A07:2021 - Identification and Authentication Failures
+    cwe_id: CWE-798
+    effort_minutes: 30
+    remediation: Use environment variables
+    code_example: db_url = os.environ.get('DATABASE_URL')
+
+  - id: hardcoded-encryption-key
+    name: Hardcoded Encryption Key
+    description: Hardcoded encryption key found in source code
+    severity: critical
+    pattern: "(encryption[_-]?key|secret[_-]?key|cipher[_-]?key)\\s*=\\s*[\"'][A-Za-z0-9+/=]{16,}[\"']"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - csharp
+      - go
+      - ruby
+      - php
+    owasp_category: A07:2021 - Identification and Authentication Failures
+    cwe_id: CWE-798
+    effort_minutes: 45
+    remediation: Use secure key management systems
+    code_example: encryption_key = os.environ.get('ENCRYPTION_KEY')
+
+  - id: hardcoded-oauth-secret
+    name: Hardcoded OAuth Client Secret
+    description: Hardcoded OAuth client secret found in source code
+    severity: critical
+    pattern: "(client[_-]?secret|oauth[_-]?secret)\\s*=\\s*[\"'][A-Za-z0-9_\\-]{20,}[\"']"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - csharp
+      - go
+      - ruby
+      - php
+    owasp_category: A07:2021 - Identification and Authentication Failures
+    cwe_id: CWE-798
+    effort_minutes: 30
+    remediation: Use environment variables or secret management
+    code_example: client_secret = os.environ.get('OAUTH_CLIENT_SECRET')
+
+  # Additional Secret Detection Rules (6 rules)
+  - id: stripe-api-key
+    name: Stripe API Key
+    description: Stripe API key exposed in source code
+    severity: critical
+    pattern: "(sk|pk)_(test|live)_[0-9a-zA-Z]{24,}"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - csharp
+      - ruby
+      - go
+      - php
+    owasp_category: A07:2021 - Identification and Authentication Failures
+    cwe_id: CWE-798
+    effort_minutes: 30
+    remediation: Use environment variables or secret management service
+    code_example: stripe_key = os.environ.get('STRIPE_API_KEY')
+
+  - id: github-token
+    name: GitHub Personal Access Token
+    description: GitHub personal access token exposed in source code
+    severity: critical
+    pattern: "ghp_[0-9a-zA-Z]{36}"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - csharp
+      - ruby
+      - go
+      - php
+    owasp_category: A07:2021 - Identification and Authentication Failures
+    cwe_id: CWE-798
+    effort_minutes: 30
+    remediation: Use environment variables and rotate the token immediately
+    code_example: github_token = os.environ.get('GITHUB_TOKEN')
+
+  - id: slack-webhook
+    name: Slack Webhook URL
+    description: Slack webhook URL exposed in source code
+    severity: high
+    pattern: "https://hooks\\.slack\\.com/services/T[a-zA-Z0-9_]{8}/B[a-zA-Z0-9_]{8}/[a-zA-Z0-9_]{24}"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - csharp
+      - ruby
+      - go
+      - php
+    owasp_category: A07:2021 - Identification and Authentication Failures
+    cwe_id: CWE-798
+    effort_minutes: 20
+    remediation: Use environment variables for webhook URLs
+    code_example: slack_webhook = os.environ.get('SLACK_WEBHOOK_URL')
+
+  - id: sendgrid-api-key
+    name: SendGrid API Key
+    description: SendGrid API key exposed in source code
+    severity: critical
+    pattern: "SG\\.[a-zA-Z0-9_\\-]{22}\\.[a-zA-Z0-9_\\-]{43}"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - csharp
+      - ruby
+      - go
+      - php
+    owasp_category: A07:2021 - Identification and Authentication Failures
+    cwe_id: CWE-798
+    effort_minutes: 30
+    remediation: Use environment variables and rotate the key
+    code_example: sendgrid_key = os.environ.get('SENDGRID_API_KEY')
+
+  - id: twilio-api-key
+    name: Twilio API Key
+    description: Twilio API key or auth token exposed in source code
+    severity: critical
+    pattern: "SK[0-9a-fA-F]{32}"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - csharp
+      - ruby
+      - go
+      - php
+    owasp_category: A07:2021 - Identification and Authentication Failures
+    cwe_id: CWE-798
+    effort_minutes: 30
+    remediation: Use environment variables for Twilio credentials
+    code_example: twilio_key = os.environ.get('TWILIO_API_KEY')
+
+  - id: generic-secret
+    name: Generic Secret Pattern
+    description: Generic secret or token pattern detected
+    severity: medium
+    pattern: "(secret|token|key|password)\\s*=\\s*[\"'][a-zA-Z0-9_\\-+/=]{32,}[\"']"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - csharp
+      - ruby
+      - go
+      - php
+    owasp_category: A07:2021 - Identification and Authentication Failures
+    cwe_id: CWE-798
+    effort_minutes: 20
+    remediation: Review and move to environment variables if sensitive
+    code_example: secret = os.environ.get('SECRET_VALUE')
+
+  # Command Injection Rules (5 rules)
+  - id: command-injection-os-system
+    name: Command Injection via os.system
+    description: Potential command injection using os.system with user input
+    severity: critical
+    pattern: "os\\.system\\s*\\([^)]*\\+|os\\.system\\s*\\([^)]*f[\"']"
+    languages:
+      - python
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-78
+    effort_minutes: 45
+    remediation: Use subprocess with argument list instead of shell=True
+    code_example: subprocess.run(['command', arg1, arg2])
+
+  - id: command-injection-subprocess-shell
+    name: Command Injection via subprocess with shell=True
+    description: Potential command injection using subprocess with shell=True
+    severity: critical
+    pattern: "subprocess\\.(run|call|Popen|check_output)\\([^)]*shell\\s*=\\s*True"
+    languages:
+      - python
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-78
+    effort_minutes: 45
+    remediation: Use subprocess without shell=True and pass arguments as list
+    code_example: subprocess.run(['command', arg1, arg2])
+
+  - id: command-injection-exec
+    name: Command Injection via exec
+    description: Potential command injection using exec or eval with user input
+    severity: critical
+    pattern: "(exec|eval)\\s*\\([^)]*input|\\(exec|eval\\)\\s*\\([^)]*request"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - php
+      - ruby
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-78
+    effort_minutes: 60
+    remediation: Never use exec/eval with user input
+    code_example: Use safe alternatives like ast.literal_eval for Python
+
+  - id: command-injection-shell-exec
+    name: Command Injection via shell_exec
+    description: Potential command injection using shell_exec or system in PHP
+    severity: critical
+    pattern: "(shell_exec|system|passthru|exec)\\s*\\([^)]*\\$_(GET|POST|REQUEST)"
+    languages:
+      - php
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-78
+    effort_minutes: 45
+    remediation: Validate and sanitize input, use escapeshellarg
+    code_example: Use escapeshellarg() and escapeshellcmd()
+
+  - id: command-injection-child-process
+    name: Command Injection via child_process
+    description: Potential command injection using child_process.exec in Node.js
+    severity: critical
+    pattern: "child_process\\.(exec|spawn)\\s*\\([^)]*\\+|child_process\\.(exec|spawn)\\s*\\([^)]*\\$\\{"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-78
+    effort_minutes: 45
+    remediation: Use child_process.execFile or spawn with argument array
+    code_example: child_process.execFile('command', [arg1, arg2])
+
+  # Path Traversal Rules (5 rules)
+  - id: path-traversal-file-read
+    name: Path Traversal in File Read
+    description: Potential path traversal vulnerability in file read operation
+    severity: high
+    pattern: "(open|read|readFile|file_get_contents)\\s*\\([^)]*\\.\\./|\\(open|read|readFile|file_get_contents\\)\\s*\\([^)]*\\$_(GET|POST|REQUEST)"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - php
+      - ruby
+      - java
+    owasp_category: A01:2021 - Broken Access Control
+    cwe_id: CWE-22
+    effort_minutes: 45
+    remediation: Validate and sanitize file paths, use allowlist
+    code_example: Use os.path.basename() to strip directory components
+
+  - id: path-traversal-file-write
+    name: Path Traversal in File Write
+    description: Potential path traversal vulnerability in file write operation
+    severity: critical
+    pattern: "(write|writeFile|file_put_contents|fopen)\\s*\\([^)]*\\.\\./|\\(write|writeFile|file_put_contents|fopen\\)\\s*\\([^)]*\\$_(GET|POST|REQUEST)"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - php
+      - ruby
+      - java
+    owasp_category: A01:2021 - Broken Access Control
+    cwe_id: CWE-22
+    effort_minutes: 60
+    remediation: Validate file paths against allowlist, use secure directory
+    code_example: Validate path is within allowed directory
+
+  - id: path-traversal-include
+    name: Path Traversal in Include/Require
+    description: Potential path traversal in include or require statement
+    severity: critical
+    pattern: "(include|require|require_once|include_once)\\s*\\([^)]*\\$_(GET|POST|REQUEST)"
+    languages:
+      - php
+    owasp_category: A01:2021 - Broken Access Control
+    cwe_id: CWE-22
+    effort_minutes: 60
+    remediation: Never use user input in include/require, use allowlist
+    code_example: Use a whitelist of allowed files
+
+  - id: path-traversal-zipfile
+    name: Path Traversal in Zip Extraction
+    description: Potential path traversal during zip file extraction
+    severity: high
+    pattern: "zipfile\\.ZipFile\\([^)]*\\)\\.extract|zipfile\\.ZipFile\\([^)]*\\)\\.extractall"
+    languages:
+      - python
+    owasp_category: A01:2021 - Broken Access Control
+    cwe_id: CWE-22
+    effort_minutes: 45
+    remediation: Validate extracted file paths before extraction
+    code_example: Check that extracted path is within target directory
+
+  - id: path-traversal-send-file
+    name: Path Traversal in Send File
+    description: Potential path traversal in file serving endpoint
+    severity: high
+    pattern: "(send_file|sendFile|res\\.sendFile)\\s*\\([^)]*\\+|\\(send_file|sendFile|res\\.sendFile\\)\\s*\\([^)]*request"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - ruby
+    owasp_category: A01:2021 - Broken Access Control
+    cwe_id: CWE-22
+    effort_minutes: 45
+    remediation: Validate file path against allowlist
+    code_example: Use safe_join() or validate path is in allowed directory
+
+  # Insecure Cryptography Rules (7 rules)
+  - id: weak-hash-md5
+    name: Weak Cryptographic Hash - MD5
+    description: Use of weak MD5 hashing algorithm
+    severity: high
+    pattern: "(hashlib\\.md5|MD5|Md5|crypto\\.createHash\\([\"']md5[\"'])"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - csharp
+      - ruby
+      - go
+      - php
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-327
+    effort_minutes: 30
+    remediation: Use SHA-256 or stronger hashing algorithms
+    code_example: Use hashlib.sha256() instead
+
+  - id: weak-hash-sha1
+    name: Weak Cryptographic Hash - SHA1
+    description: Use of weak SHA1 hashing algorithm
+    severity: high
+    pattern: "(hashlib\\.sha1|SHA1|Sha1|crypto\\.createHash\\([\"']sha1[\"'])"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - csharp
+      - ruby
+      - go
+      - php
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-327
+    effort_minutes: 30
+    remediation: Use SHA-256 or stronger hashing algorithms
+    code_example: Use hashlib.sha256() instead
+
+  - id: insecure-random
+    name: Insecure Random Number Generation
+    description: Use of insecure random number generator for security purposes
+    severity: medium
+    pattern: "(random\\.random|Math\\.random|rand\\(|mt_rand\\()"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - php
+      - ruby
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-338
+    effort_minutes: 20
+    remediation: Use cryptographically secure random generators
+    code_example: Use secrets module in Python or crypto.randomBytes in Node.js
+
+  - id: weak-cipher-des
+    name: Weak Encryption Algorithm - DES
+    description: Use of weak DES encryption algorithm
+    severity: critical
+    pattern: "(DES|Cipher\\.getInstance\\([\"']DES)"
+    languages:
+      - python
+      - java
+      - csharp
+      - go
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-327
+    effort_minutes: 45
+    remediation: Use AES-256 or stronger encryption
+    code_example: Use AES with 256-bit keys
+
+  - id: weak-cipher-rc4
+    name: Weak Encryption Algorithm - RC4
+    description: Use of weak RC4 encryption algorithm
+    severity: critical
+    pattern: "(RC4|ARC4|ARCFOUR)"
+    languages:
+      - python
+      - java
+      - csharp
+      - javascript
+      - typescript
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-327
+    effort_minutes: 45
+    remediation: Use AES-256 or stronger encryption
+    code_example: Use AES with GCM mode
+
+  - id: hardcoded-iv
+    name: Hardcoded Initialization Vector
+    description: Hardcoded IV for encryption detected
+    severity: high
+    pattern: "(iv|IV|initVector)\\s*=\\s*[\"'][0-9a-fA-F]{16,}[\"']"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - csharp
+      - go
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-329
+    effort_minutes: 30
+    remediation: Generate random IV for each encryption operation
+    code_example: Use os.urandom() or crypto.randomBytes() to generate IV
+
+  - id: insecure-ssl-tls
+    name: Insecure SSL/TLS Configuration
+    description: Insecure SSL/TLS configuration detected
+    severity: high
+    pattern: "(ssl_version|SSLv2|SSLv3|TLSv1\\.0|verify\\s*=\\s*False|verify_mode\\s*=\\s*CERT_NONE)"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - csharp
+      - ruby
+      - go
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-326
+    effort_minutes: 30
+    remediation: Use TLS 1.2 or higher with certificate verification
+    code_example: Use TLS 1.2+ and enable certificate verification
+
+  - id: ecb-mode-encryption
+    name: ECB Mode Encryption
+    description: Use of insecure ECB mode for encryption
+    severity: high
+    pattern: "(AES\\.MODE_ECB|Cipher\\.getInstance\\([^)]*\\/ECB\\/)"
+    languages:
+      - python
+      - java
+      - csharp
+      - go
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-327
+    effort_minutes: 30
+    remediation: Use CBC or GCM mode instead of ECB
+    code_example: Use AES with CBC or GCM mode
+
