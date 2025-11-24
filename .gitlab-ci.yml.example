@@ -1,0 +1,104 @@
+# GitLab CI/CD configuration for Codebase Reviewer
+# Rename this file to .gitlab-ci.yml to use it
+
+stages:
+  - test
+  - analyze
+  - report
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+
+# Run tests
+test:
+  stage: test
+  image: python:3.9
+  script:
+    - pip install -e .
+    - pip install pytest pytest-cov
+    - python -m pytest tests/ -v --cov=src/codebase_reviewer --cov-report=xml --cov-report=term
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+    paths:
+      - coverage.xml
+    expire_in: 1 week
+
+# Run code analysis
+analyze:
+  stage: analyze
+  image: python:3.9
+  script:
+    - pip install -e .
+    - python -m codebase_reviewer.cli analyze . --output analysis-results.json --format json
+    - python -m codebase_reviewer.cli analyze . --output results.sarif --format sarif
+    - python -m codebase_reviewer.cli analyze . --output report.html --format html
+  artifacts:
+    reports:
+      sast: results.sarif
+    paths:
+      - analysis-results.json
+      - results.sarif
+      - report.html
+    expire_in: 1 week
+  allow_failure: true
+
+# Quality gate check
+quality-gate:
+  stage: report
+  image: python:3.9
+  script:
+    - |
+      python -c "
+      import json
+      import sys
+      
+      with open('analysis-results.json') as f:
+          data = json.load(f)
+      
+      critical = data['summary']['critical_issues']
+      high = data['summary']['high_issues']
+      
+      print(f'Critical issues: {critical}')
+      print(f'High severity issues: {high}')
+      
+      # Quality gate: fail if critical issues found
+      if critical > 0:
+          print('❌ Quality gate failed: Critical issues found')
+          sys.exit(1)
+      
+      # Warning if high issues found
+      if high > 5:
+          print('⚠️  Warning: More than 5 high severity issues found')
+      
+      print('✅ Quality gate passed')
+      "
+  dependencies:
+    - analyze
+  only:
+    - main
+    - merge_requests
+
+# Generate and publish HTML report
+pages:
+  stage: report
+  image: python:3.9
+  script:
+    - mkdir -p public
+    - cp report.html public/index.html
+  artifacts:
+    paths:
+      - public
+    expire_in: 30 days
+  dependencies:
+    - analyze
+  only:
+    - main
+
