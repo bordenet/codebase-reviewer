@@ -216,6 +216,9 @@ __marimo__/
 # Ignore vscode AI rules
 .github/instructions/codacy.instructions.md
 
+# Session resumption state - KEEP THIS IN VERSION CONTROL
+!.resumption_state.md
+
 # ============================================================================
 # CODEBASE REVIEWER - IP PROTECTION
 # ============================================================================
