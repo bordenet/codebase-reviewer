@@ -8,14 +8,17 @@ from typing import List
 from codebase_reviewer.models import Issue, Severity
 from codebase_reviewer.security.rule_engine import RuleEngine, Finding
 from codebase_reviewer.security.rules_loader import RulesLoader
+from codebase_reviewer.quality.quality_engine import QualityEngine, QualityFinding
+from codebase_reviewer.quality.quality_loader import QualityRulesLoader
 
 
 class QualityChecker:
     """Performs code quality checks and detects common issues."""
 
     def __init__(self):
-        """Initialize quality checker with security scanner."""
+        """Initialize quality checker with security and quality scanners."""
         self.security_engine = RuleEngine(RulesLoader.get_builtin_rules())
+        self.quality_engine = QualityEngine(QualityRulesLoader.get_builtin_rules())
 
     def analyze_quality(self, repo_path: str) -> List[Issue]:
         """Perform basic code quality analysis.
@@ -36,6 +39,9 @@ class QualityChecker:
 
         # Run comprehensive security scan with OWASP rules
         issues.extend(self._run_security_scan(repo_path))
+
+        # Run comprehensive quality scan with code quality rules
+        issues.extend(self._run_quality_scan(repo_path))
 
         return issues
 
@@ -219,3 +225,42 @@ class QualityChecker:
             "low": Severity.LOW,
         }
         return severity_map.get(severity_value.lower(), Severity.MEDIUM)
+
+    def _run_quality_scan(self, repo_path: str) -> List[Issue]:
+        """Run comprehensive quality scan using code quality rules.
+
+        Args:
+            repo_path: Path to repository root
+
+        Returns:
+            List of quality issues found
+        """
+        issues: List[Issue] = []
+
+        # Build language map for files
+        language_map = self._build_language_map(repo_path)
+
+        # Scan the entire directory
+        findings = self.quality_engine.scan_directory(Path(repo_path), language_map)
+
+        # Convert QualityFinding to Issue
+        for finding in findings:
+            # Convert quality severity to Issue severity
+            severity_map = {
+                "high": Severity.HIGH,
+                "medium": Severity.MEDIUM,
+                "low": Severity.LOW,
+                "info": Severity.LOW,
+            }
+            severity = severity_map.get(finding.severity.value, Severity.MEDIUM)
+
+            issues.append(
+                Issue(
+                    title=f"{finding.rule_name}",
+                    description=f"{finding.description}\n\nRemediation: {finding.remediation}\n\nCode: {finding.line_content}",
+                    severity=severity,
+                    source=f"{finding.file_path}:{finding.line_number}",
+                )
+            )
+
+        return issues
