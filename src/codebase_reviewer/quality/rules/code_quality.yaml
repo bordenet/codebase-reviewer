@@ -1,0 +1,501 @@
+# Code Quality Rules
+# Categories: complexity, maintainability, style, documentation, testing
+
+rules:
+  # TODO/FIXME/HACK Detection (5 rules)
+  - id: todo-without-ticket
+    name: TODO Without Ticket Reference
+    description: TODO comment without ticket/issue reference
+    severity: low
+    pattern: "#\\s*TODO(?!\\s*\\(|:.*#\\d+)"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - go
+      - ruby
+    category: documentation
+    remediation: "Add ticket reference like TODO(#123): description"
+    code_example: "# TODO(#123): Refactor this method"
+    effort_minutes: 5
+
+  - id: fixme-comment
+    name: FIXME Comment
+    description: FIXME comment indicating broken or problematic code
+    severity: medium
+    pattern: "#\\s*FIXME:"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - go
+      - ruby
+    category: maintainability
+    remediation: Fix the issue or create a ticket to track it
+    code_example: Create issue and fix or add ticket reference
+    effort_minutes: 30
+
+  - id: hack-comment
+    name: HACK Comment
+    description: HACK comment indicating workaround or technical debt
+    severity: medium
+    pattern: "#\\s*HACK:"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - go
+      - ruby
+    category: maintainability
+    remediation: Refactor to remove the hack or document why it's necessary
+    code_example: Refactor to use proper solution
+    effort_minutes: 60
+
+  - id: xxx-comment
+    name: XXX Comment
+    description: XXX comment indicating urgent attention needed
+    severity: high
+    pattern: "#\\s*XXX:"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - go
+      - ruby
+    category: maintainability
+    remediation: Address the urgent issue immediately
+    code_example: Fix the critical issue
+    effort_minutes: 120
+
+  - id: noqa-overuse
+    name: Excessive noqa Comments
+    description: Excessive use of noqa/pylint disable comments
+    severity: medium
+    pattern: "#\\s*(noqa|pylint:\\s*disable|type:\\s*ignore)"
+    languages:
+      - python
+    category: maintainability
+    remediation: Fix the underlying issue instead of suppressing warnings
+    code_example: Address the linting issue properly
+    effort_minutes: 20
+
+  # Dead Code Detection (5 rules)
+  - id: unused-import
+    name: Likely Unused Import
+    description: Import statement that may be unused
+    severity: low
+    pattern: "^import\\s+[a-zA-Z_][a-zA-Z0-9_]*\\s*$"
+    languages:
+      - python
+    category: maintainability
+    remediation: Remove unused imports or use autoflake
+    code_example: Run autoflake --remove-all-unused-imports
+    effort_minutes: 5
+
+  - id: commented-code
+    name: Commented Out Code
+    description: Large blocks of commented out code
+    severity: low
+    pattern: "^\\s*#\\s*(def |class |if |for |while |return |import )"
+    languages:
+      - python
+    category: maintainability
+    remediation: Remove commented code (it's in version control)
+    code_example: Delete commented code blocks
+    effort_minutes: 5
+
+  - id: empty-except
+    name: Empty Except Block
+    description: Empty except block that silently swallows exceptions
+    severity: high
+    pattern: "except.*:\\s*pass\\s*$"
+    languages:
+      - python
+    category: maintainability
+    remediation: Handle exceptions properly or at least log them
+    code_example: "except Exception as e: logger.error(f'Error: {e}')"
+    effort_minutes: 15
+
+  - id: bare-except
+    name: Bare Except Clause
+    description: Bare except clause catches all exceptions including system exits
+    severity: high
+    pattern: "except:\\s*$"
+    languages:
+      - python
+    category: maintainability
+    remediation: Catch specific exceptions
+    code_example: "except ValueError as e:"
+    effort_minutes: 10
+
+  - id: unused-variable
+    name: Likely Unused Variable
+    description: Variable assigned but likely never used
+    severity: low
+    pattern: "^\\s*[a-zA-Z_][a-zA-Z0-9_]*\\s*=\\s*.*#\\s*unused"
+    languages:
+      - python
+      - javascript
+      - typescript
+    category: maintainability
+    remediation: Remove unused variables
+    code_example: Delete the unused variable
+    effort_minutes: 5
+
+  # Complexity Issues (5 rules)
+  - id: long-function
+    name: Very Long Function
+    description: Function with excessive lines of code (>100 lines)
+    severity: medium
+    pattern: "^(def |function |func ).*:\\s*$"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - go
+    category: complexity
+    remediation: Break down into smaller functions
+    code_example: Extract methods to reduce function size
+    effort_minutes: 60
+
+  - id: deep-nesting
+    name: Deep Nesting
+    description: Deeply nested code blocks (>4 levels)
+    severity: medium
+    pattern: "^\\s{16,}(if |for |while |with )"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+    category: complexity
+    remediation: Extract nested logic into separate functions
+    code_example: Use early returns or extract methods
+    effort_minutes: 30
+
+  - id: long-parameter-list
+    name: Long Parameter List
+    description: Function with too many parameters (>5)
+    severity: medium
+    pattern: "def\\s+\\w+\\([^)]*,[^)]*,[^)]*,[^)]*,[^)]*,[^)]*"
+    languages:
+      - python
+    category: complexity
+    remediation: Use parameter objects or builder pattern
+    code_example: Create a config object to group parameters
+    effort_minutes: 45
+
+  - id: complex-boolean
+    name: Complex Boolean Expression
+    description: Complex boolean expression that's hard to read
+    severity: low
+    pattern: "(and|or).*\\(.*\\).*\\(.*\\).*\\("
+    languages:
+      - python
+    category: complexity
+    remediation: Extract boolean logic into named variables
+    code_example: "is_valid = condition1 and condition2"
+    effort_minutes: 15
+
+  - id: magic-number
+    name: Magic Number
+    description: Unexplained numeric literal in code
+    severity: low
+    pattern: "\\s(\\d{2,}|0x[0-9a-fA-F]+)\\s"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+    category: maintainability
+    remediation: Extract to named constant
+    code_example: "MAX_RETRIES = 3"
+    effort_minutes: 10
+
+  # Naming Convention Issues (5 rules)
+  - id: single-char-variable
+    name: Single Character Variable Name
+    description: Single character variable name (except i, j, k in loops)
+    severity: low
+    pattern: "^\\s*[a-hln-z]\\s*="
+    languages:
+      - python
+      - javascript
+      - typescript
+    category: style
+    remediation: Use descriptive variable names
+    code_example: "user_count instead of n"
+    effort_minutes: 5
+
+  - id: uppercase-constant-not-constant
+    name: Uppercase Name Not Constant
+    description: Uppercase variable name that's not a constant
+    severity: low
+    pattern: "^\\s*[A-Z_]+\\s*=\\s*\\[|\\{|\\("
+    languages:
+      - python
+    category: style
+    remediation: Use lowercase for mutable variables
+    code_example: "user_list instead of USER_LIST"
+    effort_minutes: 5
+
+  - id: class-name-lowercase
+    name: Class Name Not CamelCase
+    description: Class name not following CamelCase convention
+    severity: low
+    pattern: "^class\\s+[a-z_]"
+    languages:
+      - python
+      - java
+    category: style
+    remediation: Use CamelCase for class names
+    code_example: "class UserManager instead of class user_manager"
+    effort_minutes: 10
+
+  - id: function-name-camelcase
+    name: Function Name CamelCase
+    description: Function name using CamelCase instead of snake_case
+    severity: low
+    pattern: "^def\\s+[a-z]+[A-Z]"
+    languages:
+      - python
+    category: style
+    remediation: Use snake_case for function names
+    code_example: "def get_user instead of def getUser"
+    effort_minutes: 10
+
+  - id: private-method-no-underscore
+    name: Private Method Without Underscore
+    description: Private method not prefixed with underscore
+    severity: info
+    pattern: "^\\s*def\\s+[a-z][a-z0-9_]*\\(self"
+    languages:
+      - python
+    category: style
+    remediation: Prefix private methods with underscore
+    code_example: "def _internal_method instead of def internalMethod"
+    effort_minutes: 5
+
+  # Documentation Issues (5 rules)
+  - id: missing-docstring-class
+    name: Missing Class Docstring
+    description: Class without docstring
+    severity: medium
+    pattern: "^class\\s+\\w+.*:\\s*$"
+    languages:
+      - python
+    category: documentation
+    remediation: Add docstring describing class purpose
+    code_example: '"""Class for managing user authentication."""'
+    effort_minutes: 10
+
+  - id: missing-docstring-function
+    name: Missing Function Docstring
+    description: Public function without docstring
+    severity: low
+    pattern: "^def\\s+[a-z][a-z0-9_]*\\(.*\\).*:\\s*$"
+    languages:
+      - python
+    category: documentation
+    remediation: Add docstring with Args, Returns, Raises
+    code_example: '"""Calculate total.\n\nArgs:\n    items: List of items\n\nReturns:\n    Total sum\n"""'
+    effort_minutes: 15
+
+  - id: outdated-comment
+    name: Potentially Outdated Comment
+    description: Comment referencing old code or deprecated features
+    severity: low
+    pattern: "#.*(deprecated|old|legacy|obsolete|outdated)"
+    languages:
+      - python
+      - javascript
+      - typescript
+    category: documentation
+    remediation: Update or remove outdated comments
+    code_example: Update comment to reflect current code
+    effort_minutes: 10
+
+  - id: commented-import
+    name: Commented Import Statement
+    description: Commented out import statement
+    severity: low
+    pattern: "^\\s*#\\s*import\\s+"
+    languages:
+      - python
+    category: maintainability
+    remediation: Remove commented imports
+    code_example: Delete the commented import
+    effort_minutes: 2
+
+  - id: missing-type-hints
+    name: Missing Type Hints
+    description: Function without type hints
+    severity: low
+    pattern: "^def\\s+\\w+\\([^)]*\\)\\s*:"
+    languages:
+      - python
+    category: documentation
+    remediation: Add type hints for parameters and return value
+    code_example: "def process(data: List[str]) -> Dict[str, int]:"
+    effort_minutes: 10
+
+  # Testing Issues (5 rules)
+  - id: no-assertion
+    name: Test Without Assertions
+    description: Test function without any assertions
+    severity: high
+    pattern: "^def\\s+test_.*\\(.*\\):"
+    languages:
+      - python
+    category: testing
+    remediation: Add assertions to verify behavior
+    code_example: "assert result == expected"
+    effort_minutes: 20
+
+  - id: print-statement
+    name: Print Statement in Code
+    description: Print statement instead of proper logging
+    severity: low
+    pattern: "^\\s*print\\("
+    languages:
+      - python
+    category: maintainability
+    remediation: Use logging instead of print
+    code_example: "logger.info('message') instead of print('message')"
+    effort_minutes: 5
+
+  - id: sleep-in-code
+    name: Sleep in Production Code
+    description: Sleep/delay in production code (potential performance issue)
+    severity: medium
+    pattern: "(time\\.sleep|setTimeout|Thread\\.sleep)\\("
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+    category: maintainability
+    remediation: Use proper async/await or event-driven approach
+    code_example: Use asyncio.sleep or event-based waiting
+    effort_minutes: 30
+
+  - id: global-variable
+    name: Global Variable
+    description: Global variable declaration (potential state management issue)
+    severity: medium
+    pattern: "^[A-Z_]+\\s*=\\s*"
+    languages:
+      - python
+    category: maintainability
+    remediation: Use class attributes or dependency injection
+    code_example: Move to class or use configuration object
+    effort_minutes: 30
+
+  - id: mutable-default-argument
+    name: Mutable Default Argument
+    description: Mutable default argument (list, dict) in function
+    severity: high
+    pattern: "def\\s+\\w+\\([^)]*=\\s*(\\[|\\{)"
+    languages:
+      - python
+    category: maintainability
+    remediation: Use None as default and create mutable in function body
+    code_example: "def func(items=None): items = items or []"
+    effort_minutes: 10
+
+  # Security-Adjacent Quality Issues (5 rules)
+  - id: assert-in-production
+    name: Assert in Production Code
+    description: Assert statement in production code (disabled with -O flag)
+    severity: medium
+    pattern: "^\\s*assert\\s+"
+    languages:
+      - python
+    category: maintainability
+    remediation: Use proper error handling instead of assert
+    code_example: "if not condition: raise ValueError('message')"
+    effort_minutes: 10
+
+  - id: wildcard-import
+    name: Wildcard Import
+    description: Wildcard import pollutes namespace
+    severity: low
+    pattern: "^from\\s+\\S+\\s+import\\s+\\*"
+    languages:
+      - python
+    category: maintainability
+    remediation: Import specific names
+    code_example: "from module import Class1, Class2"
+    effort_minutes: 5
+
+  - id: string-exception
+    name: String Exception
+    description: Raising string as exception (deprecated)
+    severity: high
+    pattern: "raise\\s+['\"]"
+    languages:
+      - python
+    category: maintainability
+    remediation: Raise proper exception class
+    code_example: "raise ValueError('message')"
+    effort_minutes: 5
+
+  - id: exec-usage
+    name: Exec Usage
+    description: Use of exec() function (security and maintainability risk)
+    severity: high
+    pattern: "\\bexec\\("
+    languages:
+      - python
+    category: maintainability
+    remediation: Refactor to avoid dynamic code execution
+    code_example: Use proper function calls or configuration
+    effort_minutes: 60
+
+  - id: eval-usage
+    name: Eval Usage
+    description: Use of eval() function (security and maintainability risk)
+    severity: high
+    pattern: "\\beval\\("
+    languages:
+      - python
+      - javascript
+      - typescript
+    category: maintainability
+    remediation: Use json.loads() or ast.literal_eval()
+    code_example: "json.loads(data) instead of eval(data)"
+    effort_minutes: 15
+
+  # Code Duplication (2 rules)
+  - id: duplicate-string
+    name: Duplicate String Literal
+    description: Repeated string literal (should be constant)
+    severity: low
+    pattern: "['\"][a-zA-Z0-9_]{20,}['\"]"
+    languages:
+      - python
+      - javascript
+      - typescript
+    category: maintainability
+    remediation: Extract to named constant
+    code_example: "ERROR_MESSAGE = 'long error message'"
+    effort_minutes: 5
+
+  - id: copy-paste-comment
+    name: Copy-Paste Comment
+    description: Comment indicating copy-pasted code
+    severity: medium
+    pattern: "#.*(copy|paste|duplicate|same as)"
+    languages:
+      - python
+      - javascript
+      - typescript
+    category: maintainability
+    remediation: Extract common logic into shared function
+    code_example: Create reusable function
+    effort_minutes: 45
+
