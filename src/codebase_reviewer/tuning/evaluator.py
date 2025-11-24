@@ -130,7 +130,7 @@ class PromptEvaluator:
             raise ValueError("No evaluation results to report")
 
         # Calculate aggregate statistics
-        all_scores = {}
+        all_scores: Dict[str, float] = {}
         for result in self.results:
             for criterion, score in result.scores.items():
                 if criterion not in all_scores:

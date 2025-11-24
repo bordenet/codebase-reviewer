@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional
 from codebase_reviewer.models import Prompt, RepositoryAnalysis
 from codebase_reviewer.orchestrator import AnalysisOrchestrator
 from codebase_reviewer.prompt_generator import PromptGenerator
+from codebase_reviewer.mock_llm import MockLLM
 
 
 @dataclass
@@ -38,14 +39,17 @@ class SimulationResult:
 class LLMSimulator:
     """Simulates LLM responses for prompt testing and tuning."""
 
-    def __init__(self, output_dir: Optional[str] = None):
+    def __init__(self, output_dir: Optional[str] = None, use_mock_llm: bool = True):
         """Initialize the simulator.
 
         Args:
             output_dir: Directory to save simulation results (default: ./simulation_results)
+            use_mock_llm: Whether to use context-aware mock LLM (default: True)
         """
         self.output_dir = Path(output_dir or "./simulation_results")
         self.output_dir.mkdir(parents=True, exist_ok=True)
+        self.use_mock_llm = use_mock_llm
+        self.mock_llm = MockLLM() if use_mock_llm else None
 
     def simulate_prompt(self, prompt: Prompt, analysis: RepositoryAnalysis) -> SimulatedResponse:
         """Simulate an LLM response to a single prompt.
@@ -120,9 +124,19 @@ class LLMSimulator:
         """Generate a simulated analysis response.
 
         This creates a structured response showing what information the LLM would analyze.
-        In interactive mode, this would be replaced with actual Claude analysis.
+        If use_mock_llm is True, uses context-aware mock LLM for realistic responses.
         """
-        # Get languages from code analysis
+        # Use mock LLM if enabled
+        if self.use_mock_llm and self.mock_llm:
+            prompt_text = self._format_prompt(prompt, analysis)
+            return self.mock_llm.generate_response(
+                prompt.prompt_id,
+                prompt_text,
+                prompt.context,
+                analysis.repository_path
+            )
+
+        # Fallback to generic placeholder
         languages = []
         if analysis.code and analysis.code.structure:
             languages = [lang.name for lang in analysis.code.structure.languages]

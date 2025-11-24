@@ -171,28 +171,205 @@ prompts:
       - "Recommend knowledge sharing practices"
       - "Create onboarding guide for new developers"
     deliverable: |
-      **Mentorship & Best Practices Guide**
+      **Mentorship & Best Practices Guide with Actionable Programs**
 
       ## Common Issues & Solutions
       [Patterns to avoid and better alternatives]
 
-      ## Best Practices
-      - **Code Style**: [Consistent coding standards]
-      - **Architecture**: [Architectural patterns to follow]
-      - **Testing**: [Testing best practices]
-      - **Security**: [Security guidelines]
-      - **Performance**: [Performance considerations]
+      ## Action Items
 
-      ## Code Review Guidelines
-      [What to look for in code reviews]
+      ### 🔴 CRITICAL: Create Comprehensive Onboarding Program
+      **Action**: Build structured onboarding for new team members
+      **Priority**: CRITICAL - Reduces time to productivity
+      **Effort**: 8-12 hours
 
-      ## Learning Opportunities
-      - **Training Needs**: [Skills gaps to address]
-      - **Pair Programming**: [Good opportunities for pairing]
-      - **Knowledge Sharing**: [Topics for tech talks or docs]
+      **Step 1**: Create onboarding checklist
+      ```markdown
+      # File: docs/onboarding/checklist.md
 
-      ## Onboarding Guide
-      [How to get new developers up to speed]
+      # New Developer Onboarding Checklist
 
-      ## Continuous Improvement
-      [Process for evolving practices over time]
+      ## Week 1: Setup & Orientation
+      - [ ] Development environment setup (< 4 hours)
+      - [ ] Access to all systems (GitHub, Slack, CI/CD)
+      - [ ] Read architecture documentation
+      - [ ] Meet the team (1-on-1s)
+      - [ ] Shadow senior developer
+
+      ## Week 2: First Contribution
+      - [ ] Fix documentation issue
+      - [ ] Submit first pull request
+      - [ ] Participate in code review
+      - [ ] Complete security training
+
+      ## Week 3-4: Feature Development
+      - [ ] Pick up first feature ticket
+      - [ ] Pair program with mentor
+      - [ ] Write tests for feature
+      - [ ] Deploy to staging
+      ```
+
+      **Step 2**: Create setup automation
+      ```bash
+      # File: scripts/setup_dev_environment.sh
+      #!/bin/bash
+      echo "🚀 Setting up development environment..."
+
+      python3 -m venv venv
+      source venv/bin/activate
+      pip install -r requirements.txt
+      pip install -r requirements-dev.txt
+
+      pre-commit install
+
+      cp .env.example .env
+      echo "⚠️  Please update .env with your settings"
+
+      pytest tests/ -v
+
+      echo "✅ Setup complete!"
+      ```
+
+      **Success Criteria**:
+      - [ ] Onboarding checklist created
+      - [ ] Setup script works on fresh machine
+      - [ ] New hire completes onboarding in < 2 weeks
+
+      ### 🔴 CRITICAL: Establish Mentorship Pairing Program
+      **Action**: Pair each junior/mid developer with senior mentor
+      **Priority**: CRITICAL - Accelerates learning
+      **Effort**: 4-6 hours setup
+
+      **Step 1**: Create mentorship pairs
+      ```python
+      # File: scripts/create_mentorship_pairs.py
+      mentorship_pairs = [
+          {
+              "mentee": "Alice (Junior)",
+              "mentor": "Bob (Senior)",
+              "focus_areas": ["Python best practices", "Testing"],
+              "meeting_frequency": "Weekly 1-hour sessions",
+          },
+      ]
+      ```
+
+      **Step 2**: Create mentorship guide
+      ```markdown
+      # File: docs/mentorship/guide.md
+
+      # Mentorship Guide
+
+      ## For Mentors
+      - Meet regularly with mentee
+      - Review mentee's code
+      - Share knowledge and best practices
+      - Help set and achieve goals
+
+      ## Session Structure
+      1. Check-in (5 min)
+      2. Code Review (20 min)
+      3. Learning Topic (25 min)
+      4. Goal Setting (10 min)
+      ```
+
+      **Success Criteria**:
+      - [ ] All junior/mid developers paired
+      - [ ] Weekly sessions scheduled
+      - [ ] Progress tracked monthly
+
+      ### 🟠 HIGH: Launch Tech Talk Series
+      **Action**: Start regular knowledge-sharing presentations
+      **Priority**: HIGH - Builds team knowledge
+      **Effort**: 3-4 hours setup
+
+      **Step 1**: Create tech talk schedule
+      ```markdown
+      # File: docs/tech-talks/schedule.md
+
+      # Tech Talk Schedule
+
+      ## Format
+      - Frequency: Bi-weekly (Fridays, 2-3 PM)
+      - Duration: 30-45 min + Q&A
+      - Recording: All talks recorded
+
+      ## Upcoming Talks
+      - Jan 10: "Structured Logging" - Bob
+      - Jan 24: "Testing Strategies" - Alice
+      - Feb 7: "Async Python" - Charlie
+      ```
+
+      **Success Criteria**:
+      - [ ] Bi-weekly talks scheduled
+      - [ ] 80%+ team attendance
+      - [ ] All talks recorded
+
+      ### 🟠 HIGH: Build Knowledge Base
+      **Action**: Create centralized documentation repository
+      **Priority**: HIGH - Reduces repeated questions
+      **Effort**: 6-8 hours
+
+      **Step 1**: Set up documentation structure
+      ```bash
+      mkdir -p docs/{architecture,guides,runbooks,adr}
+
+      cat > docs/README.md << 'MD'
+      # Engineering Knowledge Base
+
+      ## Quick Links
+      - [Architecture Overview](architecture/overview.md)
+      - [Onboarding Checklist](onboarding/checklist.md)
+      - [Code Review Guide](guides/code-review.md)
+      MD
+      ```
+
+      **Success Criteria**:
+      - [ ] Documentation structure created
+      - [ ] 10+ guides written
+      - [ ] Team uses docs as first resource
+
+      ### 🟡 MEDIUM: Implement Pair Programming Rotation
+      **Action**: Schedule regular pairing sessions
+      **Priority**: MEDIUM - Spreads knowledge
+      **Effort**: 2-3 hours setup
+
+      **Step 1**: Create pairing schedule
+      ```python
+      # File: scripts/generate_pairing_schedule.py
+      import random
+
+      team = ["Alice", "Bob", "Charlie", "Diana"]
+
+      def generate_pairs(members, weeks=4):
+          pairs = []
+          for week in range(weeks):
+              random.shuffle(members)
+              week_pairs = [(members[i], members[i+1])
+                           for i in range(0, len(members)-1, 2)]
+              pairs.append(week_pairs)
+          return pairs
+      ```
+
+      **Success Criteria**:
+      - [ ] Pairing schedule created
+      - [ ] 50%+ of team pairs weekly
+      - [ ] Knowledge spread across team
+
+      ## Verification Commands
+      ```bash
+      # Check onboarding docs
+      test -f docs/onboarding/checklist.md && echo "✅ Onboarding docs exist"
+
+      # Verify setup script
+      bash scripts/setup_dev_environment.sh
+
+      # View tech talk schedule
+      cat docs/tech-talks/schedule.md
+      ```
+
+      ## Priority Summary
+      - 🔴 **CRITICAL**: Onboarding (8-12h), Mentorship (4-6h) - **This sprint**
+      - 🟠 **HIGH**: Tech talks (3-4h), Knowledge base (6-8h) - **This month**
+      - 🟡 **MEDIUM**: Pair programming (2-3h) - **This quarter**
+
+      **Total Effort**: ~23-33 hours
