@@ -2,6 +2,29 @@
 
 This document contains project-specific guidelines and lessons learned for Claude Code when working in this repository.
 
+## 🔄 **SESSION RESUMPTION - READ THIS FIRST**
+
+### **CRITICAL: Always Check Resumption State on New Session**
+
+**BEFORE doing anything else in a new conversation/session:**
+
+1. ✅ **ALWAYS read `.resumption_state.md` in the repository root**
+2. ✅ Check the current sprint, task state, and exact next steps
+3. ✅ Review what NOT to do (avoid recreating working code)
+4. ✅ Continue from the exact checkpoint
+
+**BEFORE ending a conversation/session:**
+
+1. ✅ **ALWAYS update `.resumption_state.md`** with current state
+2. ✅ Document exactly what's completed, what's in progress, what's broken
+3. ✅ List the exact next steps for resumption
+4. ✅ Include critical commands for testing/validation
+5. ✅ Note any files that should NOT be modified
+
+**The `.resumption_state.md` file is the source of truth for work continuity.**
+
+---
+
 ## Project Overview
 
 **Codebase Reviewer** is a Python-based tool for analyzing codebases and generating AI review prompts.
