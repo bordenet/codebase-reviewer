@@ -216,8 +216,119 @@ __marimo__/
 # Ignore vscode AI rules
 .github/instructions/codacy.instructions.md
 
-# Codebase reviewer output files
+# ============================================================================
+# CODEBASE REVIEWER - IP PROTECTION
+# ============================================================================
+# CRITICAL: These patterns prevent accidental leakage of analyzed codebases
+# DO NOT REMOVE OR MODIFY WITHOUT SECURITY REVIEW
+# ============================================================================
+
+# Analysis output files (JSON, Markdown, etc.)
 analysis-results.json
+analysis.json
+*_analysis.json
+*-analysis.json
+analysis_*.json
+analysis-*.json
 prompts.json
 prompts.md
 prompts.md.json
+*_prompts.json
+*_prompts.md
+*-prompts.json
+*-prompts.md
+
+# Simulation results (may contain code snippets from analyzed repos)
+simulation_results/
+simulation-results/
+*_simulation_results/
+*-simulation-results/
+simulation_*.json
+simulation-*.json
+*_simulation.json
+*-simulation.json
+simulated_responses/
+simulated-responses/
+
+# Prompt tuning data (contains test cases and evaluation data)
+prompt_tuning_results/
+prompt-tuning-results/
+tuning_*/
+tuning-*/
+*_tuning/
+*-tuning/
+test_cases.json
+test-cases.json
+evaluation_results.json
+evaluation-results.json
+evaluation_results_template.json
+improvement_recommendations.md
+evaluation_report.md
+
+# Any directory that might contain analyzed repository data
+analyzed_repos/
+analyzed-repos/
+scanned_repos/
+scanned-repos/
+repo_analysis/
+repo-analysis/
+codebase_analysis/
+codebase-analysis/
+
+# Temporary analysis files
+*.analysis.json
+*.analysis.md
+*.prompts.json
+*.prompts.md
+*.simulation.json
+*.evaluation.json
+*.recommendations.md
+
+# Web UI uploaded files (users might upload sensitive repos)
+uploads/
+uploaded_repos/
+temp_repos/
+temporary_repos/
+
+# Any file containing "cari" or other specific repo names (case-insensitive)
+*cari*.json
+*cari*.md
+*Cari*.json
+*Cari*.md
+*CARI*.json
+*CARI*.md
+
+# Backup files that might contain analysis data
+*.bak
+*.backup
+*.old
+*.orig
+*~
+
+# Log files that might contain file paths or code snippets
+*.log
+logs/
+*.log.*
+
+# Any JSON/MD files in root that aren't explicitly tracked
+/*.json
+/*.md
+!README.md
+!INTEGRATION_SUMMARY.md
+!SECURITY_AUDIT.md
+!MANIFEST.md
+!QUICK-START.md
+!LICENSE.md
+!CONTRIBUTING.md
+!CHANGELOG.md
+!CODE_OF_CONDUCT.md
+
+# Exclude any directories with "output" in the name
+*output*/
+*outputs*/
+*result*/
+*results*/
+
+# ============================================================================
+# END IP PROTECTION SECTION
+# ============================================================================

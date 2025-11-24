@@ -2,3 +2,5 @@ include README.md
 include LICENSE
 include requirements.txt
 recursive-include src/codebase_reviewer/templates *.html
+recursive-include src/codebase_reviewer/prompts/workflows *.yml
+recursive-include src/codebase_reviewer/prompts/templates *.yml
