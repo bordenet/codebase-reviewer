@@ -13,7 +13,7 @@ prompts:
       - "Flag any significant documentation inaccuracies"
       - "Assess overall architecture quality and appropriateness"
     deliverable: |
-      **Architecture Validation Report**
+      **Architecture Validation Report with Actionable Recommendations**
 
       ## Claimed vs. Actual Architecture
       - **Claimed Pattern**: [e.g., microservices, monolith, layered]
@@ -33,17 +33,157 @@ prompts:
       - **Missing**: [Technologies claimed but not found]
       - **Undocumented**: [Technologies used but not documented]
 
-      ## Recommendations
-      1. [Specific action items to align code and documentation]
-      2. [Architecture improvements if needed]
+      ## Action Items
 
-      **Example:**
+      ### 🔴 CRITICAL: Document Actual Architecture Pattern
+      **Action**: Create accurate architecture documentation with diagrams
+      **Priority**: CRITICAL - Foundation for all other documentation
+      **Effort**: 4-6 hours
+
+      **Step 1**: Create architecture overview document
+      ```bash
+      mkdir -p docs/architecture
+      cat > docs/architecture/overview.md << 'EOF'
+      # Architecture Overview
+
+      ## Pattern
+      [Actual pattern: microservices/monolith/layered/etc.]
+
+      ## Components
+      - **Component A**: [Responsibility]
+      - **Component B**: [Responsibility]
+
+      ## Data Flow
+      [Describe how data flows through the system]
+      EOF
       ```
-      ## Component Validation
-      - **DocumentationAnalyzer**: ✅ Found at `src/analyzers/documentation.py`
-      - **CacheLayer**: ❌ Missing (claimed in README but not implemented)
-      - **APIGateway**: ⚠️ Partial (exists but uses Flask instead of documented FastAPI)
+
+      **Step 2**: Create Mermaid architecture diagram
+      ```markdown
+      # File: docs/architecture/diagram.md
+
+      ```mermaid
+      graph TD
+          A[API Layer] --> B[Business Logic]
+          B --> C[Data Access]
+          C --> D[(Database)]
+          A --> E[External Services]
       ```
+      ```
+
+      **Step 3**: Validate diagram matches code
+      ```bash
+      # Verify each component exists
+      find . -type d -name "api" -o -name "business" -o -name "data"
+
+      # Check imports match diagram
+      grep -r "from.*import" src/ | grep -E "api|business|data"
+      ```
+
+      **Success Criteria**:
+      - [ ] Architecture document created
+      - [ ] Mermaid diagram accurately represents code
+      - [ ] All components documented with responsibilities
+      - [ ] Data flow documented
+
+      ### 🔴 CRITICAL: Update Component Documentation
+      **Action**: Document all actual components and update README
+      **Priority**: CRITICAL - Prevents confusion for new developers
+      **Effort**: 2-3 hours
+
+      **Step 1**: Create component catalog
+      ```bash
+      cat > docs/components/catalog.md << 'EOF'
+      # Component Catalog
+
+      ## Core Components
+
+      ### DocumentationAnalyzer
+      - **Location**: `src/analyzers/documentation.py`
+      - **Purpose**: Analyzes README and documentation files
+      - **Dependencies**: None
+      - **Status**: ✅ Implemented
+
+      ### [Add other components]
+      EOF
+      ```
+
+      **Step 2**: Update README with accurate component list
+      ```markdown
+      # Update README.md
+
+      ## Architecture
+
+      This project uses a [pattern] architecture with the following components:
+
+      - **Component A** (`src/component_a/`): [Purpose]
+      - **Component B** (`src/component_b/`): [Purpose]
+
+      See [docs/architecture/overview.md](docs/architecture/overview.md) for details.
+      ```
+
+      **Success Criteria**:
+      - [ ] All components documented
+      - [ ] README updated with accurate architecture
+      - [ ] Component locations specified
+      - [ ] Dependencies mapped
+
+      ### 🟠 HIGH: Fix Technology Stack Documentation
+      **Action**: Update documentation to reflect actual technologies used
+      **Priority**: HIGH - Prevents setup issues
+      **Effort**: 1-2 hours
+
+      **Step 1**: Audit actual dependencies
+      ```bash
+      # Python
+      pip freeze > requirements_actual.txt
+      diff requirements.txt requirements_actual.txt
+
+      # Node.js
+      npm list --depth=0
+
+      # Check actual imports
+      find . -name "*.py" | xargs grep "^import\|^from" | cut -d: -f2 | sort -u > actual_imports.txt
+      ```
+
+      **Step 2**: Update README technology section
+      ```markdown
+      ## Technology Stack
+
+      ### Core Technologies
+      - **Python**: 3.11+ (actual version used)
+      - **Framework**: Flask 2.3.0 (not FastAPI as previously documented)
+      - **Database**: PostgreSQL 15
+
+      ### Key Libraries
+      - `requests`: HTTP client
+      - `pydantic`: Data validation
+      - `pytest`: Testing framework
+      ```
+
+      **Success Criteria**:
+      - [ ] All technologies documented accurately
+      - [ ] Versions specified
+      - [ ] Undocumented technologies added
+      - [ ] Unused technologies removed
+
+      ## Verification Commands
+      ```bash
+      # Validate architecture documentation
+      python -m codebase_reviewer validate-architecture .
+
+      # Generate component diagram
+      python -m codebase_reviewer generate-component-diagram .
+
+      # Check documentation accuracy
+      python -m codebase_reviewer check-docs-accuracy .
+      ```
+
+      ## Priority Summary
+      - 🔴 **CRITICAL**: Architecture docs (4-6h), Component docs (2-3h) - **This week**
+      - 🟠 **HIGH**: Tech stack docs (1-2h) - **This sprint**
+
+      **Total Effort**: ~7-11 hours
     ai_model_hints:
       complexity: "high"
       requires_code_analysis: true

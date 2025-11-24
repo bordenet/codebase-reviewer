@@ -13,7 +13,117 @@ prompts:
       - "Catalog documented features and capabilities"
       - "Identify any architectural diagrams or descriptions"
       - "Note what version of languages/frameworks are claimed"
-    deliverable: "Structured list of testable claims with source locations for validation against code"
+    deliverable: |
+      **README Analysis Report with Actionable Recommendations**
+
+      ## Claimed Architecture & Features
+      [Extract all architectural claims, features, and capabilities]
+
+      ## Technology Stack Claims
+      [List all claimed technologies with versions]
+
+      ## Setup & Installation Claims
+      [Document all setup instructions and prerequisites]
+
+      ## Action Items
+
+      ### 🔴 CRITICAL: Validate Architecture Claims
+      **Action**: Create architecture diagram and validate against actual code
+      **Priority**: CRITICAL - Ensures documentation accuracy
+      **Effort**: 2-4 hours
+
+      **Step 1**: Create Mermaid diagram from README claims
+      ```bash
+      # File: docs/architecture/claimed_architecture.md
+      cat > docs/architecture/claimed_architecture.md << 'EOF'
+      # Claimed Architecture (from README)
+
+      ```mermaid
+      graph TD
+          A[Component A] --> B[Component B]
+          B --> C[Component C]
+      ```
+      EOF
+      ```
+
+      **Step 2**: Validate components exist in codebase
+      ```bash
+      # Search for claimed components
+      find . -type f -name "*.py" -o -name "*.js" | xargs grep -l "ComponentName"
+      ```
+
+      **Success Criteria**:
+      - [ ] Architecture diagram created
+      - [ ] All claimed components verified in code
+      - [ ] Discrepancies documented
+
+      ### 🟠 HIGH: Validate Workflow Claims
+      **Action**: Test all documented workflows (CLI, Web UI, API)
+      **Priority**: HIGH - Ensures user-facing docs are accurate
+      **Effort**: 1-2 hours
+
+      **Step 1**: Test CLI workflows
+      ```bash
+      # Test each documented CLI command
+      python -m your_project --help
+      python -m your_project command1 --test
+      python -m your_project command2 --test
+      ```
+
+      **Step 2**: Test Web UI workflows (if claimed)
+      ```bash
+      # Start web server
+      python -m your_project.web --port 8000
+
+      # Test in browser: http://localhost:8000
+      # Verify all documented features work
+      ```
+
+      **Success Criteria**:
+      - [ ] All CLI commands work as documented
+      - [ ] Web UI features match documentation
+      - [ ] API endpoints respond correctly
+
+      ### 🟡 MEDIUM: Verify Technology Stack
+      **Action**: Validate all claimed technologies are actually used
+      **Priority**: MEDIUM - Prevents misleading documentation
+      **Effort**: 30-60 minutes
+
+      **Step 1**: Check dependencies
+      ```bash
+      # Python projects
+      cat requirements.txt | grep -i "claimed_framework"
+
+      # Node.js projects
+      cat package.json | jq '.dependencies'
+
+      # Check actual imports
+      find . -name "*.py" | xargs grep "^import\|^from" | sort -u
+      ```
+
+      **Success Criteria**:
+      - [ ] All claimed technologies found in dependencies
+      - [ ] No major undocumented technologies
+      - [ ] Version numbers match or are updated
+
+      ## Verification Commands
+      ```bash
+      # Validate README claims
+      python -m codebase_reviewer validate-readme .
+
+      # Generate architecture diagram
+      python -m codebase_reviewer generate-architecture-diagram .
+
+      # Test all workflows
+      python -m codebase_reviewer test-workflows .
+      ```
+
+      ## Priority Summary
+      - 🔴 **CRITICAL**: Architecture validation (2-4h) - **DO IMMEDIATELY**
+      - 🟠 **HIGH**: Workflow testing (1-2h) - **This week**
+      - 🟡 **MEDIUM**: Tech stack verification (30-60m) - **This sprint**
+
+      **Total Effort**: ~4-7 hours
     ai_model_hints:
       complexity: "medium"
       requires_code_analysis: false

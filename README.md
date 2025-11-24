@@ -1,58 +1,165 @@
-# Codebase Reviewer - AI-Powered Code Analysis & Review
+# Codebase Reviewer - Self-Evolving Documentation System
 
-A comprehensive, production-ready tool for analyzing codebases with AI-powered insights. Combines automated code analysis, documentation validation, and customizable review workflows.
+**The Mission**: Generate offline tools that reproduce LLM-quality documentation **without requiring LLM access**.
 
-## 🎯 What This Tool Does
+## 🎯 The Big Idea
 
-**Analyzes**: Scans codebases to understand structure, languages, frameworks, and dependencies
-**Validates**: Cross-checks documentation claims against actual code implementation
-**Reviews**: Generates AI prompts for comprehensive code review using customizable workflows
-**Simulates**: Tests and tunes prompts before using them with real LLMs
-**Visualizes**: Provides web UI for interactive analysis and prompt generation
+**Problem**: LLMs are expensive and require internet access for every documentation update.
+
+**Solution**: Use the LLM **once** to generate **offline tools** that can regenerate documentation infinitely without the LLM.
+
+**Innovation**: The tools detect when they become obsolete and automatically regenerate improved versions of themselves.
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ PHASE 1: LLM Generates Tools (One-Time Cost)           │
+├─────────────────────────────────────────────────────────┤
+│  Codebase → Analyzer → LLM → Offline Tools (Go)        │
+│                                    ↓                    │
+│                            Initial Docs Generated       │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│ PHASE 2: Tools Run Offline (Infinite, Free)            │
+├─────────────────────────────────────────────────────────┤
+│  Code Changes → Tools → Updated Docs (No LLM!)          │
+│                    ↓                                    │
+│              Obsolete? → Regenerate (Gen 2)             │
+└─────────────────────────────────────────────────────────┘
+```
+
+## 🚀 What This System Does
+
+**Phase 1 (One-Time)**:
+- Analyzes your codebase deeply
+- Generates an LLM prompt
+- LLM creates **offline Go tools** tailored to your codebase
+- Tools compile and validate
+
+**Phase 2 (Infinite)**:
+- Tools regenerate docs **without LLM** (offline, free, fast)
+- Tools detect when codebase changed too much
+- Tools capture learnings and trigger regeneration
+- Gen 2 tools are better than Gen 1 (self-evolution)
+
+**Key Benefits**:
+
+- ✅ **One-time LLM cost** instead of per-run
+- ✅ **Offline execution** (no internet needed)
+- ✅ **10x faster** than LLM analysis
+- ✅ **Self-evolving** (gets better over time)
+- ✅ **≥95% fidelity** to LLM output
+
+---
+
+## 📊 Current Status
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| **Phase 1: Prompt Generation** | ✅ Complete | Go tool works |
+| **LLM Integration** | ❌ Missing | Manual copy/paste only |
+| **Phase 2: Tool Generation** | ❌ Missing | 80% of mission |
+| **Offline Execution** | ❌ Missing | Core value prop |
+| **Self-Evolution** | ❌ Missing | Differentiation |
+| **Validation Framework** | ❌ Missing | Quality assurance |
+
+**Mission Completion**: ~20% ⚠️
+
+See [PRD.md](PRD.md) for complete roadmap and [CRITICAL_GAP_ANALYSIS.md](CRITICAL_GAP_ANALYSIS.md) for detailed gap analysis.
+
+---
 
 ## 🚀 Quick Start
 
-### 1. Setup (One-time)
-```bash
-# Run the setup script
-./setup.sh
+### The Complete Workflow (What You Want)
 
-# Or manually:
+```bash
+# ONE COMMAND to generate offline tools (coming soon):
+review-codebase evolve /path/to/your/codebase \
+  --llm-provider anthropic \
+  --api-key $ANTHROPIC_API_KEY \
+  --output-dir /tmp/my-codebase-reviewer
+
+# This will:
+# 1. Analyze your codebase
+# 2. Send prompt to LLM
+# 3. Generate Phase 2 tools
+# 4. Compile and validate tools
+# 5. Generate initial documentation
+
+# Then run tools offline (no LLM needed):
+/tmp/my-codebase-reviewer/phase2-tools/bin/generate-docs /path/to/your/codebase
+
+# Watch for changes and auto-update:
+review-codebase watch /path/to/your/codebase \
+  --tools-dir /tmp/my-codebase-reviewer/phase2-tools \
+  --auto-regenerate
+```
+
+**Status**: 🚧 **In Development** - See [PRD.md](PRD.md) for full roadmap
+
+### Current Capabilities (What Works Today)
+
+#### Option A: Manual Workflow (Go Tool)
+
+```bash
+# Step 1: Build Phase 1 tool
+make build
+
+# Step 2: Generate LLM prompt
+./bin/generate-docs /path/to/your/codebase
+
+# Step 3: Send prompt to LLM (manual)
+cat /tmp/codebase-reviewer/{name}/phase1-llm-prompt.md
+# Copy/paste to Claude
+
+# Step 4: Save LLM's Phase 2 tools (manual)
+# LLM will generate Go code - save to /tmp/codebase-reviewer/{name}/phase2-tools/
+
+# Step 5: Compile and run Phase 2 tools
+cd /tmp/codebase-reviewer/{name}/phase2-tools/
+go build ./cmd/generate-docs/
+./generate-docs /path/to/your/codebase
+```
+
+#### Option B: Python Analysis Tool
+
+```bash
+# Setup
 python3 -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+source .venv/bin/activate
 pip install -e .
-```
 
-### 2. Analyze a Codebase
-```bash
-# Using the CLI
-review-codebase analyze /path/to/your/codebase
+# Analyze codebase (generates actionable prompts for humans)
+review-codebase analyze /path/to/your/codebase \
+  --workflow reviewer_criteria \
+  --output analysis.json \
+  --prompts-output prompts.md
 
-# Or with a specific workflow
-review-codebase analyze /path/to/your/codebase --workflow reviewer_criteria
-
-# Save results
-review-codebase analyze /path/to/your/codebase -o analysis.json -p prompts.md
-```
-
-### 3. Use the Web Interface
-```bash
-# Start the web UI
-./start-web.sh
-
-# Or manually:
+# Web UI
 review-codebase web --port 3000
 ```
 
-Then open http://localhost:3000 in your browser.
+**Note**: The Python tool generates prompts for **human review**, not offline tools. See [CRITICAL_GAP_ANALYSIS.md](CRITICAL_GAP_ANALYSIS.md) for details.
 
-## 📁 Architecture
+## 📁 System Architecture
 
-This repository contains **two complementary tools**:
+### The True Mission: Two-Phase Evolution
 
-### 🐍 Python-Based Comprehensive Analyzer (Primary Tool)
+This system implements a **self-evolving documentation pipeline**:
 
-The main production tool with full analysis capabilities:
+**Phase 1 (Go)**: Analyzes codebase → Generates LLM prompt → LLM creates Phase 2 tools
+**Phase 2 (Go, LLM-generated)**: Offline tools regenerate docs without LLM
+
+See [PRD.md](PRD.md) for complete architecture.
+
+### Current Implementation Status
+
+This repository contains **two tools** (one complete, one in development):
+
+#### 🐍 Python Analysis Tool (Complete, Different Purpose)
+
+Generates **actionable prompts for human review** (not the main mission):
 
 ```
 src/codebase_reviewer/
@@ -84,35 +191,58 @@ src/codebase_reviewer/
 - ✅ Export to JSON/Markdown
 - ✅ Production-ready Python package
 
-### 🔧 Go-Based Phase 1 Tool (Legacy/Alternative)
+#### 🔧 Go Phase 1 Tool (Core Mission, Partially Complete)
 
-Original two-phase evolution system:
+The **main mission tool** for generating Phase 2 offline tools:
 
-```
-cmd/generate-docs/              # Go CLI tool
+```text
+cmd/generate-docs/              # Phase 1 CLI tool
 internal/
 ├── scanner/                    # Repository discovery
 └── prompt/                     # Prompt generation
 pkg/
 ├── logger/                     # Logging utilities
-└── learnings/                  # Evolution system
+└── learnings/                  # Evolution system (design only)
 prompts/
 ├── templates/                  # LLM prompt templates (YAML)
 └── schemas/                    # Data schemas
 ```
 
-**Use Cases:**
-- Alternative prompt generation approach
-- Self-evolving documentation system
-- LLM-assisted tool generation
+**Status**: ✅ **Phase 1 Complete** | ❌ **Phase 2 Not Implemented**
 
-Both tools share the same `prompts/` directory for consistency.
+**What Works**:
+
+- ✅ Analyzes codebase structure
+- ✅ Generates Phase 1 LLM prompt
+- ✅ Prompt saved to `/tmp/codebase-reviewer/{name}/phase1-llm-prompt.md`
+
+**What's Missing** (The Critical 80%):
+
+- ❌ LLM integration (manual copy/paste required)
+- ❌ Phase 2 tool generation (LLM response → compiled tools)
+- ❌ Offline tool execution framework
+- ❌ Self-evolution loop implementation
+- ❌ Validation framework (LLM vs Tool comparison)
+
+See [CRITICAL_GAP_ANALYSIS.md](CRITICAL_GAP_ANALYSIS.md) for complete details.
 
 ## 🔄 How It Works
 
-### Python Analyzer Workflow (Recommended)
+### The Mission Workflow (In Development)
 
-The Python-based analyzer follows a **4-phase analysis pipeline**:
+See [PRD.md](PRD.md) for the complete two-phase evolution system.
+
+**Target Workflow**:
+
+1. **Phase 1**: Analyze codebase → Generate LLM prompt → LLM creates Phase 2 tools
+2. **Phase 2**: Offline tools regenerate docs without LLM (infinite, free)
+3. **Evolution**: Tools detect obsolescence → Regenerate improved Gen 2 tools
+
+**Current Status**: Phase 1 works manually, automation in progress.
+
+### Python Analyzer (Current, Different Purpose)
+
+The Python tool generates **actionable prompts for humans** (not offline tools):
 
 #### Phase 0: Documentation Analysis
 1. Discover all documentation files (README, docs/, etc.)

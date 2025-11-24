@@ -322,6 +322,12 @@ logs/
 !CONTRIBUTING.md
 !CHANGELOG.md
 !CODE_OF_CONDUCT.md
+!ARCHITECTURE.md
+!READY_TO_USE.md
+!IMPLEMENTATION_COMPLETE.md
+!CRITICAL_GAP_ANALYSIS.md
+!MISSION_RECOVERY_PLAN.md
+!PRD.md
 
 # Exclude any directories with "output" in the name
 *output*/

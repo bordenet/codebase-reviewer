@@ -16,39 +16,256 @@ prompts:
       - "Assess input validation and sanitization"
       - "Check for security headers and CORS configuration"
     deliverable: |
-      **Security Assessment Report**
+      **Security Assessment Report with Actionable Remediation**
 
       ## Critical Security Issues
       For each issue, provide:
       - **File/Location**: [Exact file and line number]
-      - **Vulnerability Type**: [OWASP Top 10 category, e.g., A03:2021 - Injection]
-      - **CWE Reference**: [e.g., CWE-89: SQL Injection]
+      - **Vulnerability Type**: [OWASP Top 10 category]
+      - **CWE Reference**: [e.g., CWE-89]
       - **Description**: [What the vulnerability is]
       - **Impact**: [Potential consequences]
       - **Remediation**: [Specific fix needed]
 
-      ## Medium Priority Issues
-      [Same format as above]
+      ## Action Items
 
-      ## Low Priority Issues
-      [Same format as above]
+      ### 🔴 CRITICAL: Fix Dangerous Function Usage (eval/exec)
+      **Action**: Replace all eval() and exec() calls with safe alternatives
+      **Priority**: CRITICAL - Remote code execution risk
+      **Effort**: 2-4 hours
 
-      ## Security Best Practices
-      [Recommendations for improving security posture]
-
-      ## Compliance Considerations
-      [Any relevant compliance requirements (GDPR, HIPAA, etc.)]
-
-      **Example Format:**
+      **Step 1**: Find all dangerous function calls
+      ```bash
+      # Search for eval/exec usage
+      grep -rn "eval(" src/
+      grep -rn "exec(" src/
+      grep -rn "pickle.loads" src/
+      grep -rn "__import__" src/
       ```
-      ### Critical: SQL Injection in User Login
-      - **File**: `src/auth/login.py:45`
-      - **Type**: A03:2021 - Injection (OWASP Top 10)
-      - **CWE**: CWE-89 (SQL Injection)
-      - **Description**: User input directly concatenated into SQL query
-      - **Impact**: Attacker could bypass authentication or access sensitive data
-      - **Remediation**: Use parameterized queries or ORM
+
+      **Step 2**: Replace with safe alternatives
+
+      **Before** (❌ DANGEROUS):
+      ```python
+      # File: src/calculator.py
+      def calculate(expression):
+          result = eval(expression)  # DANGEROUS!
+          return result
       ```
+
+      **After** (✅ SAFE):
+      ```python
+      # File: src/calculator.py
+      import ast
+      import operator
+
+      OPERATORS = {
+          ast.Add: operator.add,
+          ast.Sub: operator.sub,
+          ast.Mult: operator.mul,
+          ast.Div: operator.truediv,
+      }
+
+      def calculate(expression):
+          'Safely evaluate mathematical expressions.'
+          tree = ast.parse(expression, mode='eval')
+          return _eval_node(tree.body)
+
+      def _eval_node(node):
+          if isinstance(node, ast.Num):
+              return node.n
+          elif isinstance(node, ast.BinOp):
+              left = _eval_node(node.left)
+              right = _eval_node(node.right)
+              return OPERATORS[type(node.op)](left, right)
+          else:
+              raise ValueError(f'Unsupported operation: {type(node)}')
+      ```
+
+      **Success Criteria**:
+      - [ ] No eval() calls remain
+      - [ ] No exec() calls remain
+      - [ ] All functionality preserved
+      - [ ] Tests pass
+
+      ### 🔴 CRITICAL: Implement Security Scanning in CI/CD
+      **Action**: Add automated security scanning to prevent vulnerabilities
+      **Priority**: CRITICAL - Prevents future security issues
+      **Effort**: 1-2 hours
+
+      **Step 1**: Install security tools
+      ```bash
+      pip install bandit safety pip-audit
+      ```
+
+      **Step 2**: Create security scan script
+      ```bash
+      # File: scripts/security_scan.sh
+      #!/bin/bash
+      set -e
+
+      echo "Running security scans..."
+
+      # Scan code for vulnerabilities
+      echo "1. Running bandit (code security)..."
+      bandit -r src/ -f json -o bandit-report.json
+
+      # Check dependencies for known vulnerabilities
+      echo "2. Running safety (dependency security)..."
+      safety check --json > safety-report.json
+
+      # Audit pip packages
+      echo "3. Running pip-audit..."
+      pip-audit --format json > pip-audit-report.json
+
+      echo "Security scans complete!"
+      ```
+
+      **Step 3**: Add to CI/CD pipeline
+      ```yaml
+      # File: .github/workflows/security.yml
+      name: Security Scan
+
+      on: [push, pull_request]
+
+      jobs:
+        security:
+          runs-on: ubuntu-latest
+          steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-python@v4
+              with:
+                python-version: '3.11'
+            - name: Install dependencies
+              run: |
+                pip install bandit safety pip-audit
+            - name: Run security scans
+              run: bash scripts/security_scan.sh
+            - name: Upload reports
+              uses: actions/upload-artifact@v3
+              with:
+                name: security-reports
+                path: '*-report.json'
+      ```
+
+      **Success Criteria**:
+      - [ ] Security tools installed
+      - [ ] CI/CD pipeline configured
+      - [ ] Scans run on every commit
+      - [ ] Reports generated and reviewed
+
+      ### 🟠 HIGH: Add Pre-commit Security Hooks
+      **Action**: Prevent security issues from being committed
+      **Priority**: HIGH - Catches issues before they reach CI/CD
+      **Effort**: 30-60 minutes
+
+      **Step 1**: Install pre-commit
+      ```bash
+      pip install pre-commit
+      ```
+
+      **Step 2**: Create pre-commit configuration
+      ```yaml
+      # File: .pre-commit-config.yaml
+      repos:
+        - repo: https://github.com/PyCQA/bandit
+          rev: '1.7.5'
+          hooks:
+            - id: bandit
+              args: ['-c', 'pyproject.toml']
+
+        - repo: https://github.com/pre-commit/pre-commit-hooks
+          rev: v4.4.0
+          hooks:
+            - id: detect-private-key
+            - id: check-added-large-files
+            - id: check-yaml
+            - id: check-json
+
+        - repo: https://github.com/Yelp/detect-secrets
+          rev: v1.4.0
+          hooks:
+            - id: detect-secrets
+              args: ['--baseline', '.secrets.baseline']
+      ```
+
+      **Step 3**: Install hooks
+      ```bash
+      pre-commit install
+      pre-commit run --all-files
+      ```
+
+      **Success Criteria**:
+      - [ ] Pre-commit hooks installed
+      - [ ] Security checks run before commit
+      - [ ] Team members have hooks installed
+      - [ ] No secrets in codebase
+
+      ### 🟠 HIGH: Implement Error Tracking
+      **Action**: Set up Sentry or similar for production error monitoring
+      **Priority**: HIGH - Catch security issues in production
+      **Effort**: 1-2 hours
+
+      **Step 1**: Install Sentry SDK
+      ```bash
+      pip install sentry-sdk
+      ```
+
+      **Step 2**: Configure Sentry
+      ```python
+      # File: src/config/sentry.py
+      import sentry_sdk
+      from sentry_sdk.integrations.flask import FlaskIntegration
+
+      def init_sentry(app):
+          'Initialize Sentry error tracking.'
+          sentry_sdk.init(
+              dsn=app.config['SENTRY_DSN'],
+              integrations=[FlaskIntegration()],
+              traces_sample_rate=0.1,
+              environment=app.config['ENVIRONMENT'],
+              before_send=scrub_sensitive_data,
+          )
+
+      def scrub_sensitive_data(event, hint):
+          'Remove sensitive data from error reports.'
+          # Remove passwords, tokens, etc.
+          if 'request' in event:
+              if 'data' in event['request']:
+                  data = event['request']['data']
+                  if isinstance(data, dict):
+                      for key in ['password', 'token', 'api_key']:
+                          if key in data:
+                              data[key] = '[REDACTED]'
+          return event
+      ```
+
+      **Success Criteria**:
+      - [ ] Sentry configured
+      - [ ] Sensitive data scrubbed
+      - [ ] Errors tracked in production
+      - [ ] Alerts configured
+
+      ## Verification Commands
+      ```bash
+      # Run security scans
+      bash scripts/security_scan.sh
+
+      # Check for dangerous functions
+      grep -rn "eval\|exec\|pickle.loads" src/
+
+      # Verify pre-commit hooks
+      pre-commit run --all-files
+
+      # Test Sentry integration
+      python -c "import sentry_sdk; sentry_sdk.init(); sentry_sdk.capture_message('test')"
+      ```
+
+      ## Priority Summary
+      - 🔴 **CRITICAL**: Fix eval/exec (2-4h), Security scanning (1-2h) - **THIS WEEK**
+      - 🟠 **HIGH**: Pre-commit hooks (30-60m), Error tracking (1-2h) - **THIS SPRINT**
+
+      **Total Effort**: ~5-9 hours
 
   - id: "security.2"
     title: "Error Handling & Resilience Verification"
