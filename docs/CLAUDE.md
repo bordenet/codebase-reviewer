@@ -22,6 +22,36 @@ This document contains project-specific guidelines and lessons learned for Claud
   - Use `grep | sed` pipelines instead of complex awk
   - Test all regex/text processing commands before committing
 
+## 🔒 **CRITICAL: Pre-Commit Hooks - NEVER BYPASS**
+
+### ⚠️ **ABSOLUTE RULE: NEVER BYPASS PRE-COMMIT HOOKS**
+
+This repository has **IP protection pre-commit hooks** that prevent leaking proprietary codebase data.
+
+**NEVER, EVER, UNDER ANY CIRCUMSTANCES:**
+- Use `git commit --no-verify`
+- Use `git commit -n`
+- Bypass pre-commit hooks in any way
+- Suggest bypassing hooks to the user
+- Force-add files that are blocked by hooks without fixing the issue
+
+**If a commit is blocked:**
+1. ✅ Read the error message carefully
+2. ✅ Remove sensitive references (e.g., "Acme", "Widget", proprietary paths)
+3. ✅ Use generic examples instead
+4. ✅ Re-stage and commit normally
+5. ❌ NEVER suggest `--no-verify`
+
+**The pre-commit hook protects against:**
+- Analysis output files in `/tmp/codebase-reviewer/`
+- References to analyzed repository names
+- Proprietary file paths
+- Sensitive data in file contents
+
+**This is a SECURITY REQUIREMENT, not a suggestion.**
+
+---
+
 ## Quality Standards for Code Delivery
 
 ### ALWAYS Do Before Claiming "Done":
