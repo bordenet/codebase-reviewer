@@ -1,471 +1,444 @@
-# Codebase Reviewer
+# Codebase Reviewer - AI-Powered Code Analysis & Review
 
-[![CI](https://github.com/bordenet/codebase-reviewer/actions/workflows/ci.yml/badge.svg)](https://github.com/bordenet/codebase-reviewer/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/bordenet/codebase-reviewer/branch/main/graph/badge.svg)](https://codecov.io/gh/bordenet/codebase-reviewer)
-[![Coverage](https://img.shields.io/badge/coverage-54.8%25-yellow.svg)](https://github.com/bordenet/codebase-reviewer)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
-[![Linting: pylint](https://img.shields.io/badge/linting-pylint%209.5+-yellowgreen)](https://github.com/PyCQA/pylint)
-[![Type checking: mypy](https://img.shields.io/badge/type%20checking-mypy-blue)](https://github.com/python/mypy)
-[![Testing: pytest](https://img.shields.io/badge/testing-pytest-green)](https://github.com/pytest-dev/pytest)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/bordenet/codebase-reviewer/graphs/commit-activity)
-[![GitHub issues](https://img.shields.io/github/issues/bordenet/codebase-reviewer.svg)](https://github.com/bordenet/codebase-reviewer/issues)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/bordenet/codebase-reviewer.svg)](https://github.com/bordenet/codebase-reviewer/pulls)
+A comprehensive, production-ready tool for analyzing codebases with AI-powered insights. Combines automated code analysis, documentation validation, and customizable review workflows.
 
-Python tool for analyzing codebases and generating AI review prompts.
+## 🎯 What This Tool Does
 
-## Key Features
+**Analyzes**: Scans codebases to understand structure, languages, frameworks, and dependencies
+**Validates**: Cross-checks documentation claims against actual code implementation
+**Reviews**: Generates AI prompts for comprehensive code review using customizable workflows
+**Simulates**: Tests and tunes prompts before using them with real LLMs
+**Visualizes**: Provides web UI for interactive analysis and prompt generation
 
-### Documentation-First Analysis
-- Analyzes project documentation (README, architecture docs, setup guides) **before** code
-- Extracts testable claims about architecture, setup, and features
-- Validates documentation against actual code implementation
-- Identifies drift, gaps, and outdated information
+## 🚀 Quick Start
 
-### Multi-Phase Prompt Generation
-Generates AI prompts in 5 progressive phases:
-
-1. **Phase 0: Documentation Review** - Extract claims from docs
-2. **Phase 1: Architecture Analysis** - Validate architecture against code
-3. **Phase 2: Implementation Deep-Dive** - Code quality, patterns, observability
-4. **Phase 3: Development Workflow** - Setup validation, testing strategy
-5. **Phase 4: Interactive Remediation** - Prioritized action planning
-
-### Comprehensive Analysis
-- Programming language and framework detection
-- Dependency analysis and health checks
-- Code quality assessment (TODOs, security issues, technical debt)
-- Architecture pattern detection and validation
-- Setup instruction validation
-
-## Quick Start
-
-### Web UI (Recommended)
-
-**One command to start everything:**
-
+### 1. Setup (One-time)
 ```bash
+# Run the setup script
+./setup.sh
+
+# Or manually:
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+pip install -e .
+```
+
+### 2. Analyze a Codebase
+```bash
+# Using the CLI
+review-codebase analyze /path/to/your/codebase
+
+# Or with a specific workflow
+review-codebase analyze /path/to/your/codebase --workflow reviewer_criteria
+
+# Save results
+review-codebase analyze /path/to/your/codebase -o analysis.json -p prompts.md
+```
+
+### 3. Use the Web Interface
+```bash
+# Start the web UI
 ./start-web.sh
+
+# Or manually:
+review-codebase web --port 3000
 ```
 
-This script:
-- ✅ Sets up virtual environment automatically
-- ✅ Installs all dependencies
-- ✅ Kills stale processes on the port
-- ✅ Finds an available port (defaults to 3000)
-- ✅ Opens your browser automatically
-- ✅ Just works - zero friction!
+Then open http://localhost:3000 in your browser.
 
-### CLI Analysis
+## 📁 Architecture
 
-Use the automated setup script:
+This repository contains **two complementary tools**:
 
-```bash
-# Show help
-./setup.sh --help
+### 🐍 Python-Based Comprehensive Analyzer (Primary Tool)
 
-# Analyze a repository via CLI
-./setup.sh /path/to/repository
+The main production tool with full analysis capabilities:
 
-# Force rebuild of environment
-./setup.sh --force-setup
+```
+src/codebase_reviewer/
+├── analyzers/                  # Core analysis engines
+│   ├── documentation.py        # Doc analysis & claim extraction
+│   ├── code.py                 # Code structure analysis
+│   ├── validation.py           # Cross-validation engine
+│   ├── language_detector.py    # Language/framework detection
+│   ├── dependency_parser.py    # Dependency analysis
+│   └── quality_checker.py      # Code quality assessment
+├── prompts/                    # Prompt generation system
+│   ├── workflows/              # Workflow definitions (YAML)
+│   │   ├── default.yml         # 5-phase documentation review
+│   │   └── reviewer_criteria.yml # Principal engineer review
+│   ├── templates/              # Prompt templates
+│   └── workflow_loader.py      # Workflow execution engine
+├── cli.py                      # Command-line interface
+├── web.py                      # Web UI (Flask)
+├── orchestrator.py             # Analysis coordinator
+├── simulation.py               # Prompt testing/tuning
+└── models.py                   # Data models
 ```
 
-The script:
-- Detects Python 3.9+
-- Creates virtual environment in `.venv/`
-- Installs dependencies
-- Runs the tool
+**Key Features:**
+- ✅ Multi-phase analysis (Documentation → Code → Validation → Prompts)
+- ✅ Customizable workflows (default, reviewer_criteria, custom)
+- ✅ Web UI for interactive analysis
+- ✅ Simulation mode for prompt tuning
+- ✅ Export to JSON/Markdown
+- ✅ Production-ready Python package
 
-## Manual Installation (For Development)
+### 🔧 Go-Based Phase 1 Tool (Legacy/Alternative)
 
-If you're developing or want manual control:
+Original two-phase evolution system:
 
-```bash
-# Create virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Install in development mode with dev dependencies
-pip install -e ".[dev]"
-
-# Set up pre-commit hooks (enforces quality checks on commits)
-pre-commit install
+```
+cmd/generate-docs/              # Go CLI tool
+internal/
+├── scanner/                    # Repository discovery
+└── prompt/                     # Prompt generation
+pkg/
+├── logger/                     # Logging utilities
+└── learnings/                  # Evolution system
+prompts/
+├── templates/                  # LLM prompt templates (YAML)
+└── schemas/                    # Data schemas
 ```
 
-### Pre-Commit Hooks
+**Use Cases:**
+- Alternative prompt generation approach
+- Self-evolving documentation system
+- LLM-assisted tool generation
 
-Pre-commit hooks enforce code quality:
+Both tools share the same `prompts/` directory for consistency.
 
-- Black - Code formatting (auto-fixes)
-- isort - Import sorting (auto-fixes)
-- PyLint - Linting (requires 9.5+/10)
-- MyPy - Type checking
-- Pytest - All tests must pass
+## 🔄 How It Works
 
-## Usage
+### Python Analyzer Workflow (Recommended)
 
-### Command-Line Interface
+The Python-based analyzer follows a **4-phase analysis pipeline**:
 
-#### Basic Analysis
+#### Phase 0: Documentation Analysis
+1. Discover all documentation files (README, docs/, etc.)
+2. Extract testable claims from documentation
+3. Identify claimed architecture, setup instructions, APIs
+4. Calculate documentation completeness score
+
+#### Phase 1-2: Code Analysis
+1. Detect languages and frameworks
+2. Analyze directory structure and dependencies
+3. Run quality checks (code smells, anti-patterns)
+4. Map critical modules and entry points
+
+#### Phase 3: Validation (Cross-Check)
+1. Compare documentation claims vs actual code
+2. Detect documentation drift (outdated/incorrect docs)
+3. Find undocumented features
+4. Assess drift severity
+
+#### Phase 4: Prompt Generation
+1. Load workflow definition (default or custom)
+2. Generate AI prompts based on analysis results
+3. Include context from all previous phases
+4. Export to JSON/Markdown for LLM consumption
+
+### Workflow System
+
+Choose from pre-built workflows or create custom ones:
+
+**Default Workflow**: 5-phase documentation-first review
+- Phase 0: Documentation Review
+- Phase 1: Architecture Analysis
+- Phase 2: Implementation Deep-Dive
+- Phase 3: Development Workflow
+- Phase 4: Interactive Remediation
+
+**Reviewer Criteria Workflow**: Principal engineer-level review
+- Reconnaissance (architecture, dependencies, static analysis)
+- Hygiene Checks (tests, CI, comments)
+- Safety & Security (anti-patterns, error handling)
+- Architecture Insights (call graphs, hotspots, duplication)
+- Coverage & Modeling (integrations, boundaries, complexity)
+- Strategy (design docs, instrumentation, tech debt, mentoring)
+
+## 💡 Key Features
+
+### 1. Comprehensive Analysis
+- **Documentation Analysis**: Extracts and validates claims from all docs
+- **Code Structure**: Detects languages, frameworks, dependencies
+- **Quality Assessment**: Identifies code smells, anti-patterns, issues
+- **Cross-Validation**: Compares docs vs code to find drift
+
+### 2. Customizable Workflows
+- **YAML-Based**: Define custom review workflows
+- **Pre-Built**: Default and reviewer_criteria workflows included
+- **Extensible**: Add custom prompts and analysis steps
+- **Template System**: Reusable prompt templates
+
+### 3. Multiple Interfaces
+- **CLI**: Full-featured command-line interface
+- **Web UI**: Interactive browser-based interface
+- **Programmatic**: Use as Python library
+
+### 4. Simulation & Testing
+- **Prompt Tuning**: Systematic workflow for improving prompts
+- **Test Data Generation**: Create realistic test cases
+- **Quality Evaluation**: Score outputs against rubrics
+- **Improvement Recommendations**: Get specific prompt enhancements
+- **Mock Responses**: Simulate LLM responses for testing
+- **Iterative Improvement**: Refine prompts based on results
+
+### 5. Export & Integration
+- **JSON Export**: Machine-readable analysis results
+- **Markdown Export**: Human-readable prompts
+- **Flexible Output**: Save to files or stdout
+
+## 🛠️ Commands
+
+### Python CLI Commands
+
 ```bash
-# Using the automated script (recommended)
-./setup.sh /path/to/repo
+# Analyze a codebase
+review-codebase analyze /path/to/repo
 
-# Or manually (if venv is activated)
-python -m codebase_reviewer analyze /path/to/repo
+# Use specific workflow
+review-codebase analyze /path/to/repo --workflow reviewer_criteria
 
-# Analyze with output files
-python -m codebase_reviewer analyze /path/to/repo \
-    --output analysis.json \
-    --prompts-output prompts.md
+# Save outputs
+review-codebase analyze /path/to/repo -o analysis.json -p prompts.md
 
-# Quiet mode (minimal output)
-python -m codebase_reviewer analyze /path/to/repo --quiet
+# Show only specific phase prompts
+review-codebase prompts /path/to/repo --phase 0
+
+# Run simulation (test prompts)
+review-codebase simulate /path/to/repo --workflow reviewer_criteria
+
+# Start web UI
+review-codebase web --port 3000
+
+# Prompt tuning workflow
+review-codebase tune init --project my_project --num-tests 5
+review-codebase tune evaluate ./prompt_tuning_results/tuning_my_project_*
+
+# Get help
+review-codebase --help
+review-codebase analyze --help
+review-codebase tune --help
 ```
 
-#### View Prompts
-```bash
-# Display all generated prompts
-python -m codebase_reviewer prompts /path/to/repo
+### Go CLI Commands (Legacy Tool)
 
-# Display specific phase only
-python -m codebase_reviewer prompts /path/to/repo --phase 0
+```bash
+# Build the Go tool
+make build
+
+# Run with verbose output
+./bin/generate-docs -v /path/to/codebase
+
+# Regenerate (scorch mode)
+./bin/generate-docs --scorch /path/to/codebase
+
+# Review existing analysis
+./bin/generate-docs --review /path/to/codebase
+
+# Clean
+make clean
 ```
 
-### Web Interface
+## 🎓 Example Workflows
 
-#### Start Web Server
-
-**Recommended: Use the startup script**
+### Example 1: Quick Analysis
 
 ```bash
+# Analyze a repository
+review-codebase analyze /Users/matt/GitHub/CallBox/Cari
+
+# Output shows:
+# - Documentation files found
+# - Languages and frameworks detected
+# - Quality issues identified
+# - Drift between docs and code
+# - Generated prompts count
+
+# Results saved to:
+# - prompts.md (AI prompts for review)
+# - prompts.json (machine-readable format)
+```
+
+### Example 2: Principal Engineer Review
+
+```bash
+# Use the comprehensive review workflow
+review-codebase analyze /Users/matt/GitHub/CallBox/Cari \
+  --workflow reviewer_criteria \
+  -o cari_analysis.json \
+  -p cari_prompts.md
+
+# This generates prompts for:
+# 1. High-Level Reconnaissance
+# 2. Baseline Hygiene Checks
+# 3. Core Safety and Security
+# 4. Architecture Insights
+# 5. Coverage & Modeling
+# 6. Principal Engineer Strategy
+```
+
+### Example 3: Simulation & Tuning
+
+```bash
+# Test prompts before using with real LLM
+review-codebase simulate /Users/matt/GitHub/CallBox/Cari \
+  --workflow reviewer_criteria \
+  --output-dir ./simulation_results
+
+# Review simulation results
+cat ./simulation_results/simulation_*.md
+
+# Iterate on prompts in src/codebase_reviewer/prompts/templates/
+# Re-run simulation to verify improvements
+```
+
+### Example 4: Web UI
+
+```bash
+# Start the web interface
 ./start-web.sh
+
+# Or manually:
+review-codebase web --port 3000
+
+# Then:
+# 1. Open http://localhost:3000
+# 2. Enter repository path: /Users/matt/GitHub/CallBox/Cari
+# 3. Click "Analyze"
+# 4. View results and download prompts
 ```
 
-This automatically:
-- Sets up dependencies
-- Kills stale processes
-- Finds an available port
-- Opens your browser
+## 🔧 Requirements
 
-**Manual start (if needed):**
+### Python Tool (Primary)
+- Python 3.9+
+- pip or pip3
+- Git (for repository analysis)
+
+### Go Tool (Optional/Legacy)
+- Go 1.21+
+- Git
+
+## 📦 Installation
+
+### Python Tool Setup
 
 ```bash
-# Start web server (default port 3000)
-python -m codebase_reviewer web
+# Option 1: Automated setup (recommended)
+./setup.sh
 
-# Specify custom host and port
-python -m codebase_reviewer web --host 0.0.0.0 --port 8080
+# Option 2: Manual setup
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+pip install -e .
 
-# Run in debug mode
-python -m codebase_reviewer web --debug
+# Verify installation
+review-codebase --help
 ```
 
-Then open your browser to `http://127.0.0.1:3000` (or your specified port)
+### Go Tool Setup (Optional)
 
-Features:
-- Real-time analysis progress
-- Visual metrics dashboard
-- Download prompts (Markdown/JSON)
-- Export analysis results
-
-### Example Output
-
-```
-Codebase Reviewer - Analyzing: /home/user/my-project
-
-  Phase 0: Analyzing documentation...
-  Found 8 documentation files
-  Extracted 12 testable claims
-  Phase 1-2: Analyzing code structure...
-  Detected 2 languages
-  Detected 3 frameworks
-  Found 45 quality issues
-  Validation: Comparing documentation vs code...
-  Found 3 documentation drift issues
-  Drift severity: medium
-  Generating AI prompts...
-  Generated 11 AI prompts across 5 phases
-  Analysis complete in 2.34 seconds
-
-============================================================
-ANALYSIS SUMMARY
-============================================================
-
-Documentation:
-  Files found: 8
-  Completeness: 75.0%
-  Claims extracted: 12
-  Architecture: microservices
-
-Code Structure:
-  Python: 85.3%
-  Shell: 14.7%
-  Frameworks: Flask, Docker
-  Quality issues: 45
-
-Validation:
-  Drift severity: MEDIUM
-  Drift issues: 3
-  Undocumented features: 2
-
-Generated Prompts:
-  Total prompts: 11
-  Phase 0 (Documentation Review): 3
-  Phase 1 (Architecture Analysis): 2
-  Phase 2 (Implementation Deep-Dive): 2
-  Phase 3 (Development Workflow): 2
-  Phase 4 (Interactive Remediation): 2
-
-Completed in 2.34 seconds
-```
-
-## Architecture
-
-### Core Components
-
-```
-┌─────────────────────────────────────────┐
-│       Analysis Orchestrator              │
-│  (Coordinates analysis pipeline)         │
-└─────────────────────────────────────────┘
-                   │
-      ┌────────────┼────────────┐
-      │            │            │
-┌─────▼─────┐ ┌───▼────┐ ┌────▼──────┐
-│   Docs    │ │  Code  │ │Validation │
-│ Analyzer  │ │Analyzer│ │  Engine   │
-└───────────┘ └────────┘ └───────────┘
-      │            │            │
-      └────────────┼────────────┘
-                   │
-           ┌───────▼────────┐
-           │     Prompt     │
-           │   Generator    │
-           └────────────────┘
-```
-
-### Analysis Flow
-
-1. **Documentation Analyzer**: Discovers and analyzes all markdown/documentation files
-2. **Code Analyzer**: Analyzes repository structure, languages, frameworks, dependencies
-3. **Validation Engine**: Cross-checks documentation claims against code reality
-4. **Prompt Generator**: Creates structured AI prompts incorporating findings
-
-## Generated Prompts
-
-Prompts are designed to guide AI assistants (Claude, GPT-4, Gemini) through systematic code review:
-
-### Phase 0: Documentation Review
-- README analysis and claims extraction
-- Architecture documentation review
-- Setup and build documentation assessment
-
-### Phase 1: Architecture Analysis
-- Architecture validation against code
-- Dependency analysis and health checks
-
-### Phase 2: Implementation Deep-Dive
-- Code quality and technical debt assessment
-- Observability and operational maturity review
-
-### Phase 3: Development Workflow
-- Setup instruction validation
-- Testing strategy assessment
-
-### Phase 4: Interactive Remediation
-- Issue prioritization and action planning
-
-## Output Formats
-
-### JSON Analysis Results
-```json
-{
-  "repository_path": "/path/to/repo",
-  "timestamp": "2025-11-14T10:30:00",
-  "documentation": {
-    "total_docs": 8,
-    "completeness_score": 75.0,
-    "claims_count": 12
-  },
-  "code": {
-    "languages": [{"name": "Python", "percentage": 85.3}],
-    "frameworks": ["Flask", "Docker"],
-    "quality_issues_count": 45
-  },
-  "validation": {
-    "drift_severity": "medium",
-    "architecture_drift_count": 2,
-    "setup_drift_count": 1
-  }
-}
-```
-
-### Markdown Prompts
-```markdown
-# AI Code Review Prompts
-
-## Phase 0: Documentation Review
-
-### Prompt 0.1: README Analysis & Claims Extraction
-
-**Objective:** Extract and catalog all claims about project architecture...
-
-**Tasks:**
-- Identify the stated project purpose and scope
-- List all claimed technologies and frameworks
-- Extract documented architecture pattern
-...
-```
-
-## Use Cases
-
-### 1. New Team Member Onboarding
 ```bash
-# Generate comprehensive onboarding prompts
-python -m codebase_reviewer analyze /path/to/repo --prompts-output onboarding.md
+# Build the Go tool
+make build
 
-# New team member uses prompts with AI assistant (Claude, GPT-4, etc.)
-# AI walks through architecture, patterns, setup process
+# Verify
+./bin/generate-docs -h
 ```
 
-### 2. Technical Debt Assessment
+## 🎯 Target Repository
+
+This tool is configured to analyze:
+
+**Primary Target**: `/Users/matt/GitHub/CallBox/Cari/`
+
 ```bash
-# Analyze codebase for quality issues and drift
-python -m codebase_reviewer analyze /path/to/repo --output assessment.json
+# Quick analysis
+review-codebase analyze /Users/matt/GitHub/CallBox/Cari
 
-# Review drift severity and quality issues
-# Use Phase 4 prompts to prioritize remediation
+# Comprehensive review
+review-codebase analyze /Users/matt/GitHub/CallBox/Cari \
+  --workflow reviewer_criteria \
+  -o cari_analysis.json \
+  -p cari_review_prompts.md
+
+# Simulation mode
+review-codebase simulate /Users/matt/GitHub/CallBox/Cari \
+  --workflow reviewer_criteria
 ```
 
-### 3. Documentation Audit
-```bash
-# Check documentation completeness and accuracy
-python -m codebase_reviewer analyze /path/to/repo
+## 📚 Documentation
 
-# Review documentation completeness score
-# Identify undocumented features and drift
-```
+### Getting Started
+- **`README.md`** (this file) - Overview and quick start
+- **`QUICK-START.md`** - 5-minute setup guide
+- **`START-HERE.md`** - Guided introduction
 
-## Configuration
+### Python Tool Documentation
+- **`setup.py`** - Package configuration
+- **`src/codebase_reviewer/`** - Source code with inline docs
+- **`tests/`** - Test suite with examples
 
-Default behavior can be customized by modifying analyzer classes:
+### Workflow Documentation
+- **`src/codebase_reviewer/prompts/workflows/`** - Workflow definitions
+- **`src/codebase_reviewer/prompts/templates/`** - Prompt templates
+- **`docs/WORKFLOW_INTEGRATION_PROPOSAL.md`** - Workflow system design
 
-- **DocumentationAnalyzer**: Add custom documentation patterns
-- **CodeAnalyzer**: Extend language/framework detection
-- **ValidationEngine**: Customize validation rules
-- **PromptGenerator**: Modify prompt templates
+### Prompt Tuning Documentation
+- **`docs/PROMPT_TUNING_GUIDE.md`** - Complete tuning workflow guide
+- **`archive/PROMPT_TUNING_*.md`** - Original methodology and design specs
+- **`src/codebase_reviewer/tuning/`** - Tuning system source code
 
-## Development
+### Go Tool Documentation (Legacy)
+- **`docs/EVOLUTION-SYSTEM.md`** - Evolution system guide
+- **`docs/EVOLUTION-SUMMARY.md`** - Quick reference
+- **`docs/NEXT-STEPS.md`** - Usage instructions
+- **`prompts/schemas/learnings-schema.yaml`** - Learnings schema
 
-### Running Tests
-```bash
-# Install development dependencies
-pip install -e ".[dev]"
+## 🤝 Contributing
 
-# Run tests
-pytest tests/
+This tool is designed to be:
 
-# Run with coverage
-pytest --cov=codebase_reviewer tests/
-```
+- **Generic** - Works with any codebase
+- **Extensible** - Easy to add new analyzers and workflows
+- **Customizable** - YAML-based configuration
+- **Well-Tested** - Comprehensive test suite
 
-### Linting
-```bash
-# Run pylint
-pylint src/codebase_reviewer
+To add a custom workflow:
 
-# Run mypy
-mypy src/codebase_reviewer
+1. Create a new YAML file in `src/codebase_reviewer/prompts/workflows/`
+2. Define sections and prompts
+3. Reference existing templates or create custom prompts
+4. Test with simulation mode
 
-# Format with black
-black src/codebase_reviewer
-```
+## 📄 License
 
-## Project Structure
+See LICENSE file for details.
 
-```
-codebase-reviewer/
-├── src/
-│   └── codebase_reviewer/
-│       ├── __init__.py
-│       ├── __main__.py
-│       ├── cli.py                 # Command-line interface
-│       ├── web.py                 # Flask web interface
-│       ├── models.py              # Data models
-│       ├── orchestrator.py        # Analysis orchestrator
-│       ├── prompt_generator.py    # Prompt generation
-│       ├── analyzers/             # Analysis modules
-│       │   ├── __init__.py
-│       │   ├── code.py            # Code analyzer
-│       │   ├── constants.py       # Constants
-│       │   ├── documentation.py   # Documentation analyzer
-│       │   ├── parsing_utils.py   # Parsing utilities
-│       │   └── validation.py      # Validation engine
-│       └── prompts/               # Prompt templates
-│           ├── __init__.py
-│           ├── export.py          # Export utilities
-│           ├── phase0.py          # Phase 0 prompts
-│           ├── phase1.py          # Phase 1 prompts
-│           ├── phase2.py          # Phase 2 prompts
-│           ├── phase3.py          # Phase 3 prompts
-│           └── phase4.py          # Phase 4 prompts
-├── tests/                         # Test suite
-│   └── test_basic.py
-├── docs/                          # Documentation
-│   ├── PRD.md                     # Product requirements
-│   ├── DESIGN.md                  # Technical design
-│   └── CLAUDE.md                  # AI assistant guidelines
-├── .github/
-│   └── workflows/
-│       └── ci.yml                 # CI/CD pipeline
-├── requirements.txt               # Dependencies
-├── setup.py                       # Package setup
-├── .pre-commit-config.yaml        # Pre-commit hooks
-├── .coveragerc                    # Coverage configuration
-└── README.md                      # This file
-```
+## 🆘 Support
 
-## Limitations
+### For Python Tool Issues
+1. Check test suite: `pytest tests/`
+2. Review analyzer output with `--quiet` flag removed
+3. Check simulation results for prompt quality
+4. Review workflow YAML for configuration issues
 
-- Static analysis only (no code execution)
-- Supports Python, JavaScript/TypeScript, Java, C#, Go, Ruby, Shell
-- Large repositories (>1GB) may be slow
+### For Go Tool Issues
+1. Check `docs/EVOLUTION-SYSTEM.md` for detailed guide
+2. Review `docs/NEXT-STEPS.md` for usage instructions
+3. Inspect YAML prompts for debugging
 
-## Contributing
-
-To extend this tool:
-
-1. Add language support: Extend `LANGUAGE_EXTENSIONS` in `code.py`
-2. Add framework detection: Update `FRAMEWORK_PATTERNS` in `code.py`
-3. Add documentation patterns: Modify `DOCUMENTATION_PATTERNS` in `documentation.py`
-4. Custom validation rules: Extend `ValidationEngine` class
-5. Custom prompts: Modify `PromptGenerator` methods
+### Common Issues
+- **Import errors**: Run `./setup.sh` or `pip install -e .`
+- **Port conflicts**: Use `--port` flag to specify different port
+- **Analysis errors**: Ensure repository path is correct and accessible
 
 ---
 
-## Code Coverage
-
-Codebase Reviewer maintains **54.8% test coverage** with ongoing improvements. The coverage visualization below shows detailed coverage by module:
-
-[![Coverage Grid](https://codecov.io/gh/bordenet/codebase-reviewer/graphs/tree.svg)](https://codecov.io/gh/bordenet/codebase-reviewer)
-
-**What this means:**
-- **Green**: Well-tested code (>80% coverage)
-- **Yellow**: Moderate coverage (60-80%)
-- **Red**: Needs more tests (<60%)
-- **Size**: Larger boxes = more lines of code
-
-Click the image to explore detailed coverage reports on Codecov, including line-by-line coverage, branch coverage, and historical trends.
-
----
-
-## License
-
-MIT License - see LICENSE file
+**Status**: ✅ Production Ready
+**Version**: 1.0.0
+**Last Updated**: 2025-11-24
+**Primary Tool**: Python-based comprehensive analyzer
+**Target Repository**: /Users/matt/GitHub/CallBox/Cari/
