@@ -3,11 +3,18 @@
 from pathlib import Path
 from typing import List, Optional
 from ..models import CodeAnalysis, Language
+from ..visualization.mermaid_generator import MermaidGenerator
+from ..visualization.chart_generator import ChartGenerator
 
 
 class DocumentationGenerator:
     """Generate comprehensive documentation from code analysis."""
-    
+
+    def __init__(self):
+        """Initialize documentation generator with visualization tools."""
+        self.mermaid_gen = MermaidGenerator()
+        self.chart_gen = ChartGenerator()
+
     def generate(self, analysis: CodeAnalysis, codebase_path: str) -> str:
         """
         Generate comprehensive documentation.
@@ -33,9 +40,17 @@ class DocumentationGenerator:
         # Architecture
         sections.extend(self._generate_architecture(analysis))
         sections.append("")
-        
+
+        # Architecture Diagram
+        sections.extend(self._generate_architecture_diagram(analysis))
+        sections.append("")
+
         # Languages
         sections.extend(self._generate_languages(analysis))
+        sections.append("")
+
+        # Metrics & Charts
+        sections.extend(self._generate_metrics_charts(analysis))
         sections.append("")
         
         # Key Components
@@ -246,3 +261,80 @@ class DocumentationGenerator:
 
         return lines
 
+    def _generate_architecture_diagram(self, analysis: CodeAnalysis) -> List[str]:
+        """Generate architecture diagram section."""
+        lines = [
+            "## Architecture Diagram",
+            "",
+            "### Component Overview",
+            "",
+        ]
+
+        # Add Mermaid architecture diagram
+        diagram = self.mermaid_gen.generate_architecture_diagram(analysis)
+        lines.append(diagram)
+        lines.append("")
+
+        # Add dependency graph if we have dependencies
+        if analysis.dependencies:
+            lines.extend([
+                "### Dependency Graph",
+                "",
+            ])
+            dep_diagram = self.mermaid_gen.generate_dependency_graph(analysis.dependencies)
+            lines.append(dep_diagram)
+            lines.append("")
+
+        return lines
+
+    def _generate_metrics_charts(self, analysis: CodeAnalysis) -> List[str]:
+        """Generate metrics and charts section."""
+        lines = [
+            "## Metrics & Statistics",
+            "",
+        ]
+
+        # Code metrics table
+        lines.extend([
+            "### Code Metrics",
+            "",
+            self.chart_gen.generate_metrics_table(analysis),
+            "",
+        ])
+
+        # Language distribution
+        if analysis.structure and analysis.structure.languages:
+            lines.extend([
+                "### Language Distribution",
+                "",
+                self.chart_gen.generate_language_distribution_table(analysis),
+                "",
+            ])
+
+        # Framework/Technology stack
+        if analysis.structure and analysis.structure.frameworks:
+            lines.extend([
+                "### Technology Stack",
+                "",
+                self.chart_gen.generate_framework_table(analysis),
+                "",
+            ])
+
+        # Issue severity distribution
+        if analysis.quality_issues:
+            lines.extend([
+                "### Issue Severity Distribution",
+                "",
+                self.chart_gen.generate_issue_severity_table(analysis.quality_issues),
+                "",
+            ])
+
+            # Top issues table
+            lines.extend([
+                "### Top Issues",
+                "",
+                self.chart_gen.generate_top_issues_table(analysis.quality_issues, limit=15),
+                "",
+            ])
+
+        return lines
