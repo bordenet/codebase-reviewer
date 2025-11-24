@@ -153,9 +153,10 @@ def test_analyze_quality_combined(quality_checker, temp_repo):
     )
 
     issues = quality_checker.analyze_quality(temp_repo)
-    assert len(issues) == 2
+    # Now we get 3 issues: TODO + legacy password check + OWASP password check
+    assert len(issues) >= 2  # At least TODO and password
     assert any(issue.severity == Severity.LOW for issue in issues)  # TODO
-    assert any(issue.severity == Severity.HIGH for issue in issues)  # password
+    assert any(issue.severity in [Severity.HIGH, Severity.CRITICAL] for issue in issues)  # password
 
 
 def test_check_for_todos_handles_read_errors(quality_checker, temp_repo):

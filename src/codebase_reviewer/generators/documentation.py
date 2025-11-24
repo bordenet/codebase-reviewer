@@ -49,7 +49,11 @@ class DocumentationGenerator:
         # API Documentation
         sections.extend(self._generate_api_docs(analysis))
         sections.append("")
-        
+
+        # Security & Quality Issues
+        sections.extend(self._generate_security_quality(analysis))
+        sections.append("")
+
         return "\n".join(sections)
     
     def _generate_overview(self, analysis: CodeAnalysis, codebase_path: str) -> List[str]:
@@ -167,4 +171,78 @@ class DocumentationGenerator:
             "- **Validators API**: For quality and fidelity validation",
             "- **Generators API**: For documentation generation",
         ]
+
+    def _generate_security_quality(self, analysis: CodeAnalysis) -> List[str]:
+        """Generate security and quality issues section."""
+        lines = [
+            "## Security & Quality Analysis",
+            "",
+        ]
+
+        quality_issues = analysis.quality_issues if analysis.quality_issues else []
+
+        if not quality_issues:
+            lines.extend([
+                "✅ No security or quality issues detected.",
+                "",
+            ])
+            return lines
+
+        # Group by severity
+        critical = [i for i in quality_issues if i.severity.value == "critical"]
+        high = [i for i in quality_issues if i.severity.value == "high"]
+        medium = [i for i in quality_issues if i.severity.value == "medium"]
+        low = [i for i in quality_issues if i.severity.value == "low"]
+
+        lines.extend([
+            f"**Summary**: Found {len(quality_issues)} issues",
+            f"- 🔴 Critical: {len(critical)}",
+            f"- 🟠 High: {len(high)}",
+            f"- 🟡 Medium: {len(medium)}",
+            f"- 🟢 Low: {len(low)}",
+            "",
+        ])
+
+        # Show critical issues
+        if critical:
+            lines.extend([
+                "### 🔴 Critical Issues",
+                "",
+            ])
+            for issue in critical[:10]:  # Limit to top 10
+                lines.extend([
+                    f"**{issue.title}**",
+                    f"- Location: `{issue.source}`",
+                    f"- {issue.description.split(chr(10))[0]}",  # First line only
+                    "",
+                ])
+
+        # Show high severity issues
+        if high:
+            lines.extend([
+                "### 🟠 High Severity Issues",
+                "",
+            ])
+            for issue in high[:10]:  # Limit to top 10
+                lines.extend([
+                    f"**{issue.title}**",
+                    f"- Location: `{issue.source}`",
+                    f"- {issue.description.split(chr(10))[0]}",
+                    "",
+                ])
+
+        # Summary for medium/low
+        if medium:
+            lines.extend([
+                f"### 🟡 Medium Severity: {len(medium)} issues",
+                "",
+            ])
+
+        if low:
+            lines.extend([
+                f"### 🟢 Low Severity: {len(low)} issues",
+                "",
+            ])
+
+        return lines
 
