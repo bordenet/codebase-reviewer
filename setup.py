@@ -17,7 +17,11 @@ setup(
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     package_data={
-        "codebase_reviewer": ["templates/*.html"],
+        "codebase_reviewer": [
+            "templates/*.html",
+            "prompts/workflows/*.yml",
+            "prompts/templates/*.yml",
+        ],
     },
     include_package_data=True,
     classifiers=[

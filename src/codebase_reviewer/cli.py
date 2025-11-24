@@ -9,6 +9,7 @@ import click
 from codebase_reviewer.orchestrator import AnalysisOrchestrator
 from codebase_reviewer.prompt_generator import PromptGenerator
 from codebase_reviewer.simulation import LLMSimulator
+from codebase_reviewer.tuning.runner import TuningRunner
 
 
 @click.group()
@@ -365,6 +366,56 @@ def simulate(repo_path, workflow, output_dir):
         import traceback
 
         traceback.print_exc()
+        sys.exit(1)
+
+
+@cli.group()
+def tune():
+    """Prompt tuning commands for systematic prompt improvement."""
+
+
+@tune.command("init")
+@click.option(
+    "--output-dir",
+    "-o",
+    type=click.Path(),
+    default="./prompt_tuning_results",
+    help="Directory to save tuning results",
+)
+@click.option(
+    "--num-tests",
+    "-n",
+    type=int,
+    default=5,
+    help="Number of test cases to generate",
+)
+@click.option(
+    "--project",
+    "-p",
+    type=str,
+    default="codebase_reviewer",
+    help="Project name",
+)
+def tune_init(output_dir, num_tests, project):
+    """Initialize a new prompt tuning session."""
+    runner = TuningRunner(Path(output_dir))
+    session_dir = runner.run_full_tuning_workflow(
+        project_name=project,
+        num_test_cases=num_tests,
+    )
+    click.echo(f"\n✅ Tuning session initialized: {session_dir}")
+
+
+@tune.command("evaluate")
+@click.argument("session_dir", type=click.Path(exists=True))
+def tune_evaluate(session_dir):
+    """Evaluate simulation results and generate recommendations."""
+    runner = TuningRunner(Path(session_dir).parent)
+    try:
+        report_path = runner.evaluate_simulation_results(Path(session_dir))
+        click.echo(f"\n✅ Evaluation complete: {report_path}")
+    except FileNotFoundError as e:
+        click.echo(f"\n❌ Error: {e}", err=True)
         sys.exit(1)
 
 

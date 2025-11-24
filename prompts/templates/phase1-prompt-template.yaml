@@ -1,0 +1,245 @@
+# Phase 1 LLM Prompt Template
+# This template is used to generate the actual LLM prompt for codebase analysis
+# Variables will be substituted during Phase 1 execution
+
+metadata:
+  version: "1.0.0"
+  template_type: "phase1_codebase_analysis"
+  security_level: "CRITICAL - Contains proprietary codebase references after substitution"
+  
+prompt:
+  role: "expert_software_architect_and_code_analyst"
+  
+  context: |
+    You are an expert software architect and code analyst. You have been asked to perform
+    a comprehensive analysis of a proprietary codebase to generate reference materials and
+    automated documentation tools.
+    
+    **CRITICAL SECURITY REQUIREMENTS:**
+    - All outputs MUST be written to /tmp/ or .gitignore'd locations
+    - NO proprietary code or analysis results may be committed to git
+    - Phase 2 tools you generate are proprietary and must be protected
+    - Multi-layered safeguards are required
+  
+  scan_parameters:
+    target_path: "{{TARGET_PATH}}"
+    scan_mode: "{{SCAN_MODE}}"  # deep_scan, review, scorch
+    verbose: "{{VERBOSE}}"
+    nested_repos: "{{NESTED_REPOS}}"  # JSON array of discovered git repos
+    
+  tasks:
+    - task_id: "T1"
+      name: "Codebase Deep Scan"
+      description: |
+        Perform a comprehensive scan of the codebase at {{TARGET_PATH}}.
+        
+        For each nested git repository identified:
+        1. Analyze directory structure and file organization
+        2. Identify programming languages and frameworks
+        3. Map dependencies (internal and external)
+        4. Identify integration points between repos
+        5. Extract embedded LLM prompts (if any)
+        6. Catalog APIs (internal and external)
+        7. Identify architectural patterns
+        8. Note TODO/FIXME/BUGBUG comments
+        9. Assess code quality indicators
+        10. Map data flows between services
+        
+        Nested repositories found:
+        {{NESTED_REPOS_DETAIL}}
+      
+      output_format: "structured_analysis_per_repo"
+      
+    - task_id: "T2"
+      name: "Reference Material Strategy"
+      description: |
+        Based on your deep scan, design a comprehensive set of reference materials
+        that would be valuable for:
+        - New team members ramping up
+        - Experienced developers needing quick reference
+        - Architects reviewing system design
+        - Security auditors
+        - Integration partners
+        
+        Recommended reference materials should include:
+        1. Architecture diagrams (mermaid format)
+        2. Service catalog with responsibilities
+        3. API documentation (internal/external)
+        4. Data flow diagrams
+        5. Dependency graphs
+        6. Integration point maps
+        7. LLM prompt catalog (if applicable)
+        8. TODO/FIXME/BUGBUG reports
+        9. Code quality metrics
+        10. Technology stack inventory
+        11. Deployment architecture
+        12. Security considerations
+        
+        For THIS specific codebase, determine which materials are most valuable.
+      
+      output_format: "reference_material_plan"
+    
+    - task_id: "T3"
+      name: "Phase 2 Tool Design"
+      description: |
+        Design Go-based tools that can regenerate the reference materials WITHOUT
+        requiring LLM assistance. These tools must:
+        
+        **Requirements:**
+        1. Run completely offline
+        2. Parse source code to extract information
+        3. Generate markdown, mermaid diagrams, tables
+        4. Detect when they become obsolete (codebase changes too much)
+        5. Support -v (verbose) and -h (help) flags
+        6. Use parallel processing for performance
+        7. Conform to Go best practices and linting standards
+        8. Write ALL outputs to /tmp/codebase-reviewer/{{CODEBASE_NAME}}/
+        9. Include comprehensive error handling
+        10. Provide progress indicators
+        
+        **Tool Architecture:**
+        - Modular design (one tool per report type, or unified tool with subcommands)
+        - Shared utilities for common operations
+        - Configuration via YAML
+        - Extensible for future report types
+        
+        **Self-Obsolescence Detection:**
+        Tools must detect when:
+        - Expected files/directories no longer exist
+        - Code structure has changed dramatically
+        - Dependencies have shifted significantly
+        - New languages/frameworks introduced
+        
+        When obsolete, tools should:
+        - Exit with clear error message
+        - Instruct user to re-run Phase 1 with --scorch
+        - Log what changed
+      
+      output_format: "go_tool_specifications"
+    
+    - task_id: "T4"
+      name: "Implement Phase 2 Tools"
+      description: |
+        Generate complete, production-ready Go code for Phase 2 tools.
+        
+        **Code Quality Standards:**
+        - Pass `golangci-lint` with strict settings
+        - Include comprehensive tests
+        - Document all exported functions
+        - Use meaningful variable names
+        - Handle errors explicitly
+        - Use context for cancellation
+        - Implement graceful shutdown
+        - Add benchmarks for performance-critical code
+        
+        **File Organization:**
+        ```
+        /tmp/codebase-reviewer/{{CODEBASE_NAME}}/phase2-tools/
+          ├── cmd/
+          │   ├── generate-docs/
+          │   │   └── main.go
+          │   └── validate-tools/
+          │       └── main.go
+          ├── internal/
+          │   ├── scanner/
+          │   ├── analyzer/
+          │   ├── generator/
+          │   └── validator/
+          ├── pkg/
+          │   └── models/
+          ├── configs/
+          │   └── tool-config.yaml
+          ├── go.mod
+          ├── go.sum
+          ├── Makefile
+          └── README.md
+        ```
+        
+        **Parallelization:**
+        - Use worker pools for file scanning
+        - Concurrent analysis where safe
+        - Rate limiting for external API calls (if any)
+        - Progress reporting from parallel workers
+      
+      output_format: "complete_go_codebase"
+    
+    - task_id: "T5"
+      name: "Generate Initial Reference Materials"
+      description: |
+        Run the Phase 2 tools you just created to generate the initial set of
+        reference materials. Validate that the outputs match or exceed the depth
+        and breadth of your LLM-based analysis.
+        
+        **Validation Criteria:**
+        - All identified services documented
+        - All integration points mapped
+        - All APIs cataloged
+        - Diagrams accurately represent architecture
+        - No critical information missing
+        - Outputs are well-formatted and readable
+        
+        If validation fails, iterate on Phase 2 tools until outputs are satisfactory.
+      
+      output_location: "/tmp/codebase-reviewer/{{CODEBASE_NAME}}/reference-materials/"
+      
+    - task_id: "T6"
+      name: "Security Validation"
+      description: |
+        Verify that NO proprietary information has been written to locations that
+        could be committed to git.
+        
+        Check:
+        1. All outputs in /tmp/ or .gitignore'd paths
+        2. No hardcoded secrets or credentials
+        3. No absolute paths that reveal proprietary structure
+        4. .gitignore covers all output patterns
+        5. Pre-commit hooks are in place
+        
+        Generate a security checklist report.
+      
+      output_format: "security_validation_report"
+
+  output_requirements:
+    primary_output: "/tmp/codebase-reviewer/{{CODEBASE_NAME}}/phase1-analysis.md"
+    phase2_tools: "/tmp/codebase-reviewer/{{CODEBASE_NAME}}/phase2-tools/"
+    reference_materials: "/tmp/codebase-reviewer/{{CODEBASE_NAME}}/reference-materials/"
+    
+  success_criteria:
+    - "Phase 2 tools compile and run successfully"
+    - "Reference materials are comprehensive and accurate"
+    - "Tools can detect their own obsolescence"
+    - "No proprietary data in git-tracked locations"
+    - "All outputs pass validation checks"
+
+guidance_spec:
+  code_quality:
+    - "Follow Go best practices and idioms"
+    - "Pass golangci-lint with all linters enabled"
+    - "Maintain >80% test coverage"
+    - "Document all exported symbols"
+    - "Use meaningful names (no single-letter vars except loops)"
+    - "Keep functions under 50 lines where possible"
+    - "Avoid global mutable state"
+    
+  performance:
+    - "Use goroutines for I/O-bound operations"
+    - "Implement worker pools for CPU-bound tasks"
+    - "Buffer I/O operations appropriately"
+    - "Use sync.Pool for frequently allocated objects"
+    - "Profile and benchmark critical paths"
+    - "Minimize allocations in hot paths"
+    
+  error_handling:
+    - "Return errors, don't panic (except in main/init)"
+    - "Wrap errors with context using fmt.Errorf"
+    - "Log errors with structured logging"
+    - "Provide actionable error messages"
+    - "Distinguish between retriable and fatal errors"
+    
+  security:
+    - "Validate all inputs"
+    - "Sanitize file paths"
+    - "Never log sensitive data"
+    - "Use constant-time comparisons for secrets"
+    - "Implement rate limiting where appropriate"
+
