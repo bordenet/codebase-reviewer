@@ -29,55 +29,131 @@ prompt:
     
   tasks:
     - task_id: "T1"
-      name: "Codebase Deep Scan"
+      name: "Industry-Standard Codebase Analysis"
       description: |
-        Perform a comprehensive scan of the codebase at {{TARGET_PATH}}.
-        
-        For each nested git repository identified:
-        1. Analyze directory structure and file organization
-        2. Identify programming languages and frameworks
-        3. Map dependencies (internal and external)
-        4. Identify integration points between repos
-        5. Extract embedded LLM prompts (if any)
-        6. Catalog APIs (internal and external)
-        7. Identify architectural patterns
-        8. Note TODO/FIXME/BUGBUG comments
-        9. Assess code quality indicators
-        10. Map data flows between services
-        
+        Perform a comprehensive analysis of the codebase at {{TARGET_PATH}} that meets or exceeds
+        **Semgrep** and **SonarQube** industry standards.
+
+        **SECURITY ANALYSIS (OWASP Top 10):**
+        1. SQL Injection vulnerabilities (all variants)
+        2. XSS vulnerabilities (reflected, stored, DOM-based)
+        3. Authentication/authorization flaws
+        4. Insecure cryptography (weak algorithms, hardcoded keys)
+        5. Command injection, path traversal, SSRF
+        6. Hardcoded secrets (API keys, passwords, tokens, credentials)
+        7. Insecure deserialization
+        8. CSRF vulnerabilities
+        9. Security misconfigurations
+        10. Known vulnerable dependencies (CVEs)
+
+        **CODE QUALITY ANALYSIS:**
+        1. Cyclomatic complexity (per function/method)
+        2. Cognitive complexity
+        3. Nesting depth
+        4. Function/method length
+        5. Code duplication
+        6. Dead code detection
+        7. Unused imports/variables
+        8. Magic numbers
+        9. Code smells (long methods, large classes, too many parameters)
+        10. Technical debt estimation
+
+        **ARCHITECTURE ANALYSIS:**
+        1. Directory structure and file organization
+        2. Programming languages and frameworks
+        3. Dependencies (internal and external)
+        4. Integration points between repos
+        5. Architectural patterns
+        6. Data flows between services
+        7. API catalog (internal and external)
+
+        **QUALITY INDICATORS:**
+        1. TODO/FIXME/BUGBUG/HACK comments
+        2. Test coverage (if available)
+        3. Documentation completeness
+        4. Naming conventions
+        5. Error handling patterns
+
         Nested repositories found:
         {{NESTED_REPOS_DETAIL}}
-      
-      output_format: "structured_analysis_per_repo"
+
+      output_format: "comprehensive_security_and_quality_analysis"
       
     - task_id: "T2"
-      name: "Reference Material Strategy"
+      name: "Industry-Standard Reference Material Strategy"
       description: |
-        Based on your deep scan, design a comprehensive set of reference materials
-        that would be valuable for:
+        Based on your comprehensive analysis, design reference materials that meet or exceed
+        **Semgrep** and **SonarQube** reporting standards.
+
+        Target audiences:
         - New team members ramping up
         - Experienced developers needing quick reference
         - Architects reviewing system design
-        - Security auditors
+        - Security auditors and compliance teams
         - Integration partners
-        
-        Recommended reference materials should include:
-        1. Architecture diagrams (mermaid format)
-        2. Service catalog with responsibilities
-        3. API documentation (internal/external)
-        4. Data flow diagrams
-        5. Dependency graphs
-        6. Integration point maps
-        7. LLM prompt catalog (if applicable)
-        8. TODO/FIXME/BUGBUG reports
-        9. Code quality metrics
-        10. Technology stack inventory
-        11. Deployment architecture
-        12. Security considerations
-        
+        - DevOps/SRE teams
+
+        **REQUIRED MATERIALS (Industry Standard):**
+
+        1. **Executive Summary**
+           - Overall security risk score (Critical/High/Medium/Low)
+           - Quality gate status (Pass/Fail)
+           - Key findings with ✅/⚠️/❌ indicators
+           - Top 10 issues by severity
+           - Trend analysis (if historical data available)
+
+        2. **Security Analysis Report**
+           - OWASP Top 10 vulnerability breakdown
+           - Severity distribution (Critical/High/Medium/Low/Info)
+           - Remediation priorities with effort estimates
+           - Code examples showing vulnerabilities
+           - Remediation guidance with secure code examples
+           - CVE analysis for dependencies
+
+        3. **Code Quality Report**
+           - Complexity metrics (cyclomatic, cognitive)
+           - Code smell breakdown by category
+           - Technical debt estimation (hours/days)
+           - Maintainability index
+           - Duplication analysis
+           - Test coverage metrics
+
+        4. **Architecture Documentation**
+           - Mermaid architecture diagrams
+           - Data flow diagrams
+           - Sequence diagrams for key workflows
+           - Service catalog with responsibilities
+           - Integration point maps
+           - Dependency graphs
+
+        5. **Visualization & Charts**
+           - Language distribution pie chart
+           - Issue trend charts
+           - Complexity heatmaps
+           - Security hotspot visualization
+           - Quality metrics over time
+
+        6. **Actionable Recommendations**
+           - High priority (fix immediately)
+           - Medium priority (fix this sprint)
+           - Low priority (technical debt backlog)
+           - Each with effort estimate and impact assessment
+
+        7. **API Documentation**
+           - Internal API catalog
+           - External API dependencies
+           - Authentication/authorization patterns
+           - Rate limiting and quotas
+
+        8. **Technology Stack Inventory**
+           - Languages and versions
+           - Frameworks and libraries
+           - Build tools and CI/CD
+           - Infrastructure dependencies
+
         For THIS specific codebase, determine which materials are most valuable.
-      
-      output_format: "reference_material_plan"
+
+      output_format: "industry_standard_reference_material_plan"
     
     - task_id: "T3"
       name: "Phase 2 Tool Design"
