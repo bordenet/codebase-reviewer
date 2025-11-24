@@ -9,11 +9,80 @@
 ## 🎯 Mission
 
 Generate a **self-contained Go tool** that:
-1. Analyzes the codebase and generates comprehensive documentation
-2. Runs **offline** without requiring AI/LLM access
-3. Tracks metrics and detects when it becomes obsolete
-4. **Re-emits this meta-prompt** when regeneration is needed
-5. Includes learnings from previous generations
+1. Analyzes the codebase with **industry-standard security and quality analysis**
+2. Generates comprehensive documentation with **visualizations and actionable insights**
+3. Runs **offline** without requiring AI/LLM access
+4. Tracks metrics and detects when it becomes obsolete
+5. **Re-emits this meta-prompt** when regeneration is needed
+6. Includes learnings from previous generations
+
+## 🏆 Quality Standards
+
+**Target**: Meet or exceed **Semgrep** and **SonarQube** industry standards.
+
+### Required Capabilities
+
+#### 1. **Security Analysis** (Critical)
+- Detect OWASP Top 10 vulnerabilities:
+  - SQL Injection (all variants)
+  - XSS (reflected, stored, DOM-based)
+  - Authentication/authorization flaws
+  - Insecure cryptography
+  - Command injection, path traversal, SSRF
+  - Hardcoded secrets (API keys, passwords, tokens)
+  - Insecure deserialization
+  - CSRF vulnerabilities
+- Minimum **50+ security rules** for B+ grade
+- Minimum **200+ security rules** for A- grade
+- Severity scoring: Critical/High/Medium/Low/Info
+- Remediation guidance with code examples
+
+#### 2. **Code Quality Analysis** (Critical)
+- Complexity metrics:
+  - Cyclomatic complexity
+  - Cognitive complexity
+  - Nesting depth
+  - Function/method length
+- Maintainability issues:
+  - Code duplication
+  - Dead code detection
+  - Unused imports/variables
+  - Magic numbers
+  - Code smells (long methods, large classes, too many parameters)
+- Technical debt calculation
+- Test coverage integration (if available)
+
+#### 3. **Visualization & Reporting** (Critical)
+- Executive summary with key findings (✅/⚠️/❌ indicators)
+- Mermaid diagrams:
+  - Architecture diagrams
+  - Data flow diagrams
+  - Sequence diagrams
+- Tables:
+  - Technology stack
+  - Quality metrics
+  - Security findings
+  - Comparison matrices
+- Charts:
+  - Language distribution
+  - Issue trends
+  - Complexity heatmaps
+- Prioritized recommendations (High/Medium/Low)
+- Grading system (A+/A/A-/B+/B/B-/C+/C/C-/D/F)
+
+#### 4. **Dependency Analysis** (Important)
+- Software Composition Analysis (SCA)
+- Known CVEs in dependencies
+- Outdated package detection
+- License compliance checking
+- Transitive dependency analysis
+
+#### 5. **Integration & Export** (Important)
+- JSON export for CI/CD integration
+- HTML reports with interactive elements
+- Markdown reports for documentation
+- GitHub Actions / GitLab CI examples
+- Quality gate support (pass/fail thresholds)
 
 ---
 
