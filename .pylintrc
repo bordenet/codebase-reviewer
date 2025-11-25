@@ -1,0 +1,110 @@
+[MASTER]
+# Use multiple processes to speed up Pylint
+jobs=1
+
+# Pickle collected data for later comparisons
+persistent=yes
+
+[MESSAGES CONTROL]
+# Disable specific warnings that are too strict or not relevant
+disable=
+    C0103,  # invalid-name (allow short variable names)
+    C0114,  # missing-module-docstring
+    C0115,  # missing-class-docstring
+    C0116,  # missing-function-docstring
+    C0301,  # line-too-long (handled by Black)
+    C0302,  # too-many-lines
+    C0415,  # import-outside-toplevel (sometimes necessary)
+    R0401,  # cyclic-import
+    R0801,  # duplicate-code
+    R0902,  # too-many-instance-attributes
+    R0903,  # too-few-public-methods
+    R0911,  # too-many-return-statements
+    R0912,  # too-many-branches
+    R0913,  # too-many-arguments
+    R0914,  # too-many-locals
+    R0915,  # too-many-statements
+    R1702,  # too-many-nested-blocks
+    R1705,  # no-else-return
+    R1718,  # consider-using-set-comprehension
+    R1724,  # no-else-continue
+    W0212,  # protected-access (sometimes necessary)
+    W0404,  # reimported
+    W0511,  # fixme (TODO comments)
+    W0611,  # unused-import (handled by isort/autoflake)
+    W0612,  # unused-variable
+    W0613,  # unused-argument
+    W0621,  # redefined-outer-name
+    W0622,  # redefined-builtin
+    W0107,  # unnecessary-pass
+    W0702,  # bare-except
+    W0707,  # raise-missing-from
+    W0718,  # broad-exception-caught
+    W0719,  # broad-exception-raised
+    W1203,  # logging-fstring-interpolation
+    W1309,  # f-string-without-interpolation
+    W1401,  # anomalous-backslash-in-string
+    W1404,  # implicit-str-concat
+    W1510,  # subprocess-run-check
+    W1514,  # unspecified-encoding
+    E1101,  # no-member (too many false positives)
+    C0207,  # use-maxsplit-arg
+
+[FORMAT]
+# Maximum number of characters on a single line (match Black's config)
+max-line-length=120
+
+# Maximum number of lines in a module
+max-module-lines=10000
+
+[BASIC]
+# Good variable names which should always be accepted
+good-names=i,j,k,ex,Run,_,id,db,pk,f,e
+
+[DESIGN]
+# Maximum number of arguments for function / method
+max-args=10
+
+# Maximum number of attributes for a class
+max-attributes=20
+
+# Maximum number of boolean expressions in an if statement
+max-bool-expr=5
+
+# Maximum number of branch for function / method body
+max-branches=20
+
+# Maximum number of locals for function / method body
+max-locals=50
+
+# Maximum number of parents for a class
+max-parents=7
+
+# Maximum number of public methods for a class
+max-public-methods=20
+
+# Maximum number of return / yield for function / method body
+max-returns=6
+
+# Maximum number of statements in function / method body
+max-statements=150
+
+# Minimum number of public methods for a class
+min-public-methods=0
+
+[SIMILARITIES]
+# Minimum lines number of a similarity
+min-similarity-lines=10
+
+[TYPECHECK]
+# List of members which are set dynamically and missed by pylint inference
+generated-members=
+
+[VARIABLES]
+# Tells whether we should check for unused import in __init__ files
+init-import=no
+
+[IMPORTS]
+# Allow wildcard imports from modules that define __all__
+allow-wildcard-with-all=yes
+
