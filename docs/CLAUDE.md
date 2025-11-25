@@ -259,3 +259,44 @@ This repository uses pre-commit hooks to enforce quality standards. All commits 
 4. **MyPy** - Type checking
 
 The hooks run automatically on `git commit`. If they fail, the commit is blocked.
+
+---
+
+## Communication Standards
+
+### Language and Tone
+
+**NEVER use hype, inflated, or naive language:**
+
+❌ **AVOID:**
+- "PRODUCTION-READY!"
+- "AMAZING!"
+- "PERFECT!"
+- "REVOLUTIONARY!"
+- "GAME-CHANGING!"
+- "INCREDIBLE!"
+- Over-inflated claims
+- Excessive exclamation marks
+- Marketing speak
+- Junior engineer enthusiasm
+
+✅ **USE:**
+- "Complete" or "Functional"
+- "Working" or "Tested"
+- "Validated" or "Verified"
+- Factual, measured language
+- Humble, professional tone
+- High standards without hype
+
+**Rationale**: Lofty, over-inflated language smacks of junior engineer naivety and low standards. Stay humble. Maintain a supremely high bar. Let the work speak for itself.
+
+**Examples:**
+
+❌ Bad: "This is PRODUCTION-READY and AMAZING!"
+✅ Good: "This is complete and has been tested against the requirements."
+
+❌ Bad: "PERFECT! Everything works FLAWLESSLY!"
+✅ Good: "All tests pass. The implementation meets the specified requirements."
+
+❌ Bad: "This REVOLUTIONARY feature will CHANGE EVERYTHING!"
+✅ Good: "This feature addresses the identified gap in functionality."
