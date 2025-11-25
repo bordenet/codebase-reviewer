@@ -58,7 +58,10 @@ class QualityChecker:
         todo_pattern = re.compile(r"#\s*(TODO|FIXME|HACK|XXX):\s*(.+)", re.IGNORECASE)
 
         for root, _, files in os.walk(repo_path):
-            if any(skip in root for skip in [".git", "node_modules", ".venv", "__pycache__"]):
+            if any(
+                skip in root
+                for skip in [".git", "node_modules", ".venv", "__pycache__"]
+            ):
                 continue
 
             for file in files:
@@ -106,7 +109,17 @@ class QualityChecker:
         ]
 
         for root, _, files in os.walk(repo_path):
-            if any(skip in root for skip in [".git", "node_modules", ".venv", "__pycache__", "tests", "test"]):
+            if any(
+                skip in root
+                for skip in [
+                    ".git",
+                    "node_modules",
+                    ".venv",
+                    "__pycache__",
+                    "tests",
+                    "test",
+                ]
+            ):
                 continue
 
             for file in files:
@@ -175,26 +188,36 @@ class QualityChecker:
 
         # Extension to language mapping
         ext_to_lang = {
-            '.py': 'python',
-            '.js': 'javascript',
-            '.ts': 'typescript',
-            '.tsx': 'typescript',
-            '.jsx': 'javascript',
-            '.java': 'java',
-            '.cs': 'csharp',
-            '.rb': 'ruby',
-            '.go': 'go',
-            '.php': 'php',
-            '.c': 'c',
-            '.cpp': 'cpp',
-            '.h': 'c',
-            '.hpp': 'cpp',
+            ".py": "python",
+            ".js": "javascript",
+            ".ts": "typescript",
+            ".tsx": "typescript",
+            ".jsx": "javascript",
+            ".java": "java",
+            ".cs": "csharp",
+            ".rb": "ruby",
+            ".go": "go",
+            ".php": "php",
+            ".c": "c",
+            ".cpp": "cpp",
+            ".h": "c",
+            ".hpp": "cpp",
         }
 
         # Walk the directory
         for root, _, files in os.walk(repo_path):
             # Skip common directories
-            if any(skip in root for skip in ['.git', 'node_modules', '.venv', '__pycache__', 'venv', 'env']):
+            if any(
+                skip in root
+                for skip in [
+                    ".git",
+                    "node_modules",
+                    ".venv",
+                    "__pycache__",
+                    "venv",
+                    "env",
+                ]
+            ):
                 continue
 
             for file in files:
@@ -216,7 +239,11 @@ class QualityChecker:
             Severity enum value
         """
         # Get the string value from the security Severity enum
-        severity_value = security_severity.value if hasattr(security_severity, 'value') else str(security_severity)
+        severity_value = (
+            security_severity.value
+            if hasattr(security_severity, "value")
+            else str(security_severity)
+        )
 
         severity_map = {
             "critical": Severity.CRITICAL,

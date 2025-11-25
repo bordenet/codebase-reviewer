@@ -4,4 +4,3 @@ from codebase_reviewer.quality.quality_engine import QualityEngine, QualityFindi
 from codebase_reviewer.quality.quality_loader import QualityRulesLoader
 
 __all__ = ["QualityEngine", "QualityFinding", "QualityRulesLoader"]
-

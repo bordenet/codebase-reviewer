@@ -96,8 +96,12 @@ class TuningRunner:
         print()
         print("📁 Next steps:")
         print(f"   1. Review test cases: {test_cases_path}")
-        print(f"   2. Run simulations and save results to: {session_dir}/simulation_results.json")
-        print(f"   3. Evaluate outputs and save to: {session_dir}/evaluation_results.json")
+        print(
+            f"   2. Run simulations and save results to: {session_dir}/simulation_results.json"
+        )
+        print(
+            f"   3. Evaluate outputs and save to: {session_dir}/evaluation_results.json"
+        )
         print(f"   4. Run: review-codebase tune evaluate {session_dir}")
         print()
 
@@ -174,7 +178,13 @@ class TuningRunner:
                 {
                     "test_id": "test_001",
                     "prompt_id": "0.1",
-                    "scores": {"clarity": 4, "completeness": 3, "specificity": 4, "actionability": 3, "relevance": 5},
+                    "scores": {
+                        "clarity": 4,
+                        "completeness": 3,
+                        "specificity": 4,
+                        "actionability": 3,
+                        "relevance": 5,
+                    },
                     "average_score": 3.8,
                     "feedback": {
                         "completeness": "Missing some architectural details",
@@ -216,4 +226,3 @@ This directory contains the results of a prompt tuning session.
 
         readme_path = session_dir / "README.md"
         readme_path.write_text(readme, encoding="utf-8")
-

@@ -130,7 +130,9 @@ class TestDataGenerator:
         self.test_cases = test_cases
         return test_cases
 
-    def save_test_cases(self, output_path: Path, project_name: str = "codebase_reviewer"):
+    def save_test_cases(
+        self, output_path: Path, project_name: str = "codebase_reviewer"
+    ):
         """Save test cases to JSON file.
 
         Args:
@@ -161,4 +163,3 @@ class TestDataGenerator:
 
         self.test_cases = [TestCase.from_dict(tc) for tc in data["test_cases"]]
         return self.test_cases
-
