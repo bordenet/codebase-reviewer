@@ -1,0 +1,225 @@
+# Best Practices Quality Rules
+# Rules for coding best practices and conventions
+
+rules:
+  # Error Handling
+  - id: empty-catch-block
+    name: Empty Catch Block
+    description: Exception caught but not handled
+    severity: high
+    pattern: "catch\\s*\\([^)]*\\)\\s*\\{\\s*\\}"
+    languages:
+      - javascript
+      - typescript
+      - java
+      - csharp
+    category: best-practices
+    remediation: Handle exceptions properly or at least log them
+    code_example: "catch (error) { logger.error('Error occurred', error); }"
+    effort_minutes: 30
+
+  - id: bare-except
+    name: Bare Except Clause
+    description: Catching all exceptions without specifying type
+    severity: medium
+    pattern: "except\\s*:"
+    languages:
+      - python
+    category: best-practices
+    remediation: Catch specific exceptions
+    code_example: "except ValueError as e: ..."
+    effort_minutes: 20
+
+  - id: swallowed-exception
+    name: Swallowed Exception
+    description: Exception caught but ignored
+    severity: high
+    pattern: "catch\\s*\\([^)]*\\)\\s*\\{\\s*//\\s*(ignore|skip|pass)"
+    languages:
+      - javascript
+      - typescript
+      - java
+    category: best-practices
+    remediation: Handle or log exceptions
+    code_example: "Log exception or rethrow if cannot handle"
+    effort_minutes: 30
+
+  # Resource Management
+  - id: unclosed-resource
+    name: Unclosed Resource
+    description: File or connection not properly closed
+    severity: high
+    pattern: "open\\([^)]*\\)(?!.*close\\(|.*with\\s)"
+    languages:
+      - python
+    category: best-practices
+    remediation: Use context managers (with statement)
+    code_example: "with open('file.txt') as f: ..."
+    effort_minutes: 15
+
+  - id: missing-finally
+    name: Missing Finally Block
+    description: Try block without finally for cleanup
+    severity: medium
+    pattern: "try\\s*\\{[^}]*\\}\\s*catch[^}]*\\}(?!\\s*finally)"
+    languages:
+      - javascript
+      - typescript
+      - java
+    category: best-practices
+    remediation: Add finally block for cleanup
+    code_example: "try {...} catch {...} finally { cleanup(); }"
+    effort_minutes: 20
+
+  # Null/Undefined Checks
+  - id: missing-null-check
+    name: Missing Null Check
+    description: Potential null/undefined access without check
+    severity: medium
+    pattern: "\\w+\\.\\w+(?!.*if\\s*\\(.*!==?\\s*null)"
+    languages:
+      - javascript
+      - typescript
+      - java
+    category: best-practices
+    remediation: Add null/undefined checks
+    code_example: "if (obj !== null && obj !== undefined) { obj.method(); }"
+    effort_minutes: 15
+
+  - id: optional-chaining-missing
+    name: Optional Chaining Not Used
+    description: Could use optional chaining for safer access
+    severity: low
+    pattern: "\\w+\\s*&&\\s*\\w+\\.\\w+"
+    languages:
+      - javascript
+      - typescript
+    category: best-practices
+    remediation: Use optional chaining operator
+    code_example: "obj?.property instead of obj && obj.property"
+    effort_minutes: 10
+
+  # Type Safety
+  - id: any-type-usage
+    name: Using 'any' Type
+    description: Using 'any' type defeats TypeScript's purpose
+    severity: medium
+    pattern: ":\\s*any\\b"
+    languages:
+      - typescript
+    category: best-practices
+    remediation: Use specific types instead of 'any'
+    code_example: "Use proper types or unknown instead of any"
+    effort_minutes: 30
+
+  - id: implicit-any
+    name: Implicit Any Type
+    description: Parameter without type annotation
+    severity: low
+    pattern: "function\\s+\\w+\\s*\\([^:)]*\\)\\s*\\{"
+    languages:
+      - typescript
+    category: best-practices
+    remediation: Add type annotations to parameters
+    code_example: "function foo(param: string): void"
+    effort_minutes: 10
+
+  # Async/Await
+  - id: missing-await
+    name: Missing Await Keyword
+    description: Async function call without await
+    severity: high
+    pattern: "\\w+Async\\((?!.*await)"
+    languages:
+      - javascript
+      - typescript
+      - python
+    category: best-practices
+    remediation: Add await keyword for async calls
+    code_example: "const result = await fetchDataAsync();"
+    effort_minutes: 15
+
+  - id: async-without-await
+    name: Async Function Without Await
+    description: Function marked async but doesn't use await
+    severity: low
+    pattern: "async\\s+(function|\\([^)]*\\)\\s*=>)\\s*\\{[^}]*\\}(?!.*await)"
+    languages:
+      - javascript
+      - typescript
+    category: best-practices
+    remediation: Remove async keyword if not using await
+    code_example: "Remove async if function doesn't await anything"
+    effort_minutes: 10
+
+  - id: promise-not-returned
+    name: Promise Not Returned
+    description: Promise created but not returned
+    severity: medium
+    pattern: "new\\s+Promise\\([^)]*\\)(?!.*return)"
+    languages:
+      - javascript
+      - typescript
+    category: best-practices
+    remediation: Return the promise
+    code_example: "return new Promise((resolve, reject) => {...})"
+    effort_minutes: 15
+
+  # Code Organization
+  - id: multiple-classes-per-file
+    name: Multiple Classes Per File
+    description: Multiple class definitions in single file
+    severity: low
+    pattern: "class\\s+\\w+[^}]*\\}.*class\\s+\\w+"
+    languages:
+      - java
+      - csharp
+    category: best-practices
+    remediation: One class per file
+    code_example: "Split classes into separate files"
+    effort_minutes: 30
+
+  - id: mixed-concerns
+    name: Mixed Concerns in File
+    description: File contains unrelated functionality
+    severity: medium
+    pattern: "(database|db).*http.*ui"
+    languages:
+      - python
+      - javascript
+      - typescript
+    category: best-practices
+    remediation: Separate concerns into different files
+    code_example: "Split into database, HTTP, and UI modules"
+    effort_minutes: 90
+
+  # Performance
+  - id: inefficient-loop
+    name: Inefficient Loop
+    description: Loop with repeated expensive operations
+    severity: medium
+    pattern: "for\\s*\\([^)]*\\)\\s*\\{[^}]*(\\w+\\.length|\\w+\\.size\\(\\))"
+    languages:
+      - javascript
+      - typescript
+      - java
+    category: best-practices
+    remediation: Cache length/size outside loop
+    code_example: "const len = arr.length; for (let i = 0; i < len; i++)"
+    effort_minutes: 15
+
+  - id: string-concatenation-loop
+    name: String Concatenation in Loop
+    description: Building strings with + in loop
+    severity: medium
+    pattern: "for\\s*\\([^)]*\\)\\s*\\{[^}]*\\w+\\s*\\+=\\s*[\"']"
+    languages:
+      - javascript
+      - typescript
+      - java
+      - python
+    category: best-practices
+    remediation: Use array join or StringBuilder
+    code_example: "Use array.join() or StringBuilder instead of +"
+    effort_minutes: 20
+

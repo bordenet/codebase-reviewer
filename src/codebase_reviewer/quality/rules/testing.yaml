@@ -1,0 +1,237 @@
+# Testing Quality Rules
+# Rules for test quality and coverage
+
+rules:
+  # Test Structure
+  - id: test-missing-assertion
+    name: Test Without Assertions
+    description: Test function without any assertions
+    severity: high
+    pattern: "(test|it|describe)\\s*\\([^)]*\\)\\s*\\{[^}]*\\}(?!.*assert|expect|should)"
+    languages:
+      - javascript
+      - typescript
+      - python
+    category: testing
+    remediation: Add assertions to verify behavior
+    code_example: "expect(result).toBe(expected);"
+    effort_minutes: 20
+
+  - id: test-too-long
+    name: Test Too Long
+    description: Test function exceeds recommended length
+    severity: medium
+    pattern: "(test|it)\\s*\\([^)]*\\)\\s*\\{[^}]{500,}\\}"
+    languages:
+      - javascript
+      - typescript
+      - python
+    category: testing
+    remediation: Break down into smaller, focused tests
+    code_example: "Split into multiple test cases"
+    effort_minutes: 45
+
+  - id: test-multiple-assertions
+    name: Test With Multiple Unrelated Assertions
+    description: Test checking multiple unrelated things
+    severity: medium
+    pattern: "(test|it)\\s*\\([^)]*\\)\\s*\\{[^}]*(expect|assert)[^}]*(expect|assert)[^}]*(expect|assert)"
+    languages:
+      - javascript
+      - typescript
+      - python
+    category: testing
+    remediation: One logical assertion per test
+    code_example: "Split into separate tests for each assertion"
+    effort_minutes: 30
+
+  # Test Coverage
+  - id: missing-test-file
+    name: Missing Test File
+    description: Source file without corresponding test file
+    severity: medium
+    pattern: "^(?!.*test|spec).*\\.(js|ts|py)$"
+    languages:
+      - javascript
+      - typescript
+      - python
+    category: testing
+    remediation: Create test file for this module
+    code_example: "Create corresponding .test.js or .spec.js file"
+    effort_minutes: 60
+
+  - id: untested-public-method
+    name: Untested Public Method
+    description: Public method without test coverage
+    severity: medium
+    pattern: "^\\s*(public|export)\\s+(function|def|class)\\s+\\w+(?!.*test)"
+    languages:
+      - javascript
+      - typescript
+      - python
+      - java
+    category: testing
+    remediation: Add tests for public methods
+    code_example: "Write unit tests for all public methods"
+    effort_minutes: 45
+
+  # Test Quality
+  - id: test-hardcoded-data
+    name: Test With Hardcoded Data
+    description: Test using hardcoded data instead of fixtures
+    severity: low
+    pattern: "(test|it)\\s*\\([^)]*\\)\\s*\\{[^}]*const\\s+\\w+\\s*=\\s*\\{[^}]{100,}\\}"
+    languages:
+      - javascript
+      - typescript
+    category: testing
+    remediation: Use test fixtures or factories
+    code_example: "Move test data to fixtures or use factory functions"
+    effort_minutes: 30
+
+  - id: test-sleep-usage
+    name: Test Using Sleep/Wait
+    description: Test using sleep instead of proper async handling
+    severity: medium
+    pattern: "(sleep|setTimeout|Thread\\.sleep)\\s*\\("
+    languages:
+      - javascript
+      - typescript
+      - python
+      - java
+    category: testing
+    remediation: Use proper async/await or mocking
+    code_example: "Use await or mock time-dependent code"
+    effort_minutes: 45
+
+  - id: test-console-log
+    name: Console.log in Tests
+    description: Using console.log for debugging in tests
+    severity: low
+    pattern: "console\\.log\\(|print\\(|System\\.out\\.println\\("
+    languages:
+      - javascript
+      - typescript
+      - python
+      - java
+    category: testing
+    remediation: Remove debug statements or use proper logging
+    code_example: "Remove console.log from tests"
+    effort_minutes: 5
+
+  # Mock/Stub Quality
+  - id: test-missing-mock-cleanup
+    name: Missing Mock Cleanup
+    description: Mocks not cleaned up after test
+    severity: medium
+    pattern: "jest\\.mock\\((?!.*afterEach|afterAll)"
+    languages:
+      - javascript
+      - typescript
+    category: testing
+    remediation: Clean up mocks in afterEach
+    code_example: "afterEach(() => { jest.clearAllMocks(); });"
+    effort_minutes: 15
+
+  - id: test-overmocking
+    name: Excessive Mocking
+    description: Test mocking too many dependencies
+    severity: medium
+    pattern: "(mock|stub|spy)\\([^)]*\\)[^}]*(mock|stub|spy)\\([^)]*\\)[^}]*(mock|stub|spy)\\([^)]*\\)[^}]*(mock|stub|spy)"
+    languages:
+      - javascript
+      - typescript
+      - python
+    category: testing
+    remediation: Reduce mocking, test real integrations
+    code_example: "Mock only external dependencies, test real code"
+    effort_minutes: 60
+
+  # Test Naming
+  - id: test-poor-naming
+    name: Poor Test Name
+    description: Test name doesn't describe what it tests
+    severity: low
+    pattern: "(test|it)\\s*\\([\"'](test|it|should)\\s*\\d+[\"']"
+    languages:
+      - javascript
+      - typescript
+      - python
+    category: testing
+    remediation: Use descriptive test names
+    code_example: "it('should return user when valid ID is provided')"
+    effort_minutes: 10
+
+  # Test Independence
+  - id: test-shared-state
+    name: Tests Sharing State
+    description: Tests depending on shared mutable state
+    severity: high
+    pattern: "let\\s+\\w+\\s*=\\s*[^;]*;[^}]*(test|it)\\s*\\([^)]*\\)\\s*\\{[^}]*\\w+\\s*="
+    languages:
+      - javascript
+      - typescript
+    category: testing
+    remediation: Initialize state in beforeEach
+    code_example: "Use beforeEach to set up fresh state for each test"
+    effort_minutes: 30
+
+  - id: test-order-dependency
+    name: Test Order Dependency
+    description: Tests that must run in specific order
+    severity: high
+    pattern: "(test|it)\\s*\\([^)]*\\)\\s*\\{[^}]*expect\\([^)]*\\)\\.toBe\\(\\d+\\)"
+    languages:
+      - javascript
+      - typescript
+    category: testing
+    remediation: Make tests independent
+    code_example: "Each test should set up its own state"
+    effort_minutes: 45
+
+  # Test Data
+  - id: test-production-data
+    name: Test Using Production Data
+    description: Test accessing production database or API
+    severity: critical
+    pattern: "(prod|production|live)\\.(database|db|api|endpoint)"
+    languages:
+      - javascript
+      - typescript
+      - python
+      - java
+    category: testing
+    remediation: Use test database and mock external APIs
+    code_example: "Use test environment and mock external services"
+    effort_minutes: 60
+
+  # Flaky Tests
+  - id: test-random-data
+    name: Test Using Random Data
+    description: Test using random data without seed
+    severity: medium
+    pattern: "(Math\\.random|random\\.randint|Random\\(\\))(?!.*seed)"
+    languages:
+      - javascript
+      - typescript
+      - python
+      - java
+    category: testing
+    remediation: Use seeded random or deterministic data
+    code_example: "Use faker with seed or deterministic test data"
+    effort_minutes: 20
+
+  - id: test-time-dependent
+    name: Time-Dependent Test
+    description: Test depending on current time
+    severity: medium
+    pattern: "(new\\s+Date\\(\\)|Date\\.now\\(\\)|datetime\\.now\\(\\))(?!.*mock)"
+    languages:
+      - javascript
+      - typescript
+      - python
+    category: testing
+    remediation: Mock time or use fixed timestamps
+    code_example: "Mock Date.now() or use fixed test timestamps"
+    effort_minutes: 30
+
