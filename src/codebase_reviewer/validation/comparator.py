@@ -116,7 +116,7 @@ class DocumentationComparator:
         """Extract sections from markdown content."""
         sections = {}
         current_section = None
-        current_content = []
+        current_content: List[str] = []
 
         for line in content.split("\n"):
             # Check for section headers (## or ###)

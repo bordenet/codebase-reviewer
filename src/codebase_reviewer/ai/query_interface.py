@@ -162,7 +162,7 @@ class QueryInterface:
 
         # Handle aggregate queries
         if pattern_info.get("aggregate") == "worst_file":
-            file_counts = {}
+            file_counts: Dict[str, int] = {}
             for issue in filtered:
                 file_path = issue.get("file_path", "unknown")
                 file_counts[file_path] = file_counts.get(file_path, 0) + 1

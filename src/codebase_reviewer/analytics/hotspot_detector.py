@@ -121,7 +121,7 @@ class HotspotDetector:
                 return {}
 
             # Count occurrences
-            churn = {}
+            churn: Dict[str, int] = {}
             for line in result.stdout.split("\n"):
                 line = line.strip()
                 if line:

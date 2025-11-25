@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 
 class ImpactLevel(Enum):
@@ -63,7 +63,9 @@ class RiskScorer:
             "low": 2.0,
         }
 
-    def score_issues(self, issues: List[dict], hotspots: List[dict] = None) -> List[RiskScore]:
+    def score_issues(
+        self, issues: List[dict], hotspots: Optional[List[dict]] = None
+    ) -> List[RiskScore]:
         """Score and prioritize issues.
 
         Args:

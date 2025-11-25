@@ -130,14 +130,16 @@ class PromptEvaluator:
             raise ValueError("No evaluation results to report")
 
         # Calculate aggregate statistics
-        all_scores: Dict[str, float] = {}
+        all_scores: Dict[str, List[float]] = {}
         for result in self.results:
             for criterion, score in result.scores.items():
                 if criterion not in all_scores:
                     all_scores[criterion] = []
                 all_scores[criterion].append(score)
 
-        avg_by_criterion = {criterion: sum(scores) / len(scores) for criterion, scores in all_scores.items()}
+        avg_by_criterion = {
+            criterion: sum(scores) / len(scores) for criterion, scores in all_scores.items()
+        }
         overall_avg = sum(avg_by_criterion.values()) / len(avg_by_criterion)
 
         # Generate markdown report
