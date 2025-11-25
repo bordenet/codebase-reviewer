@@ -1,7 +1,7 @@
 """Mermaid diagram generator for architecture visualization."""
 
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from ..models import CodeAnalysis, CodeStructure, DependencyInfo
 
@@ -36,8 +36,9 @@ class MermaidGenerator:
         # Add relationships based on dependencies
         if analysis.dependencies:
             for i, dep in enumerate(analysis.dependencies[:15]):  # Limit to 15 edges
-                source_idx = self._find_component_index(dep.source, components)
-                target_idx = self._find_component_index(dep.target, components)
+                # Use dependency name and source_file for relationships
+                source_idx = self._find_component_index(dep.source_file, components)
+                target_idx = self._find_component_index(dep.name, components)
                 if source_idx is not None and target_idx is not None and source_idx != target_idx:
                     lines.append(f"    C{source_idx} --> C{target_idx}")
 
@@ -152,7 +153,7 @@ class MermaidGenerator:
 
         return components if components else ["Main"]
 
-    def _find_component_index(self, name: str, components: List[str]) -> int:
+    def _find_component_index(self, name: str, components: List[str]) -> Optional[int]:
         """Find component index by name."""
         for i, comp in enumerate(components):
             if comp.lower() in name.lower() or name.lower() in comp.lower():

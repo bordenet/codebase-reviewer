@@ -87,7 +87,7 @@ class QualityEngine:
 
     def scan_file(self, file_path: Path, language: str) -> List[QualityFinding]:
         """Scan a single file for quality issues."""
-        findings = []
+        findings: List[QualityFinding] = []
 
         # Filter rules by language
         applicable_rules = [r for r in self.rules if language in r.languages and r.compiled_pattern]
@@ -101,7 +101,7 @@ class QualityEngine:
 
             for rule in applicable_rules:
                 for line_num, line in enumerate(lines, 1):
-                    if rule.compiled_pattern.search(line):
+                    if rule.compiled_pattern and rule.compiled_pattern.search(line):
                         findings.append(
                             QualityFinding(
                                 rule_id=rule.id,
@@ -141,14 +141,16 @@ class QualityEngine:
 
     def get_findings_by_severity(self) -> Dict[QualitySeverity, List[QualityFinding]]:
         """Group findings by severity level."""
-        grouped = {severity: [] for severity in QualitySeverity}
+        grouped: Dict[QualitySeverity, List[QualityFinding]] = {
+            severity: [] for severity in QualitySeverity
+        }
         for finding in self.findings:
             grouped[finding.severity].append(finding)
         return grouped
 
     def get_findings_by_category(self) -> Dict[str, List[QualityFinding]]:
         """Group findings by category."""
-        grouped = {}
+        grouped: Dict[str, List[QualityFinding]] = {}
         for finding in self.findings:
             if finding.category not in grouped:
                 grouped[finding.category] = []

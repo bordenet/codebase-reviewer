@@ -57,7 +57,7 @@ class RulesLoader:
         Returns:
             List of SecurityRule objects
         """
-        all_rules = []
+        all_rules: List[SecurityRule] = []
 
         if not directory.exists():
             logger.warning(f"Rules directory does not exist: {directory}")

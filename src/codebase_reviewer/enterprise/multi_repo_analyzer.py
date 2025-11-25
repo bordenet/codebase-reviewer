@@ -158,8 +158,8 @@ class MultiRepoAnalyzer:
             high_issues=high,
             medium_issues=medium,
             low_issues=low,
-            security_issues=len([i for i in issues if "SEC" in i.rule_id]),
-            quality_issues=len([i for i in issues if "QUAL" in i.rule_id]),
+            security_issues=len([i for i in issues if "SEC" in getattr(i, "rule_id", "")]),
+            quality_issues=len([i for i in issues if "QUAL" in getattr(i, "rule_id", "")]),
             total_files=0,  # TODO: Extract from analysis
             total_lines=0,  # TODO: Extract from analysis
             languages={},  # TODO: Extract from analysis

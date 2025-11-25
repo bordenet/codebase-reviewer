@@ -109,7 +109,7 @@ class RuleEngine:
         Returns:
             List of Finding objects
         """
-        findings = []
+        findings: List[Finding] = []
 
         # Filter rules applicable to this language
         applicable_rules = [
@@ -178,7 +178,7 @@ class RuleEngine:
 
     def get_findings_by_severity(self) -> Dict[Severity, List[Finding]]:
         """Group findings by severity level."""
-        grouped = {severity: [] for severity in Severity}
+        grouped: Dict[Severity, List[Finding]] = {severity: [] for severity in Severity}
         for finding in self.findings:
             grouped[finding.severity].append(finding)
         return grouped

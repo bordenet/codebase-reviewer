@@ -107,4 +107,3 @@ init-import=no
 [IMPORTS]
 # Allow wildcard imports from modules that define __all__
 allow-wildcard-with-all=yes
-

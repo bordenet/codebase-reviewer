@@ -109,8 +109,8 @@ class TestDataGenerator:
         for i, template in enumerate(templates[:num_cases]):
             test_case = TestCase(
                 test_id=f"test_{i+1:03d}",
-                name=template["name"],
-                description=template["description"],
+                name=str(template["name"]),
+                description=str(template["description"]),
                 inputs={
                     "repo_type": template["repo_type"],
                     "languages": template["languages"],
