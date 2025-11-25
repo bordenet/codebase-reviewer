@@ -1119,15 +1119,15 @@ def compliance(repo_path, framework, output):
 
         # Run security analysis first
         from codebase_reviewer.analyzers.quality_checker import QualityChecker
-        checker = QualityChecker(Path(repo_path))
-        analysis = checker.check_quality()
+        checker = QualityChecker()
+        issues = checker.analyze_quality(repo_path)
 
         # Generate compliance report
         reporter = ComplianceReporter()
         framework_enum = ComplianceFramework(framework.lower())
 
         analysis_results = {
-            'security_issues': analysis.quality_issues
+            'security_issues': issues
         }
 
         report = reporter.generate_report(framework_enum, analysis_results)
