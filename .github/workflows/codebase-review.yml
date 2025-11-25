@@ -39,8 +39,9 @@ jobs:
         id: analysis
         run: |
           # Run analysis and capture exit code (will be 2 if quality gate fails)
-          python -m codebase_reviewer.cli analyze . --output analysis-results.json --format json || true
-          python -m codebase_reviewer.cli analyze . --output results.sarif --format sarif || true
+          # The || true ensures the step doesn't fail even if analysis finds issues
+          python -m codebase_reviewer.cli analyze . --output analysis-results.json --format json || echo "Analysis completed with findings"
+          python -m codebase_reviewer.cli analyze . --output results.sarif --format sarif || echo "SARIF generation completed"
         continue-on-error: true
 
       - name: Upload SARIF to GitHub Security
@@ -61,6 +62,7 @@ jobs:
 
       - name: Check quality gate
         if: hashFiles('analysis-results.json') != ''
+        continue-on-error: false
         run: |
           python -c "
           import json
@@ -81,7 +83,7 @@ jobs:
           print(f'High severity issues: {high}')
 
           # Quality gate: fail if critical issues increase significantly
-          # Current baseline: 351 (mostly false positives in setup.py from DES detection)
+          # Current baseline: 352 (mostly false positives in setup.py from DES detection)
           if critical > 400:
               print('❌ Quality gate failed: Critical issues increased beyond baseline')
               sys.exit(1)
