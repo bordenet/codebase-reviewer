@@ -5,6 +5,93 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-11-25
+
+### 🚀 Major Feature: v2.0 Prompt Architecture
+
+This release introduces a completely redesigned prompt architecture with enhanced schemas, security controls, and self-evolution capabilities.
+
+### Added
+
+- **v2.0 Prompt Templates**:
+  - Phase 1 prompt template with structured output schemas
+  - Phase 2 meta-prompt template with self-evolution logic
+  - Explicit OWASP/CWE mapping requirements
+  - Confidence levels (High/Medium/Low) for all findings
+  - "Not Enough Information" handling to prevent hallucination
+  - Three scan modes: review, deep_scan, scorch
+
+- **Structured Output Schemas**:
+  - JSON schemas for all 6 Phase 1 tasks
+  - Comprehensive security analysis schema (T1)
+  - Materials plan schema (T2)
+  - Tool specifications schema (T3)
+  - Validation plan schema (T5)
+  - Security validation report schema (T6)
+  - Metrics structure schema
+  - Learning capture schema
+
+- **Obsolescence Detection**:
+  - Multi-variate heuristics (files changed %, new languages, coverage drops)
+  - Checksum diff on critical directories
+  - Semantic API change detection
+  - False positive spike detection
+  - Regeneration frequency cooldown (7 days default)
+  - Fallback strategies for suppression
+
+- **Comprehensive Metrics Tracking**:
+  - 8 dimensions: coverage, changes, quality, performance, staleness, patterns, tests, user feedback
+  - JSON persistence to /tmp/
+  - Metrics comparison for obsolescence detection
+
+- **Learning Capture Framework**:
+  - Structured learning entries with impact classification
+  - Actions taken and validation tracking
+  - Pending issues documentation
+  - Continuous improvement across tool generations
+
+- **Enhanced Security Controls**:
+  - Security validation script (`scripts/validate_security.sh`)
+  - Pre-commit hook to block proprietary references
+  - CallBox-specific .gitignore patterns
+  - Forced /tmp/ output for all analysis results
+  - IP protection validation in CI/CD
+
+- **New CLI Command**:
+  - `analyze-v2`: Run Phase 1 analysis with v2.0 architecture
+  - Scan mode selection (review/deep_scan/scorch)
+  - Pattern exclusion/inclusion
+  - Language filtering
+  - Automatic metrics initialization
+
+- **Core Modules**:
+  - `prompts/v2_loader.py`: v2.0 template loader
+  - `prompts/generator_v2.py`: Phase 1 prompt generator
+  - `models_v2.py`: v2.0 data models
+  - `validation/schema_validator.py`: JSON schema validation
+  - `obsolescence/detector.py`: Obsolescence detection
+  - `metrics/tracker.py`: Metrics tracking
+
+### Changed
+
+- Phase 1 prompt template upgraded to v2.0 with explicit schemas
+- Phase 2 meta-prompt upgraded to v2.0 with enhanced obsolescence detection
+- .gitignore enhanced with CallBox-specific patterns
+- Pre-commit hooks updated to allow security infrastructure files
+
+### Security
+
+- All analysis outputs forced to /tmp/ directory
+- Pre-commit hooks block any CallBox references in code
+- Security validation script for comprehensive IP protection
+- Successfully tested on CallBox codebase (113,300 files) with zero leaks
+
+### Documentation
+
+- Added `docs/V2_ARCHITECTURE.md` with complete v2.0 documentation
+- Updated README with v2.0 usage examples
+- Added migration guide from v1.0 to v2.0
+
 ## [2.0.0] - 2025-11-25
 
 ### 🎉 Major Release: A+ Grade Achievement
