@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Optional
 
 class RiskLevel(Enum):
     """Overall security risk level."""
+
     CRITICAL = "Critical"
     HIGH = "High"
     MEDIUM = "Medium"
@@ -15,12 +16,14 @@ class RiskLevel(Enum):
 
 class QualityGateStatus(Enum):
     """Quality gate pass/fail status."""
+
     PASS = "Pass"
     FAIL = "Fail"
 
 
 class FindingCategory(Enum):
     """Category of finding."""
+
     SECURITY = "security"
     QUALITY = "quality"
     ARCHITECTURE = "architecture"
@@ -28,6 +31,7 @@ class FindingCategory(Enum):
 
 class Severity(Enum):
     """Severity level for findings."""
+
     CRITICAL = "Critical"
     HIGH = "High"
     MEDIUM = "Medium"
@@ -37,6 +41,7 @@ class Severity(Enum):
 
 class Confidence(Enum):
     """Confidence level for findings."""
+
     HIGH = "High"
     MEDIUM = "Medium"
     LOW = "Low"
@@ -44,6 +49,7 @@ class Confidence(Enum):
 
 class CheckStatus(Enum):
     """Status of a security check."""
+
     PASS = "Pass"
     FAIL = "Fail"
     WARNING = "Warning"
@@ -52,7 +58,7 @@ class CheckStatus(Enum):
 @dataclass
 class Finding:
     """A security, quality, or architecture finding."""
-    
+
     id: str
     category: FindingCategory
     severity: Severity
@@ -68,7 +74,7 @@ class Finding:
 @dataclass
 class AnalysisSummary:
     """Summary of comprehensive analysis (T1 output)."""
-    
+
     overall_security_risk: RiskLevel
     quality_gate_status: QualityGateStatus
     key_findings: List[Finding] = field(default_factory=list)
@@ -77,7 +83,7 @@ class AnalysisSummary:
 @dataclass
 class ComprehensiveAnalysis:
     """Complete T1 output schema."""
-    
+
     summary: AnalysisSummary
     architecture: Dict[str, Any] = field(default_factory=dict)
     metrics: Dict[str, Any] = field(default_factory=dict)
@@ -88,7 +94,7 @@ class ComprehensiveAnalysis:
 @dataclass
 class MaterialPlan:
     """A single material to be generated (T2 output)."""
-    
+
     name: str
     description: str
     importance: str  # Critical/High/Medium/Low
@@ -99,14 +105,14 @@ class MaterialPlan:
 @dataclass
 class MaterialsPlan:
     """Complete T2 output schema."""
-    
+
     materials: List[MaterialPlan] = field(default_factory=list)
 
 
 @dataclass
 class CLIFlag:
     """CLI flag specification."""
-    
+
     flag: str
     description: str
 
@@ -114,7 +120,7 @@ class CLIFlag:
 @dataclass
 class ObsolescenceChecks:
     """Self-obsolescence detection configuration."""
-    
+
     file_existence: List[str] = field(default_factory=list)
     git_diff_threshold: int = 30
     structural_changes: str = ""
@@ -123,7 +129,7 @@ class ObsolescenceChecks:
 @dataclass
 class ToolSpecification:
     """Specification for a Phase 2 tool (T3 output)."""
-    
+
     name: str
     description: str
     cli_flags: List[CLIFlag] = field(default_factory=list)
@@ -136,14 +142,14 @@ class ToolSpecification:
 @dataclass
 class ToolsSpecification:
     """Complete T3 output schema."""
-    
+
     tools: List[ToolSpecification] = field(default_factory=list)
 
 
 @dataclass
 class ValidationCheck:
     """A validation check specification."""
-    
+
     type: str  # schema_validation, consistency_check, etc.
     details: Optional[str] = None
     schema_ref: Optional[str] = None
@@ -152,7 +158,7 @@ class ValidationCheck:
 @dataclass
 class OutputSpec:
     """Output file specification."""
-    
+
     path: str
     format: str  # md, json, svg, mermaid
 
@@ -192,6 +198,7 @@ class SecurityValidationReport:
 
 
 # ========== Metrics Tracking Models (Phase 2) ==========
+
 
 @dataclass
 class CoverageMetrics:
@@ -280,6 +287,7 @@ class Metrics:
 
 # ========== Learning Capture Models ==========
 
+
 @dataclass
 class LearningEntry:
     """A single learning entry from tool execution."""
@@ -297,4 +305,3 @@ class LearningCapture:
     """Collection of learnings from tool execution."""
 
     entries: List[LearningEntry] = field(default_factory=list)
-

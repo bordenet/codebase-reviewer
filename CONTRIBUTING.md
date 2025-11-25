@@ -116,11 +116,11 @@ git push origin feature/your-feature-name
 ```python
 def analyze_code(path: str, options: Dict[str, Any]) -> AnalysisResult:
     """Analyze code at the given path.
-    
+
     Args:
         path: Path to code directory
         options: Analysis options
-        
+
     Returns:
         Analysis results
     """
@@ -280,4 +280,3 @@ By contributing, you agree that your contributions will be licensed under the MI
 ---
 
 Thank you for contributing! 🎉
-
