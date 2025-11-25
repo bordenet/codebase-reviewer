@@ -896,4 +896,3 @@ rules:
     effort_minutes: 30
     remediation: Use CBC or GCM mode instead of ECB
     code_example: Use AES with CBC or GCM mode
-

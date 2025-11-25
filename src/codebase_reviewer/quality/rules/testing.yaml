@@ -234,4 +234,3 @@ rules:
     remediation: Mock time or use fixed timestamps
     code_example: "Mock Date.now() or use fixed test timestamps"
     effort_minutes: 30
-

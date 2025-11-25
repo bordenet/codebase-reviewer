@@ -63,25 +63,25 @@ jobs:
           python -c "
           import json
           import sys
-          
+
           with open('analysis-results.json') as f:
               data = json.load(f)
-          
+
           critical = data['summary']['critical_issues']
           high = data['summary']['high_issues']
-          
+
           print(f'Critical issues: {critical}')
           print(f'High severity issues: {high}')
-          
+
           # Quality gate: fail if critical issues found
           if critical > 0:
               print('❌ Quality gate failed: Critical issues found')
               sys.exit(1)
-          
+
           # Warning if high issues found
           if high > 5:
               print('⚠️  Warning: More than 5 high severity issues found')
-          
+
           print('✅ Quality gate passed')
           "
 
@@ -92,20 +92,20 @@ jobs:
           script: |
             const fs = require('fs');
             const data = JSON.parse(fs.readFileSync('analysis-results.json', 'utf8'));
-            
+
             const body = `## 🔍 Code Analysis Results
-            
+
             **Summary:**
             - 📁 Total Files: ${data.summary.total_files}
             - 🔴 Critical Issues: ${data.summary.critical_issues}
             - 🟠 High Issues: ${data.summary.high_issues}
             - 🟡 Total Issues: ${data.summary.total_issues}
-            
+
             ${data.summary.critical_issues > 0 ? '❌ Quality gate failed: Critical issues found' : '✅ Quality gate passed'}
-            
+
             See the [Security tab](${context.payload.repository.html_url}/security/code-scanning) for detailed findings.
             `;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -120,4 +120,3 @@ jobs:
           file: ./coverage.xml
           flags: unittests
           name: codecov-umbrella
-

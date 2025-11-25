@@ -1,42 +1,37 @@
 """Command-line interface for Codebase Reviewer."""
 
 import json
+import os
 import sys
 from pathlib import Path
-import os
 
 import click
 
-from codebase_reviewer.orchestrator import AnalysisOrchestrator
-from codebase_reviewer.prompt_generator import PromptGenerator
-from codebase_reviewer.simulation import LLMSimulator
-from codebase_reviewer.tuning.runner import TuningRunner
+from codebase_reviewer.ai.fix_generator import FixGenerator
+from codebase_reviewer.ai.query_interface import QueryInterface
+from codebase_reviewer.analytics.hotspot_detector import HotspotDetector
+from codebase_reviewer.analytics.risk_scorer import RiskScorer
+from codebase_reviewer.analytics.trend_analyzer import MetricSnapshot, TrendAnalyzer
+from codebase_reviewer.analyzers.code import CodeAnalyzer
+from codebase_reviewer.compliance.compliance_reporter import ComplianceFramework, ComplianceReporter
+from codebase_reviewer.enterprise.dashboard_generator import DashboardGenerator
+from codebase_reviewer.enterprise.multi_repo_analyzer import MultiRepoAnalyzer
+from codebase_reviewer.exporters.html_exporter import HTMLExporter
+from codebase_reviewer.exporters.interactive_html_exporter import InteractiveHTMLExporter
+from codebase_reviewer.exporters.json_exporter import JSONExporter
+from codebase_reviewer.exporters.sarif_exporter import SARIFExporter
+from codebase_reviewer.interactive.workflow import InteractiveWorkflow
 from codebase_reviewer.llm.client import create_client
+from codebase_reviewer.metaprompt.generator import MetaPromptGenerator
+from codebase_reviewer.metrics.productivity_metrics import ProductivityTracker
+from codebase_reviewer.metrics.roi_calculator import ROICalculator, ROIMetrics
+from codebase_reviewer.orchestrator import AnalysisOrchestrator
 from codebase_reviewer.phase2.generator import Phase2Generator
 from codebase_reviewer.phase2.runner import Phase2Runner
 from codebase_reviewer.phase2.validator import Phase2Validator
-from codebase_reviewer.interactive.workflow import InteractiveWorkflow
-from codebase_reviewer.metaprompt.generator import MetaPromptGenerator
-from codebase_reviewer.analyzers.code import CodeAnalyzer
-from codebase_reviewer.exporters.json_exporter import JSONExporter
-from codebase_reviewer.exporters.html_exporter import HTMLExporter
-from codebase_reviewer.exporters.sarif_exporter import SARIFExporter
-from codebase_reviewer.exporters.interactive_html_exporter import (
-    InteractiveHTMLExporter,
-)
-from codebase_reviewer.analytics.trend_analyzer import TrendAnalyzer, MetricSnapshot
-from codebase_reviewer.analytics.hotspot_detector import HotspotDetector
-from codebase_reviewer.analytics.risk_scorer import RiskScorer
-from codebase_reviewer.enterprise.multi_repo_analyzer import MultiRepoAnalyzer
-from codebase_reviewer.enterprise.dashboard_generator import DashboardGenerator
-from codebase_reviewer.ai.fix_generator import FixGenerator
-from codebase_reviewer.ai.query_interface import QueryInterface
-from codebase_reviewer.compliance.compliance_reporter import (
-    ComplianceReporter,
-    ComplianceFramework,
-)
-from codebase_reviewer.metrics.productivity_metrics import ProductivityTracker
-from codebase_reviewer.metrics.roi_calculator import ROICalculator, ROIMetrics
+from codebase_reviewer.prompt_generator import PromptGenerator
+from codebase_reviewer.simulation import LLMSimulator
+from codebase_reviewer.tuning.runner import TuningRunner
 
 
 @click.group()
@@ -74,9 +69,7 @@ def cli():
     help="Workflow to use (default, reviewer_criteria, etc.)",
 )
 @click.option("--quiet", "-q", is_flag=True, help="Suppress progress output")
-def review(
-    repo_path, output, prompts_output, format, workflow, quiet
-):  # pylint: disable=redefined-builtin
+def review(repo_path, output, prompts_output, format, workflow, quiet):  # pylint: disable=redefined-builtin
     """Analyze a codebase and generate AI review prompts."""
     try:
         # Resolve absolute path
@@ -98,9 +91,7 @@ def review(
             if not quiet:
                 click.echo(f"  {message}")
 
-        analysis = orchestrator.run_full_analysis(
-            repo_path, progress_callback=progress_callback, workflow=workflow
-        )
+        analysis = orchestrator.run_full_analysis(repo_path, progress_callback=progress_callback, workflow=workflow)
 
         # Save analysis results if requested
         if output:
@@ -109,68 +100,36 @@ def review(
                 "timestamp": analysis.timestamp.isoformat(),
                 "duration_seconds": analysis.analysis_duration_seconds,
                 "documentation": {
-                    "total_docs": len(analysis.documentation.discovered_docs)
-                    if analysis.documentation
-                    else 0,
-                    "completeness_score": (
-                        analysis.documentation.completeness_score
-                        if analysis.documentation
-                        else 0
-                    ),
-                    "claims_count": (
-                        len(analysis.documentation.claims)
-                        if analysis.documentation
-                        else 0
-                    ),
+                    "total_docs": len(analysis.documentation.discovered_docs) if analysis.documentation else 0,
+                    "completeness_score": (analysis.documentation.completeness_score if analysis.documentation else 0),
+                    "claims_count": (len(analysis.documentation.claims) if analysis.documentation else 0),
                 },
                 "code": {
                     "languages": [
                         {"name": l.name, "percentage": l.percentage}
                         for l in (
-                            analysis.code.structure.languages
-                            if analysis.code and analysis.code.structure
-                            else []
+                            analysis.code.structure.languages if analysis.code and analysis.code.structure else []
                         )
                     ],
                     "frameworks": [
                         f.name
                         for f in (
-                            analysis.code.structure.frameworks
-                            if analysis.code and analysis.code.structure
-                            else []
+                            analysis.code.structure.frameworks if analysis.code and analysis.code.structure else []
                         )
                     ],
-                    "quality_issues_count": (
-                        len(analysis.code.quality_issues) if analysis.code else 0
-                    ),
+                    "quality_issues_count": (len(analysis.code.quality_issues) if analysis.code else 0),
                 },
                 "validation": {
-                    "drift_severity": (
-                        analysis.validation.drift_severity.value
-                        if analysis.validation
-                        else "unknown"
-                    ),
+                    "drift_severity": (analysis.validation.drift_severity.value if analysis.validation else "unknown"),
                     "architecture_drift_count": (
-                        len(analysis.validation.architecture_drift)
-                        if analysis.validation
-                        else 0
+                        len(analysis.validation.architecture_drift) if analysis.validation else 0
                     ),
-                    "setup_drift_count": (
-                        len(analysis.validation.setup_drift)
-                        if analysis.validation
-                        else 0
-                    ),
+                    "setup_drift_count": (len(analysis.validation.setup_drift) if analysis.validation else 0),
                 },
                 "prompts": {
-                    "total_count": (
-                        len(analysis.prompts.all_prompts()) if analysis.prompts else 0
-                    ),
+                    "total_count": (len(analysis.prompts.all_prompts()) if analysis.prompts else 0),
                     "by_phase": {
-                        f"phase{i}": (
-                            len(getattr(analysis.prompts, f"phase{i}"))
-                            if analysis.prompts
-                            else 0
-                        )
+                        f"phase{i}": (len(getattr(analysis.prompts, f"phase{i}")) if analysis.prompts else 0)
                         for i in range(5)
                     },
                 },
@@ -180,9 +139,7 @@ def review(
                 json.dump(output_data, f, indent=2)
 
             if not quiet:
-                click.echo(
-                    click.style(f"\n✓ Analysis results saved to: {output}", fg="green")
-                )
+                click.echo(click.style(f"\n✓ Analysis results saved to: {output}", fg="green"))
 
         # Save prompts
         if analysis.prompts:
@@ -193,34 +150,22 @@ def review(
                 prompts_output = "prompts.md" if format != "json" else "prompts.json"
 
             if format in ["markdown", "both"]:
-                md_output = (
-                    prompts_output
-                    if prompts_output.endswith(".md")
-                    else f"{prompts_output}.md"
-                )
+                md_output = prompts_output if prompts_output.endswith(".md") else f"{prompts_output}.md"
                 markdown_content = prompt_gen.export_prompts_markdown(analysis.prompts)
                 with open(md_output, "w", encoding="utf-8") as f:
                     f.write(markdown_content)
 
                 if not quiet:
-                    click.echo(
-                        click.style(f"✓ Prompts saved to: {md_output}", fg="green")
-                    )
+                    click.echo(click.style(f"✓ Prompts saved to: {md_output}", fg="green"))
 
             if format in ["json", "both"]:
-                json_output = (
-                    prompts_output
-                    if prompts_output.endswith(".json")
-                    else f"{prompts_output}.json"
-                )
+                json_output = prompts_output if prompts_output.endswith(".json") else f"{prompts_output}.json"
                 json_content = prompt_gen.export_prompts_json(analysis.prompts)
                 with open(json_output, "w", encoding="utf-8") as f:
                     f.write(json_content)
 
                 if not quiet:
-                    click.echo(
-                        click.style(f"✓ Prompts saved to: {json_output}", fg="green")
-                    )
+                    click.echo(click.style(f"✓ Prompts saved to: {json_output}", fg="green"))
 
         # Display summary
         if not quiet:
@@ -260,9 +205,7 @@ def display_summary(analysis):
             click.echo(f"  {lang.name}: {lang.percentage:.1f}%")
 
         if analysis.code.structure.frameworks:
-            click.echo(
-                f"  Frameworks: {', '.join(f.name for f in analysis.code.structure.frameworks)}"
-            )
+            click.echo(f"  Frameworks: {', '.join(f.name for f in analysis.code.structure.frameworks)}")
 
         if analysis.code.quality_issues:
             click.echo(f"  Quality issues: {len(analysis.code.quality_issues)}")
@@ -270,9 +213,7 @@ def display_summary(analysis):
     # Validation
     if analysis.validation:
         click.echo(click.style("\nValidation:", fg="yellow", bold=True))
-        click.echo(
-            f"  Drift severity: {analysis.validation.drift_severity.value.upper()}"
-        )
+        click.echo(f"  Drift severity: {analysis.validation.drift_severity.value.upper()}")
         drift_total = (
             len(analysis.validation.architecture_drift)
             + len(analysis.validation.setup_drift)
@@ -281,9 +222,7 @@ def display_summary(analysis):
         click.echo(f"  Drift issues: {drift_total}")
 
         if analysis.validation.undocumented_features:
-            click.echo(
-                f"  Undocumented features: {len(analysis.validation.undocumented_features)}"
-            )
+            click.echo(f"  Undocumented features: {len(analysis.validation.undocumented_features)}")
 
     # Prompts
     if analysis.prompts:
@@ -323,11 +262,7 @@ def prompts(repo_path, phase):
     try:
         repo_path = str(Path(repo_path).resolve())
 
-        click.echo(
-            click.style(
-                f"\nGenerating prompts for: {repo_path}\n", fg="cyan", bold=True
-            )
-        )
+        click.echo(click.style(f"\nGenerating prompts for: {repo_path}\n", fg="cyan", bold=True))
 
         orchestrator = AnalysisOrchestrator()
         analysis = orchestrator.run_full_analysis(repo_path)
@@ -354,18 +289,14 @@ def prompts(repo_path, phase):
 
             click.echo(
                 click.style(
-                    f"\n{'=' * 60}\n"
-                    f"PHASE {phase_num}: {phase_names[phase_num]}\n"
-                    f"{'=' * 60}\n",
+                    f"\n{'=' * 60}\n" f"PHASE {phase_num}: {phase_names[phase_num]}\n" f"{'=' * 60}\n",
                     fg="cyan",
                     bold=True,
                 )
             )
 
             for prompt in phase_prompts:
-                click.echo(
-                    click.style(f"\n[{prompt.prompt_id}] {prompt.title}", bold=True)
-                )
+                click.echo(click.style(f"\n[{prompt.prompt_id}] {prompt.title}", bold=True))
                 click.echo(f"\nObjective: {prompt.objective}\n")
                 click.echo("Tasks:")
                 for task in prompt.tasks:
@@ -449,9 +380,7 @@ def simulate(repo_path, workflow, output_dir):
         click.echo("\nNext steps:")
         click.echo("1. Review the generated prompts in the markdown report")
         click.echo("2. Identify prompts that need improvement")
-        click.echo(
-            "3. Update the prompt templates in src/codebase_reviewer/prompts/templates/"
-        )
+        click.echo("3. Update the prompt templates in src/codebase_reviewer/prompts/templates/")
         click.echo("4. Re-run the simulation to verify improvements")
 
     except Exception as e:  # pylint: disable=broad-except
@@ -617,9 +546,7 @@ def evolve(
         click.echo("  🚀 CODEBASE REVIEWER - PHASE 2 TOOL GENERATION")
         click.echo("=" * 70)
         click.echo(f"Codebase: {codebase_path}")
-        click.echo(
-            f"Mode: {'Interactive (AI Assistant)' if interactive else f'API ({llm_provider})'}"
-        )
+        click.echo(f"Mode: {'Interactive (AI Assistant)' if interactive else f'API ({llm_provider})'}")
         click.echo(f"Output: {output_base}")
         click.echo(f"Generation: {generation}")
         click.echo("")
@@ -643,18 +570,14 @@ def evolve(
             # Run Go tool to generate prompt
             import subprocess
 
-            result = subprocess.run(
-                [str(go_tool), str(codebase_path)], capture_output=True, text=True
-            )
+            result = subprocess.run([str(go_tool), str(codebase_path)], capture_output=True, text=True)
 
             if result.returncode != 0:
                 click.echo(f"❌ Error generating Phase 1 prompt: {result.stderr}")
                 sys.exit(1)
 
             # Read generated prompt
-            phase1_file = Path(
-                f"/tmp/codebase-reviewer/{codebase_name}/phase1-llm-prompt.md"
-            )
+            phase1_file = Path(f"/tmp/codebase-reviewer/{codebase_name}/phase1-llm-prompt.md")
 
             if not phase1_file.exists():
                 click.echo(f"❌ Error: Prompt not generated at {phase1_file}")
@@ -665,14 +588,10 @@ def evolve(
         # Step 2: Generate meta-prompt
         click.echo(f"\n📝 Generating meta-prompt for AI assistant...")
         meta_gen = MetaPromptGenerator()
-        meta_prompt = meta_gen.generate(
-            phase1_file, codebase_name, generation=generation
-        )
+        meta_prompt = meta_gen.generate(phase1_file, codebase_name, generation=generation)
 
         # Save meta-prompt
-        meta_prompt_file = Path(
-            f"/tmp/codebase-reviewer/{codebase_name}/meta-prompt-gen{generation}.md"
-        )
+        meta_prompt_file = Path(f"/tmp/codebase-reviewer/{codebase_name}/meta-prompt-gen{generation}.md")
         meta_prompt_file.parent.mkdir(parents=True, exist_ok=True)
         meta_prompt_file.write_text(meta_prompt)
         click.echo(f"✅ Meta-prompt generated: {meta_prompt_file}")
@@ -703,14 +622,10 @@ def evolve(
             llm_client = create_client(llm_provider, api_key or "", model)
             click.echo(f"   Model: {llm_client.model}")
 
-            response = llm_client.send_prompt(
-                meta_prompt, max_tokens=16000, temperature=0.3
-            )
+            response = llm_client.send_prompt(meta_prompt, max_tokens=16000, temperature=0.3)
 
             # Save response
-            ai_response_path = Path(
-                f"/tmp/codebase-reviewer/{codebase_name}/ai-response-gen{generation}.md"
-            )
+            ai_response_path = Path(f"/tmp/codebase-reviewer/{codebase_name}/ai-response-gen{generation}.md")
             ai_response_path.write_text(response.content)
             click.echo(f"✅ AI response received: {ai_response_path}")
             click.echo(f"   Cost: ${response.cost_usd:.4f}")
@@ -724,13 +639,11 @@ def evolve(
         ai_response_content = ai_response_path.read_text()
 
         # Create a mock LLM response for the generator
-        from codebase_reviewer.llm.client import LLMResponse, LLMProvider
+        from codebase_reviewer.llm.client import LLMProvider, LLMResponse
 
         mock_response = LLMResponse(
             content=ai_response_content,
-            provider=LLMProvider.ANTHROPIC
-            if not interactive
-            else LLMProvider.ANTHROPIC,
+            provider=LLMProvider.ANTHROPIC if not interactive else LLMProvider.ANTHROPIC,
             model="interactive" if interactive else llm_client.model,
             tokens_used=0,
             cost_usd=0.0,
@@ -744,9 +657,7 @@ def evolve(
 
         if not source_files:
             click.echo("❌ Error: No Go source files found in AI response")
-            click.echo(
-                "   Make sure the AI response contains Go code blocks with file paths"
-            )
+            click.echo("   Make sure the AI response contains Go code blocks with file paths")
             sys.exit(1)
 
         # Create Phase2Tools object
@@ -784,9 +695,7 @@ def evolve(
         # Step 5: Validate tools
         click.echo(f"\n✅ Validating Phase 2 tools...")
         validator = Phase2Validator()
-        report = validator.validate_tools(
-            phase2_tools.tools_dir, phase2_tools.binary_path
-        )
+        report = validator.validate_tools(phase2_tools.tools_dir, phase2_tools.binary_path)
         validator.print_report(report)
 
         if not report.is_valid:
@@ -797,9 +706,7 @@ def evolve(
         if auto_run:
             click.echo(f"\n🚀 Running Phase 2 tools to generate initial docs...")
             runner = Phase2Runner()
-            run_result = runner.run_tools(
-                phase2_tools.binary_path, codebase_path, verbose=True
-            )
+            run_result = runner.run_tools(phase2_tools.binary_path, codebase_path, verbose=True)
 
             if run_result.success:
                 click.echo(f"\n✅ Documentation generated: {run_result.output_dir}")
@@ -809,9 +716,7 @@ def evolve(
                 sys.exit(1)
 
         # Summary
-        InteractiveWorkflow.display_success(
-            phase2_tools.tools_dir, phase2_tools.binary_path, codebase_path
-        )
+        InteractiveWorkflow.display_success(phase2_tools.tools_dir, phase2_tools.binary_path, codebase_path)
 
     except Exception as e:
         click.echo(f"\n❌ Error: {e}", err=True)
@@ -909,9 +814,7 @@ def analyze(repo_path, output, format, with_analytics, track_trends):
 
                 # Risk scoring
                 scorer = RiskScorer()
-                risk_scores = scorer.score_issues(
-                    all_issues, [h.to_dict() for h in hotspots]
-                )
+                risk_scores = scorer.score_issues(all_issues, [h.to_dict() for h in hotspots])
                 analytics_data["risk_scores"] = [r.to_dict() for r in risk_scores]
 
                 quick_wins = [r for r in risk_scores if r.is_quick_win]
@@ -925,9 +828,7 @@ def analyze(repo_path, output, format, with_analytics, track_trends):
                 trend_analyzer = TrendAnalyzer()
 
                 # Count issues by severity
-                critical_count = len(
-                    [i for i in all_issues if i["severity"] == "critical"]
-                )
+                critical_count = len([i for i in all_issues if i["severity"] == "critical"])
                 high_count = len([i for i in all_issues if i["severity"] == "high"])
                 medium_count = len([i for i in all_issues if i["severity"] == "medium"])
                 low_count = len([i for i in all_issues if i["severity"] == "low"])
@@ -941,15 +842,9 @@ def analyze(repo_path, output, format, with_analytics, track_trends):
                     medium_issues=medium_count,
                     low_issues=low_count,
                     total_files=len(file_issues),
-                    total_lines=sum(
-                        m.get("lines_of_code", 0) for m in file_metrics.values()
-                    ),
-                    security_issues=len(
-                        [i for i in all_issues if "SEC" in i.get("id", "")]
-                    ),
-                    quality_issues=len(
-                        [i for i in all_issues if "QUAL" in i.get("id", "")]
-                    ),
+                    total_lines=sum(m.get("lines_of_code", 0) for m in file_metrics.values()),
+                    security_issues=len([i for i in all_issues if "SEC" in i.get("id", "")]),
+                    quality_issues=len([i for i in all_issues if "QUAL" in i.get("id", "")]),
                 )
 
                 trend_analyzer.record_snapshot(snapshot)
@@ -961,13 +856,9 @@ def analyze(repo_path, output, format, with_analytics, track_trends):
 
                     for trend in trends:
                         if trend.direction == "improving":
-                            click.echo(
-                                f"  ✅ {trend.metric_name}: {trend.direction} ({trend.change_percent:+.1f}%)"
-                            )
+                            click.echo(f"  ✅ {trend.metric_name}: {trend.direction} ({trend.change_percent:+.1f}%)")
                         elif trend.direction == "degrading":
-                            click.echo(
-                                f"  ⚠️  {trend.metric_name}: {trend.direction} ({trend.change_percent:+.1f}%)"
-                            )
+                            click.echo(f"  ⚠️  {trend.metric_name}: {trend.direction} ({trend.change_percent:+.1f}%)")
 
         # Add analytics to analysis object if present
         if analytics_data:
@@ -981,9 +872,7 @@ def analyze(repo_path, output, format, with_analytics, track_trends):
 
         elif format == "html":
             exporter = HTMLExporter()
-            exporter.export(
-                analysis, output, title=f"Code Analysis - {Path(repo_path).name}"
-            )
+            exporter.export(analysis, output, title=f"Code Analysis - {Path(repo_path).name}")
             click.echo(f"✅ HTML report saved to: {output}")
 
         elif format == "interactive-html":
@@ -994,9 +883,7 @@ def analyze(repo_path, output, format, with_analytics, track_trends):
                 title=f"Interactive Code Analysis - {Path(repo_path).name}",
             )
             click.echo(f"✅ Interactive HTML report saved to: {output}")
-            click.echo(
-                f"💡 Open in browser for filtering, search, and drill-down capabilities"
-            )
+            click.echo(f"💡 Open in browser for filtering, search, and drill-down capabilities")
 
         elif format == "sarif":
             exporter = SARIFExporter()
@@ -1004,9 +891,7 @@ def analyze(repo_path, output, format, with_analytics, track_trends):
             click.echo(f"✅ SARIF report saved to: {output}")
 
         elif format == "markdown":
-            from codebase_reviewer.generators.documentation import (
-                DocumentationGenerator,
-            )
+            from codebase_reviewer.generators.documentation import DocumentationGenerator
 
             generator = DocumentationGenerator()
             markdown = generator.generate(analysis, repo_path)
@@ -1021,11 +906,7 @@ def analyze(repo_path, output, format, with_analytics, track_trends):
             if analysis.quality_issues
             else 0
         )
-        high = (
-            len([i for i in analysis.quality_issues if i.severity.value == "high"])
-            if analysis.quality_issues
-            else 0
-        )
+        high = len([i for i in analysis.quality_issues if i.severity.value == "high"]) if analysis.quality_issues else 0
 
         click.echo(f"\n📈 Summary:")
         click.echo(f"  Total issues: {total_issues}")
@@ -1034,9 +915,7 @@ def analyze(repo_path, output, format, with_analytics, track_trends):
 
         # Exit code based on critical issues
         if critical > 0:
-            click.echo(
-                click.style("\n❌ Quality gate failed: Critical issues found", fg="red")
-            )
+            click.echo(click.style("\n❌ Quality gate failed: Critical issues found", fg="red"))
             sys.exit(1)
         else:
             click.echo(click.style("\n✅ Quality gate passed", fg="green"))
@@ -1178,18 +1057,14 @@ def multi_repo(repos, output, workers):
         def progress_callback(message):
             click.echo(f"  {message}")
 
-        analyses = analyzer.analyze_repos(
-            repo_paths, progress_callback=progress_callback
-        )
+        analyses = analyzer.analyze_repos(repo_paths, progress_callback=progress_callback)
 
         # Get aggregate metrics
         aggregate = analyzer.get_aggregate_metrics()
 
         # Generate dashboard
         dashboard_gen = DashboardGenerator()
-        dashboard_gen.generate_multi_repo_dashboard(
-            [a.to_dict() for a in analyses], aggregate.to_dict(), Path(output)
-        )
+        dashboard_gen.generate_multi_repo_dashboard([a.to_dict() for a in analyses], aggregate.to_dict(), Path(output))
 
         click.echo(f"\n✅ Dashboard saved to: {output}")
 
@@ -1201,9 +1076,7 @@ def multi_repo(repos, output, workers):
         click.echo(f"  🟠 High: {aggregate.total_high}")
         click.echo(f"  🟡 Medium: {aggregate.total_medium}")
         click.echo(f"  ⚪ Low: {aggregate.total_low}")
-        click.echo(
-            f"\n  📈 Average issues per repo: {aggregate.avg_issues_per_repo:.1f}"
-        )
+        click.echo(f"\n  📈 Average issues per repo: {aggregate.avg_issues_per_repo:.1f}")
         click.echo(f"  🏆 Best repository: {aggregate.best_repo}")
         click.echo(f"  ⚠️  Worst repository: {aggregate.worst_repo}")
 
@@ -1332,9 +1205,7 @@ def productivity(repo_path, days, author):
         # Display results
         click.echo(f"\n📈 Productivity Report")
         click.echo("=" * 60)
-        click.echo(
-            f"Period: {report.period_start.strftime('%Y-%m-%d')} to {report.period_end.strftime('%Y-%m-%d')}"
-        )
+        click.echo(f"Period: {report.period_start.strftime('%Y-%m-%d')} to {report.period_end.strftime('%Y-%m-%d')}")
         click.echo(f"Productivity Score: {report.productivity_score:.1f}/100")
         click.echo("=" * 60)
 

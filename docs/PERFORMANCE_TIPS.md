@@ -158,7 +158,7 @@ Fail fast on critical issues:
     python3 -m codebase_reviewer.cli analyze . \
       --format json \
       --output analysis.json
-    
+
     # Fail if critical issues found
     CRITICAL=$(cat analysis.json | jq '[.quality_issues[] | select(.severity == "critical")] | length')
     if [ "$CRITICAL" -gt 0 ]; then
@@ -222,7 +222,7 @@ Cache Python dependencies in CI:
 # Good: Specific pattern
 - id: hardcoded-password
   pattern: 'PASSWORD\s*=\s*["\'][^"\']+["\']'
-  
+
 # Bad: Too broad pattern (slow)
 - id: any-string
   pattern: '["\'].*["\']'
@@ -254,4 +254,3 @@ time python3 -m codebase_reviewer.cli analyze /path/to/project
 - **Large projects**: Batch processing, parallel analysis
 - **CI/CD**: Quality gates, caching, incremental analysis
 - **Custom rules**: Be specific, test patterns, avoid greedy quantifiers
-

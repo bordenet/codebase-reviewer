@@ -1,11 +1,12 @@
 """Tests for parsing utilities."""
 
 import pytest
+
 from codebase_reviewer.analyzers.parsing_utils import (
-    extract_section,
-    extract_list_items,
-    extract_code_blocks,
     detect_architecture_pattern,
+    extract_code_blocks,
+    extract_list_items,
+    extract_section,
 )
 
 

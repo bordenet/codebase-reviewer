@@ -2,10 +2,11 @@
 Rules loader for loading security rules from YAML files.
 """
 
-import yaml
+import logging
 from pathlib import Path
 from typing import List
-import logging
+
+import yaml
 
 from .rule_engine import SecurityRule, Severity
 
@@ -36,9 +37,7 @@ class RulesLoader:
                     rule = RulesLoader._parse_rule(rule_data)
                     rules.append(rule)
                 except Exception as e:
-                    logger.error(
-                        f"Failed to parse rule {rule_data.get('id', 'unknown')}: {e}"
-                    )
+                    logger.error(f"Failed to parse rule {rule_data.get('id', 'unknown')}: {e}")
 
             logger.info(f"Loaded {len(rules)} rules from {yaml_path}")
             return rules

@@ -341,4 +341,3 @@ rules:
     effort_minutes: 60
     remediation: Use safer storage formats like JSON or SQLite
     code_example: "Use json or sqlite3 instead of shelve"
-

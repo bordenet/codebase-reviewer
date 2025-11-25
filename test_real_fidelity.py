@@ -9,15 +9,15 @@ This test creates a REAL comparison by:
 """
 
 import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
-from codebase_reviewer.validation.validator import Validator
 from codebase_reviewer.analyzers.code import CodeAnalyzer
 from codebase_reviewer.generators.documentation import DocumentationGenerator
+from codebase_reviewer.validation.validator import Validator
 
 
 def create_gold_standard_analysis(codebase_path: Path, output_path: Path) -> Path:
@@ -139,7 +139,7 @@ sequenceDiagram
     participant AI as AI Assistant
     participant P2 as Phase 2 Tools
     participant V as Validator
-    
+
     U->>P1: Analyze codebase
     P1->>P1: Scan files, detect languages
     P1->>U: Meta-prompt (DNA)
@@ -217,23 +217,23 @@ python test_end_to_end.py
    - Architecture diagrams
    - Data flow diagrams
    - Sequence diagrams
-   
+
 2. **Add table generation** for metrics and comparisons
-   
+
 3. **Improve type coverage** - Add type hints to all functions
 
 ### Medium Priority
 
 4. **Add chart generation** for language distribution, quality metrics
-   
+
 5. **Enhance visualization** in validation reports
-   
+
 6. **Add code example extraction** from actual codebase
 
 ### Low Priority
 
 7. **Add interactive HTML reports** with collapsible sections
-   
+
 8. **Add diff visualization** for before/after comparisons
 
 ---
@@ -303,9 +303,7 @@ def main():
 
     # Use this codebase as test subject
     codebase_path = Path(__file__).parent
-    output_path = Path("/tmp/real-fidelity-test") / datetime.now().strftime(
-        "%Y%m%d_%H%M%S"
-    )
+    output_path = Path("/tmp/real-fidelity-test") / datetime.now().strftime("%Y%m%d_%H%M%S")
 
     print(f"Codebase: {codebase_path}")
     print(f"Output: {output_path}")

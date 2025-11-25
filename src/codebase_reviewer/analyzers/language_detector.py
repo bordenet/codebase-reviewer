@@ -6,10 +6,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Dict, List
 
-from codebase_reviewer.analyzers.constants import (
-    FRAMEWORK_PATTERNS,
-    LANGUAGE_EXTENSIONS,
-)
+from codebase_reviewer.analyzers.constants import FRAMEWORK_PATTERNS, LANGUAGE_EXTENSIONS
 from codebase_reviewer.models import EntryPoint, Framework, Language
 
 
@@ -50,9 +47,7 @@ class LanguageDetector:
                     # Count lines for better percentage calculation
                     file_path = Path(root) / file
                     try:
-                        with open(
-                            file_path, "r", encoding="utf-8", errors="ignore"
-                        ) as f:
+                        with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
                             lines = len(f.readlines())
                             extension_lines[ext] = extension_lines.get(ext, 0) + lines
                     except Exception:
@@ -62,9 +57,7 @@ class LanguageDetector:
         languages: List[Language] = []
         total_lines = sum(extension_lines.values()) or 1
 
-        for ext, lines in sorted(
-            extension_lines.items(), key=lambda x: x[1], reverse=True
-        ):
+        for ext, lines in sorted(extension_lines.items(), key=lambda x: x[1], reverse=True):
             if ext in LANGUAGE_EXTENSIONS:
                 lang_name = LANGUAGE_EXTENSIONS[ext]
                 percentage = (lines / total_lines) * 100
@@ -99,9 +92,7 @@ class LanguageDetector:
 
         return frameworks
 
-    def _search_for_pattern(
-        self, repo_path: str, file_pattern: str, search_term: str
-    ) -> bool:
+    def _search_for_pattern(self, repo_path: str, file_pattern: str, search_term: str) -> bool:
         """Search for pattern in files.
 
         Args:
@@ -138,9 +129,7 @@ class LanguageDetector:
 
         return False
 
-    def find_entry_points(
-        self, repo_path: str, languages: List[Language]
-    ) -> List[EntryPoint]:
+    def find_entry_points(self, repo_path: str, languages: List[Language]) -> List[EntryPoint]:
         """Find application entry points.
 
         Args:

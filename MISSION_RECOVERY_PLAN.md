@@ -92,11 +92,11 @@ class Phase2Generator:
     ) -> Phase2Tools:
         """Full pipeline: analyze → prompt → LLM → extract → compile."""
         pass
-    
+
     def compile_tools(self, tools_dir: Path) -> bool:
         """Compile Go tools and validate."""
         pass
-    
+
     def validate_tools(self, tools_dir: Path) -> ValidationReport:
         """Ensure tools work correctly."""
         pass
@@ -138,11 +138,11 @@ class ArtifactComparator:
     ) -> ComparisonReport:
         """Compare LLM-generated vs tool-generated docs."""
         pass
-    
+
     def calculate_fidelity_score(self, report: ComparisonReport) -> float:
         """Score 0-1: how well tools reproduce LLM output."""
         pass
-    
+
     def generate_report(self, report: ComparisonReport) -> str:
         """Human-readable comparison report."""
         pass
@@ -206,7 +206,7 @@ class Regenerator:
     ) -> str:
         """Create improved Phase 1 prompt with learnings."""
         pass
-    
+
     def regenerate_tools(
         self,
         codebase_path: Path,
@@ -335,4 +335,3 @@ git diff --cached | grep -i "CallBox\|/Users/Matt" && echo "⚠️  STOP! Propri
 **Recommendation**: **Option C** → **Option B** → **Option A**
 
 Test manually first, then automate incrementally.
-

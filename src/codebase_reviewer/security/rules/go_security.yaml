@@ -359,4 +359,3 @@ rules:
     effort_minutes: 60
     remediation: Simplify regex patterns and set timeout limits
     code_example: "Use simpler patterns or validate input length"
-

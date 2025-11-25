@@ -224,4 +224,3 @@ rules:
     effort_minutes: 45
     remediation: Use SecureRandom
     code_example: "SecureRandom.hex(32) instead of rand()"
-

@@ -230,8 +230,8 @@ You'll know it's working when:
 
 ---
 
-**Time to first documentation**: ~10 minutes  
-**Time to regenerate**: ~5 minutes  
+**Time to first documentation**: ~10 minutes
+**Time to regenerate**: ~5 minutes
 **Improvement per generation**: 20-50%
 
 **Ready to start?** Run `make build` and let's go! 🚀

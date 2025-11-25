@@ -1,15 +1,11 @@
 """Tests for security rule engine."""
 
-import pytest
-from pathlib import Path
 import tempfile
+from pathlib import Path
 
-from codebase_reviewer.security.rule_engine import (
-    RuleEngine,
-    SecurityRule,
-    Severity,
-    Finding,
-)
+import pytest
+
+from codebase_reviewer.security.rule_engine import Finding, RuleEngine, SecurityRule, Severity
 from codebase_reviewer.security.rules_loader import RulesLoader
 
 

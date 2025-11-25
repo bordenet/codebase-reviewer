@@ -150,7 +150,7 @@ if obsolescence.IsObsolete {
     // Generate regeneration prompt
     regenPrompt := learnings.GenerateRegenerationPrompt(...)
     learnings.SaveRegenerationPrompt(regenPrompt, outputDir)
-    
+
     log.Info("Tool is obsolete. Regeneration prompt saved.")
     log.Info("Run: generate-docs --scorch /path/to/codebase")
     os.Exit(2) // Exit code 2 = obsolete
@@ -221,7 +221,7 @@ cd /tmp/codebase-reviewer/Cari/phase2-tools
 # ⚠️  Tool has become obsolete!
 # ⚠️  Obsolescence score: 0.65
 # ⚠️  Reason: Codebase fingerprint changed (and other changes)
-# 
+#
 # ✅ Regeneration prompt saved to:
 #    - /tmp/codebase-reviewer/Cari/phase1-regeneration-prompt.yaml
 #    - /tmp/codebase-reviewer/Cari/phase1-regeneration-prompt.md
@@ -336,8 +336,8 @@ codebase-reviewer/
 ## Example: Evolution in Action
 
 ### Generation 1
-**Prompt**: Standard Phase 1 prompt  
-**Tools**: Basic TypeScript parser, simple reports  
+**Prompt**: Standard Phase 1 prompt
+**Tools**: Basic TypeScript parser, simple reports
 **Learnings**:
 - ✓ TypeScript parsing works well
 - ✗ Failed to detect state machine pattern
@@ -345,7 +345,7 @@ codebase-reviewer/
 - Edge case: Nested package.json files
 
 ### Generation 2
-**Prompt**: Regeneration prompt with Gen 1 learnings  
+**Prompt**: Regeneration prompt with Gen 1 learnings
 **Tools**: Improved with:
 - State machine pattern detector
 - Parallel file processing (5.2s for 827 files)
@@ -359,7 +359,7 @@ codebase-reviewer/
 - Edge case: Multi-line YAML in TypeScript strings
 
 ### Generation 3
-**Prompt**: Regeneration prompt with Gen 1 + Gen 2 learnings  
+**Prompt**: Regeneration prompt with Gen 1 + Gen 2 learnings
 **Tools**: Further improved with:
 - LLM prompt extractor
 - Multi-line YAML parser
@@ -412,5 +412,5 @@ cp -r /tmp/codebase-reviewer/{name}/phase2-tools \
 
 ---
 
-**Status**: ✅ Evolution system implemented  
+**Status**: ✅ Evolution system implemented
 **Next**: Run Phase 1 tool and let the evolution begin!

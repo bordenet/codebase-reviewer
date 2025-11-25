@@ -1,10 +1,10 @@
 """Phase 2 tool generator - extracts and compiles LLM-generated tools."""
 
+import shutil
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Optional
-import shutil
 
 from ..llm.client import LLMClient, LLMResponse
 from ..llm.code_extractor import CodeExtractor
@@ -94,9 +94,7 @@ class Phase2Generator:
 
         # Create tools directory
         codebase_name = codebase_path.name
-        tools_dir = (
-            self.output_base_dir / codebase_name / f"phase2-tools-gen{generation}"
-        )
+        tools_dir = self.output_base_dir / codebase_name / f"phase2-tools-gen{generation}"
 
         if tools_dir.exists():
             print(f"⚠️  Removing existing tools directory: {tools_dir}")
@@ -161,9 +159,7 @@ class Phase2Generator:
 
         # Run go mod tidy
         print(f"   Running go mod tidy...")
-        result = subprocess.run(
-            ["go", "mod", "tidy"], cwd=tools_dir, capture_output=True, text=True
-        )
+        result = subprocess.run(["go", "mod", "tidy"], cwd=tools_dir, capture_output=True, text=True)
         if result.returncode != 0:
             print(f"⚠️  go mod tidy warning: {result.stderr}")
 

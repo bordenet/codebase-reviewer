@@ -1,17 +1,10 @@
 """Tests for visualization generators."""
 
 import pytest
-from codebase_reviewer.visualization.mermaid_generator import MermaidGenerator
+
+from codebase_reviewer.models import CodeAnalysis, CodeStructure, DependencyInfo, Framework, Issue, Language, Severity
 from codebase_reviewer.visualization.chart_generator import ChartGenerator
-from codebase_reviewer.models import (
-    CodeAnalysis,
-    CodeStructure,
-    Language,
-    Framework,
-    DependencyInfo,
-    Issue,
-    Severity,
-)
+from codebase_reviewer.visualization.mermaid_generator import MermaidGenerator
 
 
 class TestMermaidGenerator:
@@ -24,12 +17,8 @@ class TestMermaidGenerator:
         # Create test analysis
         structure = CodeStructure(
             languages=[
-                Language(
-                    name="Python", file_count=10, percentage=60.0, line_count=1000
-                ),
-                Language(
-                    name="JavaScript", file_count=5, percentage=30.0, line_count=500
-                ),
+                Language(name="Python", file_count=10, percentage=60.0, line_count=1000),
+                Language(name="JavaScript", file_count=5, percentage=30.0, line_count=500),
             ],
             frameworks=[Framework(name="Flask")],
         )
@@ -51,9 +40,7 @@ class TestMermaidGenerator:
 
         dependencies = [
             DependencyInfo(name="flask", dependency_type="production", version="2.0.0"),
-            DependencyInfo(
-                name="pytest", dependency_type="development", version="7.0.0"
-            ),
+            DependencyInfo(name="pytest", dependency_type="development", version="7.0.0"),
         ]
 
         diagram = gen.generate_dependency_graph(dependencies)
@@ -94,12 +81,8 @@ class TestChartGenerator:
 
         structure = CodeStructure(
             languages=[
-                Language(
-                    name="Python", file_count=10, percentage=60.0, line_count=1000
-                ),
-                Language(
-                    name="JavaScript", file_count=5, percentage=30.0, line_count=500
-                ),
+                Language(name="Python", file_count=10, percentage=60.0, line_count=1000),
+                Language(name="JavaScript", file_count=5, percentage=30.0, line_count=500),
             ],
             frameworks=[],
         )
@@ -150,11 +133,7 @@ class TestChartGenerator:
         gen = ChartGenerator()
 
         structure = CodeStructure(
-            languages=[
-                Language(
-                    name="Python", file_count=10, percentage=100.0, line_count=1000
-                )
-            ],
+            languages=[Language(name="Python", file_count=10, percentage=100.0, line_count=1000)],
             frameworks=[],
         )
         analysis = CodeAnalysis(

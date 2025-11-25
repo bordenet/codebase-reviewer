@@ -1,8 +1,9 @@
 """SARIF exporter for GitHub Code Scanning integration."""
 
 import json
-from typing import Dict, Any, List
 from pathlib import Path
+from typing import Any, Dict, List
+
 from ..models import CodeAnalysis, Issue, Severity
 
 
@@ -13,9 +14,7 @@ class SARIFExporter:
     Spec: https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html
     """
 
-    def export(
-        self, analysis: CodeAnalysis, output_path: str, repository_root: str = "."
-    ) -> None:
+    def export(self, analysis: CodeAnalysis, output_path: str, repository_root: str = ".") -> None:
         """Export analysis to SARIF file.
 
         Args:
@@ -28,9 +27,7 @@ class SARIFExporter:
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
 
-    def to_sarif(
-        self, analysis: CodeAnalysis, repository_root: str = "."
-    ) -> Dict[str, Any]:
+    def to_sarif(self, analysis: CodeAnalysis, repository_root: str = ".") -> Dict[str, Any]:
         """Convert analysis to SARIF format.
 
         Args:
@@ -78,14 +75,8 @@ class SARIFExporter:
                     "id": rule_id,
                     "name": issue.title,
                     "shortDescription": {"text": issue.title},
-                    "fullDescription": {
-                        "text": issue.description.split("\n")[0]
-                        if issue.description
-                        else issue.title
-                    },
-                    "defaultConfiguration": {
-                        "level": self._severity_to_sarif_level(issue.severity)
-                    },
+                    "fullDescription": {"text": issue.description.split("\n")[0] if issue.description else issue.title},
+                    "defaultConfiguration": {"level": self._severity_to_sarif_level(issue.severity)},
                     "properties": {
                         "tags": ["security", "quality"],
                         "precision": "high",
@@ -94,9 +85,7 @@ class SARIFExporter:
 
         return list(rules_map.values())
 
-    def _generate_results(
-        self, issues: List[Issue], repository_root: str
-    ) -> List[Dict[str, Any]]:
+    def _generate_results(self, issues: List[Issue], repository_root: str) -> List[Dict[str, Any]]:
         """Generate SARIF results from issues.
 
         Args:
@@ -111,11 +100,7 @@ class SARIFExporter:
             # Parse source location (format: "file.py:line" or just "file.py")
             source_parts = issue.source.split(":")
             file_path = source_parts[0]
-            line_number = (
-                int(source_parts[1])
-                if len(source_parts) > 1 and source_parts[1].isdigit()
-                else 1
-            )
+            line_number = int(source_parts[1]) if len(source_parts) > 1 and source_parts[1].isdigit() else 1
 
             results.append(
                 {
