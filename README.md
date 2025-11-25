@@ -68,11 +68,13 @@ Phase 2 (Infinite, Free, Offline)
 
 ### Features
 - ✅ **v2.0 Prompt Architecture**: Structured schemas, OWASP/CWE mapping
-- ✅ **Obsolescence Detection**: Multi-variate heuristics detect when tools need regeneration
+- ✅ **Phase II Regeneration Flow**: Self-evolving tools that improve over time
+- ✅ **Obsolescence Detection**: Multi-variate heuristics (files changed, new languages, coverage, staleness)
 - ✅ **Metrics Tracking**: 8 dimensions (coverage, quality, performance, staleness)
 - ✅ **Learning Capture**: Tools improve with each generation
 - ✅ **Human-in-the-Loop**: Approval gates, rollback support
 - ✅ **Three Scan Modes**: review (quick), deep_scan (thorough), scorch (exhaustive)
+- ✅ **Tested & Validated**: Complete regeneration flow tested end-to-end
 
 ### Quick Start
 

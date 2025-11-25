@@ -195,16 +195,131 @@ The v2.0 architecture is a complete redesign. Key differences:
 | Learning Capture | No | Yes |
 | Scan Modes | No | 3 modes |
 
+## Phase II Regeneration Flow
+
+The self-evolution cycle is the core innovation of v2.0. Here's how it works:
+
+### The Complete Cycle
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ Generation 1 (Initial)                                      │
+├─────────────────────────────────────────────────────────────┤
+│ 1. Run Phase 1 analysis on codebase                        │
+│ 2. LLM generates Phase 2 tools (Go binaries)               │
+│ 3. Tools generate initial documentation                     │
+│ 4. Metrics tracker saves baseline                          │
+└─────────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────────┐
+│ Codebase Evolution                                          │
+├─────────────────────────────────────────────────────────────┤
+│ • Developers add new files                                  │
+│ • New languages/frameworks introduced                       │
+│ • Code coverage changes                                     │
+│ • Time passes (staleness)                                   │
+└─────────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────────┐
+│ Obsolescence Detection (Multi-variate)                      │
+├─────────────────────────────────────────────────────────────┤
+│ ✓ Files changed > 30% threshold                            │
+│ ✓ New languages detected                                   │
+│ ✓ Coverage < 85% threshold                                 │
+│ ✓ Staleness > 30 days                                      │
+│ ✓ Error rate > 5%                                          │
+└─────────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────────┐
+│ Regeneration Trigger                                        │
+├─────────────────────────────────────────────────────────────┤
+│ 1. Tools detect obsolescence                               │
+│ 2. Emit enhanced regeneration prompt                       │
+│ 3. Include learnings from Gen 1                            │
+│ 4. Document what failed/succeeded                          │
+│ 5. Specify improvements needed                             │
+└─────────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────────┐
+│ Generation 2 (Improved)                                     │
+├─────────────────────────────────────────────────────────────┤
+│ 1. Give regeneration prompt to LLM                         │
+│ 2. LLM generates improved Phase 2 tools                    │
+│ 3. New tools support additional languages                  │
+│ 4. Better coverage, fewer false positives                  │
+│ 5. Cycle repeats...                                        │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Testing the Regeneration Flow
+
+Run the comprehensive test to see the complete cycle:
+
+```bash
+./test_phase2_regeneration.sh
+```
+
+This test demonstrates:
+1. **Phase 1 Analysis**: Analyzes a test codebase (2 Python files)
+2. **Metrics Tracking**: Initializes baseline metrics (100% coverage)
+3. **Codebase Changes**: Simulates evolution (adds JavaScript files)
+4. **Obsolescence Detection**: Detects 3 triggers:
+   - Files changed: 50% (threshold: 30%)
+   - New languages: JavaScript
+   - Coverage dropped: 50% (minimum: 85%)
+5. **Regeneration Prompt**: Generates enhanced prompt for Gen 2
+
+### Example Output
+
+```
+🔍 Step 4: Detecting Obsolescence...
+============================================================
+OBSOLESCENCE DETECTION RESULT
+============================================================
+Is Obsolete: True
+Should Regenerate: True
+
+Reasons:
+  - Files changed: 50.0% (threshold: 30.0%)
+  - New languages detected: javascript
+  - Coverage dropped: 50.0% (minimum: 85.0%)
+============================================================
+```
+
+### Customizing Thresholds
+
+Adjust obsolescence thresholds in your code:
+
+```python
+from codebase_reviewer.obsolescence.detector import ObsolescenceDetector, ObsolescenceThresholds
+
+detector = ObsolescenceDetector(
+    codebase_path=Path("/path/to/code"),
+    thresholds=ObsolescenceThresholds(
+        files_changed_percent=30.0,      # Trigger at 30% change
+        coverage_min_percent=85.0,       # Require 85% coverage
+        stale_run_days_max=30,           # Max 30 days staleness
+        error_rate_max_percent=5.0,      # Max 5% error rate
+        regeneration_cooldown_days=7,    # 7 day cooldown
+        new_languages_detected=True      # Trigger on new languages
+    )
+)
+
+result = detector.detect_obsolescence(current_metrics)
+```
+
 ## Next Steps
 
-1. Implement `validate-v2` command for response validation
-2. Implement `generate-tools-v2` command for Phase 2 tool generation
-3. Add LLM integration for automated analysis
-4. Implement incremental regeneration
-5. Add visualization for metrics trends
+1. ✅ **Phase II Regeneration Flow** - Complete and tested
+2. Implement `validate-v2` command for response validation
+3. Implement `generate-tools-v2` command for Phase 2 tool generation
+4. Add LLM integration for automated analysis
+5. Implement incremental regeneration
+6. Add visualization for metrics trends
 
 ## References
 
 - [Phase 1 Prompt Template](../prompts/templates/phase1-prompt-template.yaml)
 - [Phase 2 Meta-Prompt Template](../prompts/templates/meta-prompt-template.md)
 - [Security Validation Script](../scripts/validate_security.sh)
+- [Phase II Regeneration Test](../test_phase2_regeneration.sh)
