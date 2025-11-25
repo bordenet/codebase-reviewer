@@ -121,14 +121,14 @@ func main() {
 		fmt.Println("🔍 Checking obsolescence...")
 		detector := obsolescence.NewDetector(GENERATION, "Acme")
 		isObsolete, reasons := detector.Check(m, *codebasePath)
-		
+
 		if isObsolete {
 			fmt.Println("\n⚠️  OBSOLESCENCE DETECTED!")
 			fmt.Println("\nReasons:")
 			for _, reason := range reasons {
 				fmt.Printf("  - %s\n", reason)
 			}
-			
+
 			// Emit regeneration prompt
 			fmt.Println("\n🔄 Generating regeneration prompt...")
 			promptPath, err := metaprompt.EmitRegenerationPrompt(GENERATION, "Acme", m, reasons)
@@ -175,5 +175,3 @@ func writeDocs(outputPath string, docs *generator.Documentation) error {
 ```
 
 ---
-
-

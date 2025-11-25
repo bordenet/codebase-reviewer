@@ -297,4 +297,3 @@ pytest tests/test_compliance.py
 - [Features Comparison](FEATURES_COMPARISON.md)
 - [CI/CD Integration](WORKFLOW_INTEGRATION_PROPOSAL.md)
 - [Performance Tips](PERFORMANCE_TIPS.md)
-

@@ -13,7 +13,7 @@ from codebase_reviewer.models_v2 import Metrics
 @dataclass
 class ObsolescenceThresholds:
     """Thresholds for obsolescence detection."""
-    
+
     files_changed_percent: float = 30.0
     new_languages_detected: bool = True
     coverage_min_percent: float = 85.0
@@ -25,7 +25,7 @@ class ObsolescenceThresholds:
 @dataclass
 class ObsolescenceResult:
     """Result of obsolescence detection."""
-    
+
     is_obsolete: bool
     reasons: List[str] = field(default_factory=list)
     metrics: Optional[Metrics] = None
@@ -36,15 +36,15 @@ class ObsolescenceResult:
 
 class ObsolescenceDetector:
     """Detects when Phase 2 tools have become obsolete."""
-    
+
     def __init__(
         self,
         codebase_path: Path,
         metrics_file: Optional[Path] = None,
-        thresholds: Optional[ObsolescenceThresholds] = None
+        thresholds: Optional[ObsolescenceThresholds] = None,
     ):
         """Initialize detector.
-        
+
         Args:
             codebase_path: Path to the codebase being analyzed
             metrics_file: Path to metrics JSON file (default: /tmp/codebase-reviewer/{name}/metrics.json)
@@ -52,101 +52,103 @@ class ObsolescenceDetector:
         """
         self.codebase_path = Path(codebase_path)
         self.thresholds = thresholds or ObsolescenceThresholds()
-        
+
         if metrics_file is None:
             codebase_name = self.codebase_path.name
             metrics_file = Path(f"/tmp/codebase-reviewer/{codebase_name}/metrics.json")
-        
+
         self.metrics_file = Path(metrics_file)
         self.previous_metrics: Optional[Metrics] = None
         self.current_metrics: Optional[Metrics] = None
-    
+
     def load_previous_metrics(self) -> Optional[Metrics]:
         """Load metrics from previous run.
-        
+
         Returns:
             Metrics object or None if no previous run
         """
         if not self.metrics_file.exists():
             return None
-        
+
         try:
-            with open(self.metrics_file, 'r', encoding='utf-8') as f:
+            with open(self.metrics_file, "r", encoding="utf-8") as f:
                 data = json.load(f)
-            
+
             # Convert dict to Metrics object
             from codebase_reviewer.models_v2 import (
-                CoverageMetrics, ChangeMetrics, QualityMetrics,
-                PerformanceMetrics, StalenessMetrics, PatternMetrics,
-                TestMetrics, UserFeedbackMetrics
+                ChangeMetrics,
+                CoverageMetrics,
+                PatternMetrics,
+                PerformanceMetrics,
+                QualityMetrics,
+                StalenessMetrics,
+                TestMetrics,
+                UserFeedbackMetrics,
             )
-            
+
             return Metrics(
-                coverage=CoverageMetrics(**data.get('coverage', {})),
-                changes=ChangeMetrics(**data.get('changes', {})),
-                quality=QualityMetrics(**data.get('quality', {})),
-                performance=PerformanceMetrics(**data.get('performance', {})),
-                staleness=StalenessMetrics(**data.get('staleness', {})),
-                patterns=PatternMetrics(**data.get('patterns', {})),
-                tests=TestMetrics(**data.get('tests', {})),
-                user_feedback=UserFeedbackMetrics(**data.get('user_feedback', {}))
+                coverage=CoverageMetrics(**data.get("coverage", {})),
+                changes=ChangeMetrics(**data.get("changes", {})),
+                quality=QualityMetrics(**data.get("quality", {})),
+                performance=PerformanceMetrics(**data.get("performance", {})),
+                staleness=StalenessMetrics(**data.get("staleness", {})),
+                patterns=PatternMetrics(**data.get("patterns", {})),
+                tests=TestMetrics(**data.get("tests", {})),
+                user_feedback=UserFeedbackMetrics(**data.get("user_feedback", {})),
             )
         except (json.JSONDecodeError, KeyError, TypeError) as e:
             print(f"Warning: Failed to load previous metrics: {e}")
             return None
-    
+
     def save_metrics(self, metrics: Metrics) -> None:
         """Save current metrics to file.
-        
+
         Args:
             metrics: Metrics to save
         """
         self.metrics_file.parent.mkdir(parents=True, exist_ok=True)
-        
+
         # Convert to dict
         data = {
-            'coverage': {
-                'files_total': metrics.coverage.files_total,
-                'files_analyzed': metrics.coverage.files_analyzed,
-                'files_documented': metrics.coverage.files_documented,
-                'coverage_percent': metrics.coverage.coverage_percent
+            "coverage": {
+                "files_total": metrics.coverage.files_total,
+                "files_analyzed": metrics.coverage.files_analyzed,
+                "files_documented": metrics.coverage.files_documented,
+                "coverage_percent": metrics.coverage.coverage_percent,
             },
-            'changes': {
-                'files_changed': metrics.changes.files_changed,
-                'files_changed_percent': metrics.changes.files_changed_percent,
-                'files_added': metrics.changes.files_added,
-                'files_deleted': metrics.changes.files_deleted,
-                'new_languages': metrics.changes.new_languages
+            "changes": {
+                "files_changed": metrics.changes.files_changed,
+                "files_changed_percent": metrics.changes.files_changed_percent,
+                "files_added": metrics.changes.files_added,
+                "files_deleted": metrics.changes.files_deleted,
+                "new_languages": metrics.changes.new_languages,
             },
-            'quality': {
-                'error_count': metrics.quality.error_count,
-                'error_rate_percent': metrics.quality.error_rate_percent,
-                'warning_count': metrics.quality.warning_count,
-                'false_positive_estimate': metrics.quality.false_positive_estimate
+            "quality": {
+                "error_count": metrics.quality.error_count,
+                "error_rate_percent": metrics.quality.error_rate_percent,
+                "warning_count": metrics.quality.warning_count,
+                "false_positive_estimate": metrics.quality.false_positive_estimate,
             },
-            'performance': {
-                'avg_runtime_seconds': metrics.performance.avg_runtime_seconds,
-                'memory_usage_mb': metrics.performance.memory_usage_mb
+            "performance": {
+                "avg_runtime_seconds": metrics.performance.avg_runtime_seconds,
+                "memory_usage_mb": metrics.performance.memory_usage_mb,
             },
-            'staleness': {
-                'last_run_date': metrics.staleness.last_run_date,
-                'days_since_last_run': metrics.staleness.days_since_last_run
+            "staleness": {
+                "last_run_date": metrics.staleness.last_run_date,
+                "days_since_last_run": metrics.staleness.days_since_last_run,
             },
-            'patterns': {
-                'detected': metrics.patterns.detected,
-                'newly_detected': metrics.patterns.newly_detected
+            "patterns": {"detected": metrics.patterns.detected, "newly_detected": metrics.patterns.newly_detected},
+            "tests": {
+                "regression_pass_count": metrics.tests.regression_pass_count,
+                "regression_fail_count": metrics.tests.regression_fail_count,
             },
-            'tests': {
-                'regression_pass_count': metrics.tests.regression_pass_count,
-                'regression_fail_count': metrics.tests.regression_fail_count
+            "user_feedback": {
+                "human_override_flags": metrics.user_feedback.human_override_flags,
+                "notes": metrics.user_feedback.notes,
             },
-            'user_feedback': {
-                'human_override_flags': metrics.user_feedback.human_override_flags,
-                'notes': metrics.user_feedback.notes
-            }
         }
-        
-        with open(self.metrics_file, 'w', encoding='utf-8') as f:
+
+        with open(self.metrics_file, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
     def calculate_checksum(self, directories: List[str]) -> str:
@@ -166,10 +168,10 @@ class ObsolescenceDetector:
                 continue
 
             # Walk directory and hash file paths
-            for file_path in sorted(full_path.rglob('*')):
+            for file_path in sorted(full_path.rglob("*")):
                 if file_path.is_file():
                     relative = file_path.relative_to(self.codebase_path)
-                    hasher.update(str(relative).encode('utf-8'))
+                    hasher.update(str(relative).encode("utf-8"))
 
         return hasher.hexdigest()
 
@@ -194,7 +196,7 @@ class ObsolescenceDetector:
                 is_obsolete=False,
                 reasons=["First run - no previous metrics"],
                 metrics=current_metrics,
-                should_regenerate=False
+                should_regenerate=False,
             )
 
         # Heuristic 1: Files changed percentage
@@ -267,6 +269,5 @@ class ObsolescenceDetector:
             metrics=current_metrics,
             should_regenerate=should_regenerate,
             suppressed=suppressed,
-            suppression_reason=suppression_reason
+            suppression_reason=suppression_reason,
         )
-

@@ -25,16 +25,16 @@ from codebase_reviewer.llm.client import create_client
 from codebase_reviewer.metaprompt.generator import MetaPromptGenerator
 from codebase_reviewer.metrics.productivity_metrics import ProductivityTracker
 from codebase_reviewer.metrics.roi_calculator import ROICalculator, ROIMetrics
+from codebase_reviewer.metrics.tracker import MetricsTracker
+from codebase_reviewer.obsolescence.detector import ObsolescenceDetector
 from codebase_reviewer.orchestrator import AnalysisOrchestrator
 from codebase_reviewer.phase2.generator import Phase2Generator
 from codebase_reviewer.phase2.runner import Phase2Runner
 from codebase_reviewer.phase2.validator import Phase2Validator
 from codebase_reviewer.prompt_generator import PromptGenerator
+from codebase_reviewer.prompts.generator_v2 import Phase1PromptGeneratorV2, ScanParameters
 from codebase_reviewer.simulation import LLMSimulator
 from codebase_reviewer.tuning.runner import TuningRunner
-from codebase_reviewer.prompts.generator_v2 import Phase1PromptGeneratorV2, ScanParameters
-from codebase_reviewer.metrics.tracker import MetricsTracker
-from codebase_reviewer.obsolescence.detector import ObsolescenceDetector
 from codebase_reviewer.validation.schema_validator import SchemaValidator
 
 
@@ -1408,7 +1408,7 @@ def analyze_v2(repo_path, output_dir, scan_mode, exclude, include, languages, qu
         total_files = 0
         for root, _, files in os.walk(repo_path):
             # Skip common ignore patterns
-            if any(skip in root for skip in ['.git', 'node_modules', '__pycache__', '.venv', 'venv']):
+            if any(skip in root for skip in [".git", "node_modules", "__pycache__", ".venv", "venv"]):
                 continue
             total_files += len(files)
 
@@ -1430,6 +1430,7 @@ def analyze_v2(repo_path, output_dir, scan_mode, exclude, include, languages, qu
     except Exception as e:
         click.echo(click.style(f"\n✗ Error: {str(e)}", fg="red"), err=True)
         import traceback
+
         if not quiet:
             traceback.print_exc()
         sys.exit(1)

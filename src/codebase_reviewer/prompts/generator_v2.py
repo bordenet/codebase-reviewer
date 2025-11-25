@@ -156,4 +156,3 @@ class Phase1PromptGeneratorV2:
             f.write(prompt)
 
         return filepath
-

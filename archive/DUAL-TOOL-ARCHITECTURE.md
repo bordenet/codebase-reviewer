@@ -247,8 +247,8 @@ git diff cmd/ pkg/     # Go
 
 ---
 
-**Created**: 2025-11-23  
-**Purpose**: Document dual-tool architecture  
+**Created**: 2025-11-23
+**Purpose**: Document dual-tool architecture
 **Maintainer**: See git history for contributors
 
 ---
