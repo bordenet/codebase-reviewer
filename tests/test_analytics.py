@@ -1,11 +1,13 @@
 """Tests for analytics module."""
 
-import pytest
 from datetime import datetime
 from pathlib import Path
-from codebase_reviewer.analytics.trend_analyzer import TrendAnalyzer, MetricSnapshot
+
+import pytest
+
 from codebase_reviewer.analytics.hotspot_detector import HotspotDetector
 from codebase_reviewer.analytics.risk_scorer import RiskScorer
+from codebase_reviewer.analytics.trend_analyzer import MetricSnapshot, TrendAnalyzer
 
 
 class TestTrendAnalyzer:

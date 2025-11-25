@@ -14,7 +14,7 @@ learnings:
     codebase_name: "string"          # Name of analyzed codebase
     codebase_path: "string"          # Path to codebase
     codebase_fingerprint: "string"   # Hash of codebase structure
-    
+
   execution_metrics:
     duration_seconds: "float"        # How long the tool ran
     files_processed: "integer"       # Number of files analyzed
@@ -22,13 +22,13 @@ learnings:
     warnings_generated: "integer"    # Number of warnings
     reports_generated: "integer"     # Number of output files created
     memory_peak_mb: "float"          # Peak memory usage
-    
+
   what_worked_well:
     - category: "string"             # e.g., "parsing", "detection", "generation"
       description: "string"          # What worked well
       confidence: "string"           # "high", "medium", "low"
       examples: ["string"]           # Specific examples
-      
+
   what_failed:
     - category: "string"             # e.g., "parsing", "detection", "generation"
       description: "string"          # What failed
@@ -37,7 +37,7 @@ learnings:
       impact: "string"               # "critical", "major", "minor"
       examples: ["string"]           # Specific examples
       suggested_fix: "string"        # How to fix in next generation
-      
+
   edge_cases_discovered:
     - case_id: "string"              # Unique identifier
       description: "string"          # Description of edge case
@@ -46,7 +46,7 @@ learnings:
       desired_behavior: "string"     # How it should be handled
       workaround: "string"           # Temporary workaround if any
       priority: "string"             # "high", "medium", "low"
-      
+
   patterns_identified:
     - pattern_type: "string"         # e.g., "code_structure", "naming", "architecture"
       pattern_name: "string"         # Name of the pattern
@@ -55,7 +55,7 @@ learnings:
       locations: ["string"]          # Where it appears
       significance: "string"         # Why it matters
       recommendation: "string"       # How to leverage in next generation
-      
+
   improvements_needed:
     - improvement_id: "string"       # Unique identifier
       category: "string"             # "performance", "accuracy", "coverage", "usability"
@@ -65,48 +65,48 @@ learnings:
       priority: "string"             # "critical", "high", "medium", "low"
       effort_estimate: "string"      # "small", "medium", "large"
       implementation_hint: "string"  # Suggestion for how to implement
-      
+
   codebase_changes_detected:
     structural_changes:
       new_directories: ["string"]    # New directories since last run
       removed_directories: ["string"] # Removed directories
       renamed_directories: ["string"] # Renamed directories
-      
+
     language_changes:
       new_languages: ["string"]      # New programming languages detected
       removed_languages: ["string"]  # Languages no longer present
       language_shift: "string"       # Overall trend (e.g., "TypeScript → Go")
-      
+
     framework_changes:
       new_frameworks: ["string"]     # New frameworks detected
       removed_frameworks: ["string"] # Frameworks no longer used
       version_upgrades: ["string"]   # Framework version changes
-      
+
     dependency_changes:
       new_dependencies: ["string"]   # New dependencies added
       removed_dependencies: ["string"] # Dependencies removed
       major_upgrades: ["string"]     # Major version changes
-      
+
     architecture_changes:
       new_services: ["string"]       # New services/modules
       removed_services: ["string"]   # Removed services/modules
       refactored_services: ["string"] # Services that were refactored
       pattern_shifts: ["string"]     # Architecture pattern changes
-      
+
   obsolescence_indicators:
     is_obsolete: "boolean"           # Is this tool obsolete?
     obsolescence_score: "float"      # 0.0 (fresh) to 1.0 (completely obsolete)
     reasons: ["string"]              # Why it's obsolete
     confidence: "string"             # "high", "medium", "low"
     recommendation: "string"         # "regenerate", "update", "continue"
-    
+
   next_generation_recommendations:
     new_report_types: ["string"]     # New reports to generate
     enhanced_detections: ["string"]  # Better detection logic needed
     performance_optimizations: ["string"] # Performance improvements
     usability_improvements: ["string"] # UX improvements
     code_quality_improvements: ["string"] # Code quality improvements
-    
+
   custom_notes:
     - note: "string"                 # Free-form notes
       category: "string"             # Category for organization
@@ -117,4 +117,3 @@ learnings:
 # 2. During run: Collect metrics, detect patterns, identify issues
 # 3. At end: Save updated learnings to same file
 # 4. If obsolete: Generate regeneration prompt using learnings
-

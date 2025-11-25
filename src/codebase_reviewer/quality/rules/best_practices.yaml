@@ -222,4 +222,3 @@ rules:
     remediation: Use array join or StringBuilder
     code_example: "Use array.join() or StringBuilder instead of +"
     effort_minutes: 20
-

@@ -498,4 +498,3 @@ rules:
     remediation: Extract common logic into shared function
     code_example: Create reusable function
     effort_minutes: 45
-

@@ -241,4 +241,3 @@ func reviewPhase2Tools(outputDir string, repos []scanner.Repository, log *logger
 	// For now, return not implemented
 	return fmt.Errorf("review mode not yet implemented")
 }
-

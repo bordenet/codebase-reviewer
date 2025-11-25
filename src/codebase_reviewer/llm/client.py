@@ -2,8 +2,8 @@
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Any
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 
 class LLMProvider(Enum):
@@ -114,9 +114,7 @@ class LLMClient(ABC):
         return LLMProvider.ANTHROPIC
 
 
-def create_client(
-    provider: str, api_key: str, model: Optional[str] = None
-) -> LLMClient:
+def create_client(provider: str, api_key: str, model: Optional[str] = None) -> LLMClient:
     """Factory function to create an LLM client.
 
     Args:
@@ -140,6 +138,4 @@ def create_client(
     elif provider_lower == "openai":
         return OpenAIProvider(api_key, model)
     else:
-        raise ValueError(
-            f"Unsupported provider: {provider}. " f"Supported: anthropic, openai"
-        )
+        raise ValueError(f"Unsupported provider: {provider}. " f"Supported: anthropic, openai")

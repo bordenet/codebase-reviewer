@@ -1,13 +1,11 @@
 """Tests for productivity metrics."""
 
-import pytest
-from pathlib import Path
 from datetime import datetime, timedelta
-from codebase_reviewer.metrics.productivity_metrics import (
-    ProductivityMetrics,
-    ProductivityReport,
-    ProductivityTracker,
-)
+from pathlib import Path
+
+import pytest
+
+from codebase_reviewer.metrics.productivity_metrics import ProductivityMetrics, ProductivityReport, ProductivityTracker
 
 
 class TestProductivityMetrics:
@@ -112,9 +110,7 @@ class TestProductivityTracker:
         # Create a commit
         (tmp_path / "test.txt").write_text("test")
         subprocess.run(["git", "add", "."], cwd=tmp_path, capture_output=True)
-        subprocess.run(
-            ["git", "commit", "-m", "Initial commit"], cwd=tmp_path, capture_output=True
-        )
+        subprocess.run(["git", "commit", "-m", "Initial commit"], cwd=tmp_path, capture_output=True)
 
         tracker = ProductivityTracker(tmp_path)
         report = tracker.generate_report(days=30)
@@ -145,15 +141,11 @@ class TestProductivityTracker:
         # Create commits
         (tmp_path / "file1.txt").write_text("content1")
         subprocess.run(["git", "add", "."], cwd=tmp_path, capture_output=True)
-        subprocess.run(
-            ["git", "commit", "-m", "Commit 1"], cwd=tmp_path, capture_output=True
-        )
+        subprocess.run(["git", "commit", "-m", "Commit 1"], cwd=tmp_path, capture_output=True)
 
         (tmp_path / "file2.txt").write_text("content2")
         subprocess.run(["git", "add", "."], cwd=tmp_path, capture_output=True)
-        subprocess.run(
-            ["git", "commit", "-m", "Commit 2"], cwd=tmp_path, capture_output=True
-        )
+        subprocess.run(["git", "commit", "-m", "Commit 2"], cwd=tmp_path, capture_output=True)
 
         tracker = ProductivityTracker(tmp_path)
         start = datetime.now() - timedelta(days=1)

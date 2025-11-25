@@ -117,4 +117,3 @@ This document compares Codebase Reviewer against industry-leading tools like **S
 **Best for:** Teams that need comprehensive analysis with compliance reporting, productivity tracking, and ROI demonstration - all for free.
 
 **Complements well with:** Semgrep (for broader rule coverage) or SonarQube (for enterprise features).
-

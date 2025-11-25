@@ -1,8 +1,8 @@
 """Risk scoring for prioritizing issues."""
 
 from dataclasses import dataclass
-from typing import List, Dict
 from enum import Enum
+from typing import Dict, List
 
 
 class ImpactLevel(Enum):
@@ -63,9 +63,7 @@ class RiskScorer:
             "low": 2.0,
         }
 
-    def score_issues(
-        self, issues: List[dict], hotspots: List[dict] = None
-    ) -> List[RiskScore]:
+    def score_issues(self, issues: List[dict], hotspots: List[dict] = None) -> List[RiskScore]:
         """Score and prioritize issues.
 
         Args:
@@ -128,9 +126,7 @@ class RiskScorer:
 
         return risk_scores
 
-    def _determine_impact(
-        self, severity: str, file_path: str, hotspot_files: set
-    ) -> str:
+    def _determine_impact(self, severity: str, file_path: str, hotspot_files: set) -> str:
         """Determine business impact of an issue.
 
         Args:

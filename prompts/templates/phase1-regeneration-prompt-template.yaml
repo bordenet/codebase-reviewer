@@ -18,20 +18,20 @@ context:
   codebase_name: "{{CODEBASE_NAME}}"
   codebase_path: "{{CODEBASE_PATH}}"
   output_directory: "/tmp/codebase-reviewer/{{CODEBASE_NAME}}/"
-  
+
   previous_analysis:
     repositories_found: "{{PREV_REPO_COUNT}}"
     primary_languages: "{{PREV_LANGUAGES}}"
     total_files: "{{PREV_FILE_COUNT}}"
     services_identified: "{{PREV_SERVICE_COUNT}}"
-  
+
   current_scan:
     repositories_found: "{{CURR_REPO_COUNT}}"
     primary_languages: "{{CURR_LANGUAGES}}"
     total_files: "{{CURR_FILE_COUNT}}"
     new_directories: "{{NEW_DIRECTORIES}}"
     removed_directories: "{{REMOVED_DIRECTORIES}}"
-    
+
   changes_detected:
     structural_changes: "{{STRUCTURAL_CHANGES}}"
     new_languages: "{{NEW_LANGUAGES}}"
@@ -42,16 +42,16 @@ context:
 learnings_from_previous_generation:
   what_worked_well: |
     {{WHAT_WORKED_WELL}}
-  
+
   what_failed: |
     {{WHAT_FAILED}}
-  
+
   edge_cases_discovered: |
     {{EDGE_CASES}}
-  
+
   patterns_identified: |
     {{PATTERNS_IDENTIFIED}}
-  
+
   improvements_needed: |
     {{IMPROVEMENTS_NEEDED}}
 
@@ -60,15 +60,15 @@ enhanced_requirements:
     - "{{ENHANCEMENT_1}}"
     - "{{ENHANCEMENT_2}}"
     - "{{ENHANCEMENT_3}}"
-  
+
   new_report_types:
     - "{{NEW_REPORT_1}}"
     - "{{NEW_REPORT_2}}"
-  
+
   better_detection_logic:
     - "{{DETECTION_IMPROVEMENT_1}}"
     - "{{DETECTION_IMPROVEMENT_2}}"
-  
+
   performance_optimizations:
     - "{{PERF_OPT_1}}"
     - "{{PERF_OPT_2}}"
@@ -77,19 +77,19 @@ prompt:
   instruction: |
     You are tasked with regenerating the Phase 1 codebase analysis for {{CODEBASE_NAME}}.
     This is GENERATION {{GENERATION_NUMBER}} of the analysis.
-    
+
     The previous Phase 2 tools (generation {{PREV_GENERATION}}) have detected that they are
     obsolete due to: {{OBSOLESCENCE_REASON}}
-    
+
     Your task is to create an IMPROVED Phase 1 analysis that:
     1. Incorporates learnings from the previous generation
     2. Addresses the failures and edge cases discovered
     3. Generates Phase 2 tools with enhanced capabilities
     4. Implements the improvements identified below
-    
+
     **CRITICAL**: This is an evolutionary process. Each generation should be measurably
     better than the last. Review the "learnings_from_previous_generation" section carefully.
-  
+
   tasks:
     - task_id: "T1-REGEN"
       name: "Enhanced Deep Scan"
@@ -99,11 +99,11 @@ prompt:
         - New detection for: {{NEW_LANGUAGES}}, {{NEW_FRAMEWORKS}}
         - Better handling of: {{EDGE_CASES}}
         - Improved pattern recognition for: {{PATTERNS_IDENTIFIED}}
-      
+
       improvements_over_previous:
         - "{{SCAN_IMPROVEMENT_1}}"
         - "{{SCAN_IMPROVEMENT_2}}"
-    
+
     - task_id: "T2-REGEN"
       name: "Enhanced Reference Material Strategy"
       description: |
@@ -111,32 +111,32 @@ prompt:
         - Include new report types: {{NEW_REPORT_TYPES}}
         - Better organization based on: {{LEARNINGS}}
         - Enhanced detail for: {{AREAS_NEEDING_MORE_DETAIL}}
-    
+
     - task_id: "T3-REGEN"
       name: "Enhanced Phase 2 Tool Design"
       description: |
         Design Phase 2 tools with improvements:
-        
+
         **Core Enhancements**:
         {{ENHANCEMENT_LIST}}
-        
+
         **Better Obsolescence Detection**:
         - Track codebase fingerprint (file count, structure hash, dependency hash)
         - Detect: {{DETECTION_IMPROVEMENTS}}
         - When obsolete, emit THIS prompt template with learnings
-        
+
         **Self-Evolution**:
         - Each tool run saves learnings to: /tmp/codebase-reviewer/{{CODEBASE_NAME}}/learnings.yaml
         - Learnings include: what worked, what failed, edge cases, patterns
         - Regeneration prompt includes ALL learnings for continuous improvement
-        
+
         **Prompt Management**:
         - ALL LLM prompts stored as YAML in: prompts/phase2-regeneration/
         - Prompts are versioned and include generation metadata
         - Easy to inspect, edit, and version control
-      
+
       output_format: "enhanced_go_tool_specifications"
-    
+
     - task_id: "T4-REGEN"
       name: "Generate Enhanced Phase 2 Tools"
       description: |
@@ -146,6 +146,5 @@ prompt:
         - Better performance for: {{PERF_BOTTLENECKS}}
         - Learnings capture system
         - Regeneration prompt emission
-      
-      output_location: "/tmp/codebase-reviewer/{{CODEBASE_NAME}}/phase2-tools/"
 
+      output_location: "/tmp/codebase-reviewer/{{CODEBASE_NAME}}/phase2-tools/"

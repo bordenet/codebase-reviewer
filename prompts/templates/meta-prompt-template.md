@@ -1,7 +1,7 @@
 # Meta-Prompt for Phase 2 Tool Generation
 
-**Generation**: {{generation}}  
-**Codebase**: {{codebase_name}}  
+**Generation**: {{generation}}
+**Codebase**: {{codebase_name}}
 **Date**: {{date}}
 
 ---
@@ -173,15 +173,15 @@ When obsolete, emit enhanced meta-prompt:
 func emitRegenerationPrompt(metrics Metrics) {
     // Load original meta-prompt
     original := metaprompt.META_PROMPT
-    
+
     // Add learnings
     enhanced := addLearnings(original, metrics)
-    
+
     // Save to file
     path := fmt.Sprintf("/tmp/codebase-reviewer/%s/regeneration-prompt-gen%d.md",
         codebaseName, generation+1)
     ioutil.WriteFile(path, []byte(enhanced), 0644)
-    
+
     // Display instructions
     displayRegenerationInstructions(path)
 }
@@ -200,22 +200,22 @@ type Metrics struct {
     FilesAnalyzed       int
     FilesDocumented     int
     CoveragePercent     float64
-    
+
     // Change detection
     FilesChanged        int
     FilesChangedPercent float64
     FilesAdded          int
     FilesDeleted        int
-    
+
     // Quality
     ErrorCount          int
     ErrorRate           float64
     WarningCount        int
-    
+
     // Staleness
     LastRunDate         time.Time
     StaleDays           int
-    
+
     // Patterns
     LanguagesDetected   []string
     NewLanguages        []string
@@ -349,4 +349,3 @@ Please generate the complete Go tool based on this meta-prompt.
 - Tested logic
 
 Thank you! 🚀
-

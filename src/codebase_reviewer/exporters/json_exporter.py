@@ -1,8 +1,9 @@
 """JSON exporter for analysis results."""
 
 import json
-from typing import Dict, Any, List
 from pathlib import Path
+from typing import Any, Dict, List
+
 from ..models import CodeAnalysis, Issue
 
 
@@ -32,45 +33,27 @@ class JSONExporter:
         """
         return {
             "version": "1.0.0",
-            "structure": self._structure_to_dict(analysis.structure)
-            if analysis.structure
-            else None,
+            "structure": self._structure_to_dict(analysis.structure) if analysis.structure else None,
             "dependencies": [self._dependency_to_dict(d) for d in analysis.dependencies]
             if analysis.dependencies
             else [],
-            "complexity_metrics": analysis.complexity_metrics
-            if analysis.complexity_metrics
-            else {},
+            "complexity_metrics": analysis.complexity_metrics if analysis.complexity_metrics else {},
             "quality_issues": [self._issue_to_dict(i) for i in analysis.quality_issues]
             if analysis.quality_issues
             else [],
             "summary": {
-                "total_files": sum(
-                    lang.file_count for lang in analysis.structure.languages
-                )
+                "total_files": sum(lang.file_count for lang in analysis.structure.languages)
                 if analysis.structure and analysis.structure.languages
                 else 0,
                 "total_languages": len(analysis.structure.languages)
                 if analysis.structure and analysis.structure.languages
                 else 0,
-                "total_dependencies": len(analysis.dependencies)
-                if analysis.dependencies
-                else 0,
-                "total_issues": len(analysis.quality_issues)
+                "total_dependencies": len(analysis.dependencies) if analysis.dependencies else 0,
+                "total_issues": len(analysis.quality_issues) if analysis.quality_issues else 0,
+                "critical_issues": len([i for i in analysis.quality_issues if i.severity.value == "critical"])
                 if analysis.quality_issues
                 else 0,
-                "critical_issues": len(
-                    [
-                        i
-                        for i in analysis.quality_issues
-                        if i.severity.value == "critical"
-                    ]
-                )
-                if analysis.quality_issues
-                else 0,
-                "high_issues": len(
-                    [i for i in analysis.quality_issues if i.severity.value == "high"]
-                )
+                "high_issues": len([i for i in analysis.quality_issues if i.severity.value == "high"])
                 if analysis.quality_issues
                 else 0,
             },

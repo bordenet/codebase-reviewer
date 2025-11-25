@@ -428,4 +428,3 @@ rules:
     effort_minutes: 90
     remediation: Sanitize and validate LDAP query parameters
     code_example: "Escape special LDAP characters in user input"
-

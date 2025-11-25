@@ -1,7 +1,7 @@
 """Dashboard generation for team metrics and visualization."""
 
-from typing import List, Dict
 from pathlib import Path
+from typing import Dict, List
 
 
 class DashboardGenerator:
@@ -11,9 +11,7 @@ class DashboardGenerator:
         """Initialize dashboard generator."""
         pass
 
-    def generate_multi_repo_dashboard(
-        self, repo_analyses: List[dict], aggregate: dict, output_path: Path
-    ) -> None:
+    def generate_multi_repo_dashboard(self, repo_analyses: List[dict], aggregate: dict, output_path: Path) -> None:
         """Generate multi-repository dashboard.
 
         Args:
@@ -38,9 +36,7 @@ class DashboardGenerator:
         """
         # Generate repository cards
         repo_cards = []
-        for repo in sorted(
-            repo_analyses, key=lambda r: r["total_issues"], reverse=True
-        ):
+        for repo in sorted(repo_analyses, key=lambda r: r["total_issues"], reverse=True):
             severity_class = self._get_severity_class(repo["total_issues"])
 
             card = f"""

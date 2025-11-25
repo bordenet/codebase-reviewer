@@ -1,9 +1,9 @@
 """Hotspot detection for identifying problematic files."""
 
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List
-import subprocess
 
 
 @dataclass
@@ -44,9 +44,7 @@ class HotspotDetector:
         """
         self.repo_path = repo_path
 
-    def detect_hotspots(
-        self, file_issues: Dict[str, List], file_metrics: Dict[str, dict]
-    ) -> List[Hotspot]:
+    def detect_hotspots(self, file_issues: Dict[str, List], file_metrics: Dict[str, dict]) -> List[Hotspot]:
         """Detect code hotspots.
 
         Args:
@@ -73,9 +71,7 @@ class HotspotDetector:
             churn_score = min(churn / 10.0, 10.0)  # Normalize to 0-10
 
             # Risk score = weighted combination
-            risk_score = (
-                bug_count * 3.0 + complexity_score * 2.0 + churn_score * 1.5
-            ) / 6.5
+            risk_score = (bug_count * 3.0 + complexity_score * 2.0 + churn_score * 1.5) / 6.5
 
             # Only include files with significant risk
             if risk_score > 3.0:

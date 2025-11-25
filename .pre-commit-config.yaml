@@ -37,7 +37,7 @@ repos:
     hooks:
       - id: pylint
         name: pylint
-        entry: python
+        entry: python3
         args: ['-m', 'pylint', 'src/codebase_reviewer', '--max-line-length=120', '--min-similarity-lines=10', '--fail-under=9.5']
         language: system
         types: [python]
@@ -51,7 +51,7 @@ repos:
     hooks:
       - id: mypy
         name: mypy
-        entry: python
+        entry: python3
         args: ['-m', 'mypy', 'src/codebase_reviewer', '--ignore-missing-imports']
         language: system
         types: [python]
@@ -65,7 +65,7 @@ repos:
     hooks:
       - id: pytest
         name: pytest
-        entry: python
+        entry: python3
         args: ['-m', 'pytest', 'tests/', '-v', '--tb=short', '--cov=src/codebase_reviewer', '--cov-report=term-missing:skip-covered', '--cov-fail-under=54']
         language: system
         types: [python]

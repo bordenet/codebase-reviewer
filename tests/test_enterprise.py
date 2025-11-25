@@ -1,13 +1,11 @@
 """Tests for enterprise module."""
 
-import pytest
 from pathlib import Path
-from codebase_reviewer.enterprise.multi_repo_analyzer import (
-    MultiRepoAnalyzer,
-    RepoAnalysis,
-    AggregateMetrics,
-)
+
+import pytest
+
 from codebase_reviewer.enterprise.dashboard_generator import DashboardGenerator
+from codebase_reviewer.enterprise.multi_repo_analyzer import AggregateMetrics, MultiRepoAnalyzer, RepoAnalysis
 
 
 class TestMultiRepoAnalyzer:

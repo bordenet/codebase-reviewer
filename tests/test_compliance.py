@@ -1,11 +1,8 @@
 """Tests for compliance reporting."""
 
 import pytest
-from codebase_reviewer.compliance.compliance_reporter import (
-    ComplianceFramework,
-    ComplianceReporter,
-    ComplianceControl,
-)
+
+from codebase_reviewer.compliance.compliance_reporter import ComplianceControl, ComplianceFramework, ComplianceReporter
 from codebase_reviewer.models import Issue, Severity
 
 

@@ -201,4 +201,3 @@ func NewLearnings() *Learnings {
 		CustomNotes:    []CustomNote{},
 	}
 }
-

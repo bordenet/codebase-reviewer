@@ -252,4 +252,3 @@ rules:
     remediation: Fix code examples
     code_example: "Ensure code examples are syntactically correct"
     effort_minutes: 20
-

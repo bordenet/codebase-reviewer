@@ -7,10 +7,10 @@ This module provides integration with LLM providers (Claude, OpenAI) to:
 4. Validate response completeness
 """
 
-from .client import LLMClient, LLMResponse, LLMError
+from .client import LLMClient, LLMError, LLMResponse
+from .code_extractor import CodeExtractor
 from .providers.anthropic import AnthropicProvider
 from .providers.openai import OpenAIProvider
-from .code_extractor import CodeExtractor
 
 __all__ = [
     "LLMClient",

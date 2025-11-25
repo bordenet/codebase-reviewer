@@ -1,10 +1,10 @@
 """Tests for interactive HTML exporter."""
 
-import pytest
 from pathlib import Path
-from codebase_reviewer.exporters.interactive_html_exporter import (
-    InteractiveHTMLExporter,
-)
+
+import pytest
+
+from codebase_reviewer.exporters.interactive_html_exporter import InteractiveHTMLExporter
 from codebase_reviewer.models import CodeAnalysis, Issue, Severity
 
 

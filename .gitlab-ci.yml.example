@@ -59,25 +59,25 @@ quality-gate:
       python -c "
       import json
       import sys
-      
+
       with open('analysis-results.json') as f:
           data = json.load(f)
-      
+
       critical = data['summary']['critical_issues']
       high = data['summary']['high_issues']
-      
+
       print(f'Critical issues: {critical}')
       print(f'High severity issues: {high}')
-      
+
       # Quality gate: fail if critical issues found
       if critical > 0:
           print('❌ Quality gate failed: Critical issues found')
           sys.exit(1)
-      
+
       # Warning if high issues found
       if high > 5:
           print('⚠️  Warning: More than 5 high severity issues found')
-      
+
       print('✅ Quality gate passed')
       "
   dependencies:
@@ -101,4 +101,3 @@ pages:
     - analyze
   only:
     - main
-

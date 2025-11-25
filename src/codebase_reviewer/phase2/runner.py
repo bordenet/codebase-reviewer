@@ -1,10 +1,10 @@
 """Phase 2 tool runner - executes generated tools."""
 
 import subprocess
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
-import time
 
 
 @dataclass
@@ -33,9 +33,7 @@ class RunResult:
 class Phase2Runner:
     """Runs Phase 2 tools to generate documentation."""
 
-    def run_tools(
-        self, binary_path: Path, codebase_path: Path, verbose: bool = False
-    ) -> RunResult:
+    def run_tools(self, binary_path: Path, codebase_path: Path, verbose: bool = False) -> RunResult:
         """Execute Phase 2 tools to generate documentation.
 
         Args:
@@ -124,8 +122,6 @@ class Phase2Runner:
                     missing.append(file_name)
 
             if missing:
-                raise Exception(
-                    f"Expected output files not found: {', '.join(missing)}"
-                )
+                raise Exception(f"Expected output files not found: {', '.join(missing)}")
 
         return result

@@ -2,9 +2,10 @@
 
 from pathlib import Path
 from typing import List, Optional
+
 from ..models import CodeAnalysis, Language
-from ..visualization.mermaid_generator import MermaidGenerator
 from ..visualization.chart_generator import ChartGenerator
+from ..visualization.mermaid_generator import MermaidGenerator
 
 
 class DocumentationGenerator:
@@ -71,9 +72,7 @@ class DocumentationGenerator:
 
         return "\n".join(sections)
 
-    def _generate_overview(
-        self, analysis: CodeAnalysis, codebase_path: str
-    ) -> List[str]:
+    def _generate_overview(self, analysis: CodeAnalysis, codebase_path: str) -> List[str]:
         """Generate overview section."""
         languages = analysis.structure.languages if analysis.structure else []
         lang_count = len(languages)
@@ -305,9 +304,7 @@ class DocumentationGenerator:
                     "",
                 ]
             )
-            dep_diagram = self.mermaid_gen.generate_dependency_graph(
-                analysis.dependencies
-            )
+            dep_diagram = self.mermaid_gen.generate_dependency_graph(analysis.dependencies)
             lines.append(dep_diagram)
             lines.append("")
 
@@ -358,9 +355,7 @@ class DocumentationGenerator:
                 [
                     "### Issue Severity Distribution",
                     "",
-                    self.chart_gen.generate_issue_severity_table(
-                        analysis.quality_issues
-                    ),
+                    self.chart_gen.generate_issue_severity_table(analysis.quality_issues),
                     "",
                 ]
             )
@@ -370,9 +365,7 @@ class DocumentationGenerator:
                 [
                     "### Top Issues",
                     "",
-                    self.chart_gen.generate_top_issues_table(
-                        analysis.quality_issues, limit=15
-                    ),
+                    self.chart_gen.generate_top_issues_table(analysis.quality_issues, limit=15),
                     "",
                 ]
             )

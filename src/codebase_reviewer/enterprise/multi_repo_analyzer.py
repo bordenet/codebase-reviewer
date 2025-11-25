@@ -1,10 +1,10 @@
 """Multi-repository analysis for enterprise teams."""
 
+import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import json
 
 
 @dataclass
@@ -93,9 +93,7 @@ class MultiRepoAnalyzer:
         self.max_workers = max_workers
         self.repo_analyses: List[RepoAnalysis] = []
 
-    def analyze_repos(
-        self, repo_paths: List[Path], progress_callback=None
-    ) -> List[RepoAnalysis]:
+    def analyze_repos(self, repo_paths: List[Path], progress_callback=None) -> List[RepoAnalysis]:
         """Analyze multiple repositories in parallel.
 
         Args:

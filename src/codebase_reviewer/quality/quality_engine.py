@@ -5,12 +5,12 @@ This module provides a flexible rule engine that can detect code quality issues
 using regex patterns and metrics.
 """
 
+import logging
 import re
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import List, Dict, Optional, Pattern
-import logging
+from typing import Dict, List, Optional, Pattern
 
 logger = logging.getLogger(__name__)
 
@@ -90,9 +90,7 @@ class QualityEngine:
         findings = []
 
         # Filter rules by language
-        applicable_rules = [
-            r for r in self.rules if language in r.languages and r.compiled_pattern
-        ]
+        applicable_rules = [r for r in self.rules if language in r.languages and r.compiled_pattern]
 
         if not applicable_rules:
             return findings
@@ -127,9 +125,7 @@ class QualityEngine:
         self.findings.extend(findings)
         return findings
 
-    def scan_directory(
-        self, directory: Path, language_map: Dict[str, str]
-    ) -> List[QualityFinding]:
+    def scan_directory(self, directory: Path, language_map: Dict[str, str]) -> List[QualityFinding]:
         """Scan a directory for quality issues."""
         all_findings = []
 

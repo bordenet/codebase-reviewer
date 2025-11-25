@@ -241,4 +241,3 @@ rules:
     remediation: Consolidate related changes into fewer classes
     code_example: "Refactor to reduce coupling between classes"
     effort_minutes: 120
-

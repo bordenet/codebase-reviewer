@@ -6,17 +6,17 @@ End-to-end test of the complete workflow:
 3. Compare and validate fidelity
 """
 
-import sys
 import json
-from pathlib import Path
+import sys
 from datetime import datetime
+from pathlib import Path
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
-from codebase_reviewer.validation.validator import Validator
 from codebase_reviewer.validation.comparator import DocumentationComparator
 from codebase_reviewer.validation.metrics import calculate_metrics_from_comparison
+from codebase_reviewer.validation.validator import Validator
 
 
 def generate_llm_documentation(codebase_path: Path, output_path: Path) -> Path:

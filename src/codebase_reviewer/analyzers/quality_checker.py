@@ -6,10 +6,10 @@ from pathlib import Path
 from typing import List
 
 from codebase_reviewer.models import Issue, Severity
-from codebase_reviewer.security.rule_engine import RuleEngine, Finding
-from codebase_reviewer.security.rules_loader import RulesLoader
 from codebase_reviewer.quality.quality_engine import QualityEngine, QualityFinding
 from codebase_reviewer.quality.quality_loader import QualityRulesLoader
+from codebase_reviewer.security.rule_engine import Finding, RuleEngine
+from codebase_reviewer.security.rules_loader import RulesLoader
 
 
 class QualityChecker:
@@ -58,10 +58,7 @@ class QualityChecker:
         todo_pattern = re.compile(r"#\s*(TODO|FIXME|HACK|XXX):\s*(.+)", re.IGNORECASE)
 
         for root, _, files in os.walk(repo_path):
-            if any(
-                skip in root
-                for skip in [".git", "node_modules", ".venv", "__pycache__"]
-            ):
+            if any(skip in root for skip in [".git", "node_modules", ".venv", "__pycache__"]):
                 continue
 
             for file in files:
@@ -239,11 +236,7 @@ class QualityChecker:
             Severity enum value
         """
         # Get the string value from the security Severity enum
-        severity_value = (
-            security_severity.value
-            if hasattr(security_severity, "value")
-            else str(security_severity)
-        )
+        severity_value = security_severity.value if hasattr(security_severity, "value") else str(security_severity)
 
         severity_map = {
             "critical": Severity.CRITICAL,

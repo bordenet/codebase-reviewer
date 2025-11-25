@@ -4,11 +4,7 @@ import pytest
 
 from codebase_reviewer.models import RepositoryAnalysis
 from codebase_reviewer.prompts.generator import PhaseGenerator
-from codebase_reviewer.prompts.workflow_executor import (
-    PromptStatus,
-    WorkflowExecutor,
-    WorkflowProgress,
-)
+from codebase_reviewer.prompts.workflow_executor import PromptStatus, WorkflowExecutor, WorkflowProgress
 from codebase_reviewer.prompts.workflow_loader import WorkflowLoader
 
 
@@ -112,9 +108,7 @@ def test_prompt_status_enum():
 
 def test_workflow_progress_pending_calculation():
     """Test WorkflowProgress pending calculation."""
-    progress = WorkflowProgress(
-        total_prompts=10, completed=3, failed=1, skipped=1, running=2
-    )
+    progress = WorkflowProgress(total_prompts=10, completed=3, failed=1, skipped=1, running=2)
 
     assert progress.pending == 3  # 10 - 3 - 1 - 1 - 2 = 3
 

@@ -92,4 +92,3 @@ func (l *Logger) log(level, format string, args ...interface{}) {
 func (l *Logger) SetLevel(level Level) {
 	l.level = level
 }
-

@@ -1,7 +1,8 @@
 """Mermaid diagram generator for architecture visualization."""
 
-from typing import List, Dict
 from pathlib import Path
+from typing import Dict, List
+
 from ..models import CodeAnalysis, CodeStructure, DependencyInfo
 
 
@@ -37,11 +38,7 @@ class MermaidGenerator:
             for i, dep in enumerate(analysis.dependencies[:15]):  # Limit to 15 edges
                 source_idx = self._find_component_index(dep.source, components)
                 target_idx = self._find_component_index(dep.target, components)
-                if (
-                    source_idx is not None
-                    and target_idx is not None
-                    and source_idx != target_idx
-                ):
+                if source_idx is not None and target_idx is not None and source_idx != target_idx:
                     lines.append(f"    C{source_idx} --> C{target_idx}")
 
         lines.append("```")
