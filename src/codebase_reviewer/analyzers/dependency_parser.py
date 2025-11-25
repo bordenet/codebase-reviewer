@@ -12,7 +12,9 @@ from codebase_reviewer.models import CodeStructure, DependencyInfo
 class DependencyParser:
     """Parses and analyzes project dependencies."""
 
-    def analyze_dependencies(self, repo_path: str, structure: CodeStructure) -> List[DependencyInfo]:
+    def analyze_dependencies(
+        self, repo_path: str, structure: CodeStructure
+    ) -> List[DependencyInfo]:
         """Analyze project dependencies.
 
         Args:
@@ -38,7 +40,9 @@ class DependencyParser:
 
         return dependencies
 
-    def _parse_dependency_file(self, file_path: Path, language: str) -> List[DependencyInfo]:
+    def _parse_dependency_file(
+        self, file_path: Path, language: str
+    ) -> List[DependencyInfo]:
         """Parse dependency file.
 
         Args:
@@ -78,7 +82,9 @@ class DependencyParser:
                         DependencyInfo(
                             name=name,
                             version=version,
-                            dependency_type="dev" if dep_type == "devDependencies" else "runtime",
+                            dependency_type="dev"
+                            if dep_type == "devDependencies"
+                            else "runtime",
                             source_file=str(file_path.name),
                         )
                     )
@@ -121,7 +127,9 @@ class DependencyParser:
         for line in content.splitlines():
             line = line.strip()
 
-            if line.startswith("[tool.poetry.dependencies]") or line.startswith("[project.dependencies]"):
+            if line.startswith("[tool.poetry.dependencies]") or line.startswith(
+                "[project.dependencies]"
+            ):
                 in_dependencies = True
                 continue
             elif line.startswith("["):
@@ -134,7 +142,10 @@ class DependencyParser:
                     if name != "python":
                         dependencies.append(
                             DependencyInfo(
-                                name=name, version=version, dependency_type="runtime", source_file=str(file_path.name)
+                                name=name,
+                                version=version,
+                                dependency_type="runtime",
+                                source_file=str(file_path.name),
                             )
                         )
 

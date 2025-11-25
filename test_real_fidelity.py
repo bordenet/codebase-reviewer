@@ -23,7 +23,7 @@ from codebase_reviewer.generators.documentation import DocumentationGenerator
 def create_gold_standard_analysis(codebase_path: Path, output_path: Path) -> Path:
     """
     Create a 'gold standard' analysis - what I (the AI assistant) would actually generate.
-    
+
     This should include:
     - Detailed analysis
     - Insights and recommendations
@@ -34,7 +34,7 @@ def create_gold_standard_analysis(codebase_path: Path, output_path: Path) -> Pat
     - Actionable recommendations
     """
     print("📝 Creating gold standard AI analysis (what I would actually generate)...")
-    
+
     # This is what I, the AI assistant, would actually generate
     gold_standard = f"""# {codebase_path.name} - Comprehensive AI Analysis
 
@@ -261,12 +261,12 @@ This is a **well-architected, production-ready system** with strong foundations.
 
 **Next Steps**: Add visualization generation to achieve A+ grade.
 """
-    
+
     # Save gold standard
     gold_path = output_path / "gold_standard_ai_analysis.md"
     gold_path.parent.mkdir(parents=True, exist_ok=True)
     gold_path.write_text(gold_standard)
-    
+
     print(f"✅ Gold standard saved to: {gold_path}")
     return gold_path
 
@@ -274,22 +274,22 @@ This is a **well-architected, production-ready system** with strong foundations.
 def generate_tool_output(codebase_path: Path, output_path: Path) -> Path:
     """Generate documentation using the tool."""
     print("🔧 Generating tool output (using DocumentationGenerator)...")
-    
+
     from codebase_reviewer.analyzers.code import CodeAnalyzer
     from codebase_reviewer.generators.documentation import DocumentationGenerator
-    
+
     # Analyze codebase
     analyzer = CodeAnalyzer()
     analysis = analyzer.analyze(str(codebase_path))
-    
+
     # Generate documentation
     generator = DocumentationGenerator()
     doc_content = generator.generate(analysis, str(codebase_path))
-    
+
     # Save to file
     tool_path = output_path / "tool_output.md"
     tool_path.write_text(doc_content)
-    
+
     print(f"✅ Tool output saved to: {tool_path}")
     return tool_path
 
@@ -300,23 +300,25 @@ def main():
     print("  🧪 REAL FIDELITY TEST - AI vs Tool")
     print("=" * 80)
     print()
-    
+
     # Use this codebase as test subject
     codebase_path = Path(__file__).parent
-    output_path = Path("/tmp/real-fidelity-test") / datetime.now().strftime("%Y%m%d_%H%M%S")
-    
+    output_path = Path("/tmp/real-fidelity-test") / datetime.now().strftime(
+        "%Y%m%d_%H%M%S"
+    )
+
     print(f"Codebase: {codebase_path}")
     print(f"Output: {output_path}")
     print()
-    
+
     # Step 1: Create gold standard (what I would generate)
     gold_path = create_gold_standard_analysis(codebase_path, output_path)
     print()
-    
+
     # Step 2: Generate tool output
     tool_path = generate_tool_output(codebase_path, output_path)
     print()
-    
+
     # Step 3: Compare and validate
     print("🔍 Comparing AI gold standard vs Tool output...")
     validator = Validator(fidelity_threshold=0.95)
@@ -326,17 +328,17 @@ def main():
         llm_doc_path=gold_path,
         tool_doc_path=tool_path,
     )
-    
+
     # Save report
     report_path = output_path / "real_fidelity_report.md"
     report_path.write_text(report.to_markdown())
-    
+
     json_path = output_path / "real_fidelity_report.json"
     json_path.write_text(report.to_json())
-    
+
     print(f"✅ Validation complete")
     print()
-    
+
     # Display results
     print("=" * 80)
     print("  📊 REAL FIDELITY RESULTS")
@@ -354,35 +356,34 @@ def main():
     print()
     print(f"Recommendation: {report.recommendation}")
     print()
-    
+
     if report.strengths:
         print("Strengths:")
         for strength in report.strengths:
             print(f"  ✅ {strength}")
         print()
-    
+
     if report.weaknesses:
         print("Weaknesses:")
         for weakness in report.weaknesses:
             print(f"  ⚠️  {weakness}")
         print()
-    
+
     if report.improvements_needed:
         print("Improvements Needed:")
         for improvement in report.improvements_needed:
             print(f"  🔧 {improvement}")
         print()
-    
+
     print(f"Full report: {report_path}")
     print()
     print(f"Gold standard: {gold_path}")
     print(f"Tool output: {tool_path}")
     print()
-    
+
     # Exit with appropriate code
     sys.exit(0 if report.passes_validation else 1)
 
 
 if __name__ == "__main__":
     main()
-

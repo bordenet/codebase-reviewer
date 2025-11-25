@@ -37,7 +37,11 @@ class MermaidGenerator:
             for i, dep in enumerate(analysis.dependencies[:15]):  # Limit to 15 edges
                 source_idx = self._find_component_index(dep.source, components)
                 target_idx = self._find_component_index(dep.target, components)
-                if source_idx is not None and target_idx is not None and source_idx != target_idx:
+                if (
+                    source_idx is not None
+                    and target_idx is not None
+                    and source_idx != target_idx
+                ):
                     lines.append(f"    C{source_idx} --> C{target_idx}")
 
         lines.append("```")
@@ -74,10 +78,7 @@ class MermaidGenerator:
                     lines.append(f"    {node_ids[dep_name]}[{dep_name}]")
 
         # Add style classes
-        lines.extend([
-            "    classDef dev fill:#f9f,stroke:#333,stroke-width:2px",
-            "```"
-        ])
+        lines.extend(["    classDef dev fill:#f9f,stroke:#333,stroke-width:2px", "```"])
         return "\n".join(lines)
 
     def generate_data_flow_diagram(self, analysis: CodeAnalysis) -> str:
@@ -92,14 +93,16 @@ class MermaidGenerator:
         lines = ["```mermaid", "flowchart TD"]
 
         # Simple data flow based on structure
-        lines.extend([
-            "    A[User Input] --> B[Input Validation]",
-            "    B --> C[Business Logic]",
-            "    C --> D[Data Access]",
-            "    D --> E[Database]",
-            "    C --> F[Output Formatting]",
-            "    F --> G[User Output]",
-        ])
+        lines.extend(
+            [
+                "    A[User Input] --> B[Input Validation]",
+                "    B --> C[Business Logic]",
+                "    C --> D[Data Access]",
+                "    D --> E[Database]",
+                "    C --> F[Output Formatting]",
+                "    F --> G[User Output]",
+            ]
+        )
 
         lines.append("```")
         return "\n".join(lines)
@@ -115,21 +118,23 @@ class MermaidGenerator:
         """
         lines = ["```mermaid", "sequenceDiagram"]
 
-        lines.extend([
-            "    participant U as User",
-            "    participant C as CLI",
-            "    participant A as Analyzer",
-            "    participant G as Generator",
-            "",
-            "    U->>C: Run analysis",
-            "    C->>A: Analyze codebase",
-            "    A->>A: Scan files",
-            "    A->>A: Extract structure",
-            "    A-->>C: Return analysis",
-            "    C->>G: Generate docs",
-            "    G-->>C: Return documentation",
-            "    C-->>U: Display results",
-        ])
+        lines.extend(
+            [
+                "    participant U as User",
+                "    participant C as CLI",
+                "    participant A as Analyzer",
+                "    participant G as Generator",
+                "",
+                "    U->>C: Run analysis",
+                "    C->>A: Analyze codebase",
+                "    A->>A: Scan files",
+                "    A->>A: Extract structure",
+                "    A-->>C: Return analysis",
+                "    C->>G: Generate docs",
+                "    G-->>C: Return documentation",
+                "    C-->>U: Display results",
+            ]
+        )
 
         lines.append("```")
         return "\n".join(lines)
@@ -162,6 +167,5 @@ class MermaidGenerator:
         # Remove file extensions
         name = Path(name).stem
         # Take last part of path
-        parts = name.split('/')
+        parts = name.split("/")
         return parts[-1] if parts else name
-

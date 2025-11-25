@@ -2,5 +2,4 @@
 
 from .auto_config import AutoConfig
 
-__all__ = ['AutoConfig']
-
+__all__ = ["AutoConfig"]

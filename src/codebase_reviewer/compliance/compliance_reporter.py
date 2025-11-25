@@ -8,6 +8,7 @@ from pathlib import Path
 
 class ComplianceFramework(Enum):
     """Compliance frameworks."""
+
     SOC2 = "soc2"
     HIPAA = "hipaa"
     PCI_DSS = "pci_dss"
@@ -18,6 +19,7 @@ class ComplianceFramework(Enum):
 @dataclass
 class ComplianceControl:
     """A compliance control requirement."""
+
     control_id: str
     name: str
     description: str
@@ -30,6 +32,7 @@ class ComplianceControl:
 @dataclass
 class ComplianceViolation:
     """A compliance violation."""
+
     control: ComplianceControl
     file_path: str
     line_number: int
@@ -41,13 +44,14 @@ class ComplianceViolation:
 @dataclass
 class ComplianceReport:
     """Compliance report for a framework."""
+
     framework: ComplianceFramework
     total_controls: int
     passing_controls: int
     failing_controls: int
     violations: List[ComplianceViolation] = field(default_factory=list)
     compliance_score: float = 0.0
-    
+
     def __post_init__(self):
         """Calculate compliance score."""
         if self.total_controls > 0:
@@ -56,7 +60,7 @@ class ComplianceReport:
 
 class ComplianceReporter:
     """Generate compliance reports."""
-    
+
     # SOC2 Trust Service Criteria
     SOC2_CONTROLS = [
         ComplianceControl(
@@ -70,7 +74,7 @@ class ComplianceReporter:
                 "No hardcoded credentials",
                 "Secure authentication mechanisms",
                 "Access logging and monitoring",
-            ]
+            ],
         ),
         ComplianceControl(
             control_id="CC6.6",
@@ -83,7 +87,7 @@ class ComplianceReporter:
                 "Use strong encryption algorithms",
                 "No weak crypto (MD5, SHA1)",
                 "Secure key management",
-            ]
+            ],
         ),
         ComplianceControl(
             control_id="CC7.2",
@@ -96,10 +100,10 @@ class ComplianceReporter:
                 "Logging of security events",
                 "Error handling and reporting",
                 "Audit trail implementation",
-            ]
+            ],
         ),
     ]
-    
+
     # HIPAA Security Rule
     HIPAA_CONTROLS = [
         ComplianceControl(
@@ -114,7 +118,7 @@ class ComplianceReporter:
                 "Emergency access procedure",
                 "Automatic logoff",
                 "Encryption and decryption",
-            ]
+            ],
         ),
         ComplianceControl(
             control_id="164.312(e)(1)",
@@ -127,10 +131,10 @@ class ComplianceReporter:
                 "Integrity controls",
                 "Encryption of data in transit",
                 "Secure communication protocols",
-            ]
+            ],
         ),
     ]
-    
+
     # PCI-DSS Requirements
     PCI_DSS_CONTROLS = [
         ComplianceControl(
@@ -144,7 +148,7 @@ class ComplianceReporter:
                 "No storage of sensitive authentication data after authorization",
                 "Mask PAN when displayed",
                 "Encrypt stored cardholder data",
-            ]
+            ],
         ),
         ComplianceControl(
             control_id="PCI-6.5.1",
@@ -157,10 +161,10 @@ class ComplianceReporter:
                 "Input validation",
                 "Parameterized queries",
                 "Output encoding",
-            ]
+            ],
         ),
     ]
-    
+
     def __init__(self):
         """Initialize compliance reporter."""
         self.controls = {
@@ -168,31 +172,33 @@ class ComplianceReporter:
             ComplianceFramework.HIPAA: self.HIPAA_CONTROLS,
             ComplianceFramework.PCI_DSS: self.PCI_DSS_CONTROLS,
         }
-    
-    def generate_report(self, framework: ComplianceFramework, analysis_results: Dict) -> ComplianceReport:
+
+    def generate_report(
+        self, framework: ComplianceFramework, analysis_results: Dict
+    ) -> ComplianceReport:
         """Generate compliance report.
-        
+
         Args:
             framework: Compliance framework
             analysis_results: Analysis results with security findings
-            
+
         Returns:
             Compliance report
         """
         controls = self.controls.get(framework, [])
         violations = []
-        
+
         # Map security findings to compliance violations
-        security_issues = analysis_results.get('security_issues', [])
-        
+        security_issues = analysis_results.get("security_issues", [])
+
         for control in controls:
             # Check if any security issues violate this control
             control_violations = self._check_control(control, security_issues)
             violations.extend(control_violations)
-        
+
         passing = len(controls) - len(set(v.control.control_id for v in violations))
         failing = len(set(v.control.control_id for v in violations))
-        
+
         return ComplianceReport(
             framework=framework,
             total_controls=len(controls),
@@ -200,42 +206,62 @@ class ComplianceReporter:
             failing_controls=failing,
             violations=violations,
         )
-    
-    def _check_control(self, control: ComplianceControl, security_issues: List) -> List[ComplianceViolation]:
+
+    def _check_control(
+        self, control: ComplianceControl, security_issues: List
+    ) -> List[ComplianceViolation]:
         """Check if control is violated.
-        
+
         Args:
             control: Compliance control
             security_issues: List of security issues
-            
+
         Returns:
             List of violations
         """
         violations = []
-        
+
         # Map control categories to security issue patterns
         category_patterns = {
-            'access_control': ['hardcoded', 'password', 'secret', 'api_key', 'token'],
-            'encryption': ['md5', 'sha1', 'weak_crypto', 'insecure_hash'],
-            'data_protection': ['sensitive_data', 'pii', 'credit_card', 'ssn'],
-            'secure_coding': ['sql_injection', 'xss', 'command_injection', 'path_traversal'],
+            "access_control": ["hardcoded", "password", "secret", "api_key", "token"],
+            "encryption": ["md5", "sha1", "weak_crypto", "insecure_hash"],
+            "data_protection": ["sensitive_data", "pii", "credit_card", "ssn"],
+            "secure_coding": [
+                "sql_injection",
+                "xss",
+                "command_injection",
+                "path_traversal",
+            ],
         }
-        
-        patterns = category_patterns.get(control.category, [])
-        
-        for issue in security_issues:
-            issue_title = issue.title.lower() if hasattr(issue, 'title') else ''
-            issue_desc = issue.description.lower() if hasattr(issue, 'description') else ''
-            
-            if any(pattern in issue_title or pattern in issue_desc for pattern in patterns):
-                violations.append(ComplianceViolation(
-                    control=control,
-                    file_path=issue.source.split(':')[0] if hasattr(issue, 'source') and ':' in issue.source else 'unknown',
-                    line_number=int(issue.source.split(':')[1]) if hasattr(issue, 'source') and ':' in issue.source and len(issue.source.split(':')) > 1 else 0,
-                    description=issue.description if hasattr(issue, 'description') else '',
-                    remediation=f"Address {control.name} requirement",
-                    evidence=issue.title if hasattr(issue, 'title') else '',
-                ))
-        
-        return violations
 
+        patterns = category_patterns.get(control.category, [])
+
+        for issue in security_issues:
+            issue_title = issue.title.lower() if hasattr(issue, "title") else ""
+            issue_desc = (
+                issue.description.lower() if hasattr(issue, "description") else ""
+            )
+
+            if any(
+                pattern in issue_title or pattern in issue_desc for pattern in patterns
+            ):
+                violations.append(
+                    ComplianceViolation(
+                        control=control,
+                        file_path=issue.source.split(":")[0]
+                        if hasattr(issue, "source") and ":" in issue.source
+                        else "unknown",
+                        line_number=int(issue.source.split(":")[1])
+                        if hasattr(issue, "source")
+                        and ":" in issue.source
+                        and len(issue.source.split(":")) > 1
+                        else 0,
+                        description=issue.description
+                        if hasattr(issue, "description")
+                        else "",
+                        remediation=f"Address {control.name} requirement",
+                        evidence=issue.title if hasattr(issue, "title") else "",
+                    )
+                )
+
+        return violations

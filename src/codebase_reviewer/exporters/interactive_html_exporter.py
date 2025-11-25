@@ -8,7 +8,12 @@ import json
 class InteractiveHTMLExporter:
     """Export analysis results to interactive HTML format."""
 
-    def export(self, analysis: CodeAnalysis, output_path: str, title: str = "Interactive Code Analysis Report") -> None:
+    def export(
+        self,
+        analysis: CodeAnalysis,
+        output_path: str,
+        title: str = "Interactive Code Analysis Report",
+    ) -> None:
         """Export analysis to interactive HTML file.
 
         Args:
@@ -17,11 +22,13 @@ class InteractiveHTMLExporter:
             title: Report title
         """
         html = self.to_html(analysis, title)
-        
-        with open(output_path, 'w', encoding='utf-8') as f:
+
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(html)
 
-    def to_html(self, analysis: CodeAnalysis, title: str = "Interactive Code Analysis Report") -> str:
+    def to_html(
+        self, analysis: CodeAnalysis, title: str = "Interactive Code Analysis Report"
+    ) -> str:
         """Convert analysis to interactive HTML.
 
         Args:
@@ -32,28 +39,32 @@ class InteractiveHTMLExporter:
             HTML string
         """
         issues = analysis.quality_issues if analysis.quality_issues else []
-        
+
         # Convert issues to JSON for JavaScript
-        issues_json = json.dumps([
-            {
-                'id': i.title,
-                'file': i.source.split(':')[0] if ':' in i.source else i.source,
-                'line': i.source.split(':')[1] if ':' in i.source and len(i.source.split(':')) > 1 else '0',
-                'severity': i.severity.value,
-                'description': i.description,
-                'category': 'security' if 'SEC' in i.title else 'quality',
-            }
-            for i in issues
-        ])
-        
+        issues_json = json.dumps(
+            [
+                {
+                    "id": i.title,
+                    "file": i.source.split(":")[0] if ":" in i.source else i.source,
+                    "line": i.source.split(":")[1]
+                    if ":" in i.source and len(i.source.split(":")) > 1
+                    else "0",
+                    "severity": i.severity.value,
+                    "description": i.description,
+                    "category": "security" if "SEC" in i.title else "quality",
+                }
+                for i in issues
+            ]
+        )
+
         # Calculate summary stats
         total_issues = len(issues)
         critical_count = len([i for i in issues if i.severity.value == "critical"])
         high_count = len([i for i in issues if i.severity.value == "high"])
         medium_count = len([i for i in issues if i.severity.value == "medium"])
         low_count = len([i for i in issues if i.severity.value == "low"])
-        security_count = len([i for i in issues if 'SEC' in i.title])
-        quality_count = len([i for i in issues if 'QUAL' in i.title])
+        security_count = len([i for i in issues if "SEC" in i.title])
+        quality_count = len([i for i in issues if "QUAL" in i.title])
 
         html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -239,4 +250,3 @@ class InteractiveHTMLExporter:
 """
 
         return html
-

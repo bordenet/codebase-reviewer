@@ -40,7 +40,7 @@ def test_check_for_todos_python(quality_checker, temp_repo):
         "def foo():\n"
         "    pass\n"
     )
-    
+
     issues = quality_checker._check_for_todos(temp_repo)
     assert len(issues) == 4
     assert all(issue.severity == Severity.LOW for issue in issues)
@@ -65,7 +65,7 @@ def test_check_for_todos_case_insensitive(quality_checker, temp_repo):
     """Test that TODO detection is case-insensitive."""
     test_file = Path(temp_repo) / "test.py"
     test_file.write_text("# todo: lowercase todo\n# ToDo: Mixed case\n")
-    
+
     issues = quality_checker._check_for_todos(temp_repo)
     assert len(issues) == 2
 
@@ -77,7 +77,7 @@ def test_check_for_todos_skips_directories(quality_checker, temp_repo):
         dir_path = Path(temp_repo) / skip_dir
         dir_path.mkdir()
         (dir_path / "test.py").write_text("# TODO: Should be skipped\n")
-    
+
     issues = quality_checker._check_for_todos(temp_repo)
     assert len(issues) == 0
 
@@ -86,7 +86,7 @@ def test_check_for_security_issues_hardcoded_password(quality_checker, temp_repo
     """Test detection of hardcoded passwords."""
     test_file = Path(temp_repo) / "config.py"
     test_file.write_text('password = "secret123"\n')
-    
+
     issues = quality_checker._check_for_security_issues(temp_repo)
     assert len(issues) == 1
     assert issues[0].severity == Severity.HIGH
@@ -97,7 +97,7 @@ def test_check_for_security_issues_api_key(quality_checker, temp_repo):
     """Test detection of hardcoded API keys."""
     test_file = Path(temp_repo) / "config.py"
     test_file.write_text('api_key = "abc123xyz"\napi-key = "def456"\n')
-    
+
     issues = quality_checker._check_for_security_issues(temp_repo)
     assert len(issues) >= 1
     assert any("API key" in issue.description for issue in issues)
@@ -107,7 +107,7 @@ def test_check_for_security_issues_secret(quality_checker, temp_repo):
     """Test detection of hardcoded secrets."""
     test_file = Path(temp_repo) / "config.py"
     test_file.write_text('secret = "my_secret_value"\n')
-    
+
     issues = quality_checker._check_for_security_issues(temp_repo)
     assert len(issues) == 1
     assert "secret" in issues[0].description.lower()
@@ -117,7 +117,7 @@ def test_check_for_security_issues_eval(quality_checker, temp_repo):
     """Test detection of eval() usage."""
     test_file = Path(temp_repo) / "dangerous.py"
     test_file.write_text('result = eval("1 + 1")\n')
-    
+
     issues = quality_checker._check_for_security_issues(temp_repo)
     assert len(issues) == 1
     assert "eval()" in issues[0].description
@@ -126,8 +126,8 @@ def test_check_for_security_issues_eval(quality_checker, temp_repo):
 def test_check_for_security_issues_exec(quality_checker, temp_repo):
     """Test detection of exec() usage."""
     test_file = Path(temp_repo) / "dangerous.py"
-    test_file.write_text('exec("print(\'hello\')")\n')
-    
+    test_file.write_text("exec(\"print('hello')\")\n")
+
     issues = quality_checker._check_for_security_issues(temp_repo)
     assert len(issues) == 1
     assert "exec()" in issues[0].description
@@ -139,7 +139,7 @@ def test_check_for_security_issues_skips_test_directories(quality_checker, temp_
         dir_path = Path(temp_repo) / test_dir
         dir_path.mkdir()
         (dir_path / "test.py").write_text('password = "test123"\n')
-    
+
     issues = quality_checker._check_for_security_issues(temp_repo)
     assert len(issues) == 0
 
@@ -147,16 +147,15 @@ def test_check_for_security_issues_skips_test_directories(quality_checker, temp_
 def test_analyze_quality_combined(quality_checker, temp_repo):
     """Test that analyze_quality combines TODO and security checks."""
     test_file = Path(temp_repo) / "code.py"
-    test_file.write_text(
-        "# TODO: Fix security\n"
-        'password = "secret"\n'
-    )
+    test_file.write_text("# TODO: Fix security\n" 'password = "secret"\n')
 
     issues = quality_checker.analyze_quality(temp_repo)
     # Now we get 3 issues: TODO + legacy password check + OWASP password check
     assert len(issues) >= 2  # At least TODO and password
     assert any(issue.severity == Severity.LOW for issue in issues)  # TODO
-    assert any(issue.severity in [Severity.HIGH, Severity.CRITICAL] for issue in issues)  # password
+    assert any(
+        issue.severity in [Severity.HIGH, Severity.CRITICAL] for issue in issues
+    )  # password
 
 
 def test_check_for_todos_handles_read_errors(quality_checker, temp_repo):
@@ -180,4 +179,3 @@ def test_check_for_security_issues_handles_read_errors(quality_checker, temp_rep
     # Should not raise an exception
     issues = quality_checker._check_for_security_issues(temp_repo)
     assert isinstance(issues, list)
-

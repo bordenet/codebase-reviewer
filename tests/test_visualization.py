@@ -24,8 +24,12 @@ class TestMermaidGenerator:
         # Create test analysis
         structure = CodeStructure(
             languages=[
-                Language(name="Python", file_count=10, percentage=60.0, line_count=1000),
-                Language(name="JavaScript", file_count=5, percentage=30.0, line_count=500),
+                Language(
+                    name="Python", file_count=10, percentage=60.0, line_count=1000
+                ),
+                Language(
+                    name="JavaScript", file_count=5, percentage=30.0, line_count=500
+                ),
             ],
             frameworks=[Framework(name="Flask")],
         )
@@ -47,7 +51,9 @@ class TestMermaidGenerator:
 
         dependencies = [
             DependencyInfo(name="flask", dependency_type="production", version="2.0.0"),
-            DependencyInfo(name="pytest", dependency_type="development", version="7.0.0"),
+            DependencyInfo(
+                name="pytest", dependency_type="development", version="7.0.0"
+            ),
         ]
 
         diagram = gen.generate_dependency_graph(dependencies)
@@ -88,8 +94,12 @@ class TestChartGenerator:
 
         structure = CodeStructure(
             languages=[
-                Language(name="Python", file_count=10, percentage=60.0, line_count=1000),
-                Language(name="JavaScript", file_count=5, percentage=30.0, line_count=500),
+                Language(
+                    name="Python", file_count=10, percentage=60.0, line_count=1000
+                ),
+                Language(
+                    name="JavaScript", file_count=5, percentage=30.0, line_count=500
+                ),
             ],
             frameworks=[],
         )
@@ -110,9 +120,24 @@ class TestChartGenerator:
         gen = ChartGenerator()
 
         issues = [
-            Issue(title="Critical Issue", description="Test", severity=Severity.CRITICAL, source="test.py"),
-            Issue(title="High Issue", description="Test", severity=Severity.HIGH, source="test.py"),
-            Issue(title="Low Issue", description="Test", severity=Severity.LOW, source="test.py"),
+            Issue(
+                title="Critical Issue",
+                description="Test",
+                severity=Severity.CRITICAL,
+                source="test.py",
+            ),
+            Issue(
+                title="High Issue",
+                description="Test",
+                severity=Severity.HIGH,
+                source="test.py",
+            ),
+            Issue(
+                title="Low Issue",
+                description="Test",
+                severity=Severity.LOW,
+                source="test.py",
+            ),
         ]
 
         table = gen.generate_issue_severity_table(issues)
@@ -125,7 +150,11 @@ class TestChartGenerator:
         gen = ChartGenerator()
 
         structure = CodeStructure(
-            languages=[Language(name="Python", file_count=10, percentage=100.0, line_count=1000)],
+            languages=[
+                Language(
+                    name="Python", file_count=10, percentage=100.0, line_count=1000
+                )
+            ],
             frameworks=[],
         )
         analysis = CodeAnalysis(
@@ -166,11 +195,20 @@ class TestChartGenerator:
         gen = ChartGenerator()
 
         issues = [
-            Issue(title="Issue 1", description="Test", severity=Severity.CRITICAL, source="test.py:1"),
-            Issue(title="Issue 2", description="Test", severity=Severity.HIGH, source="test.py:2"),
+            Issue(
+                title="Issue 1",
+                description="Test",
+                severity=Severity.CRITICAL,
+                source="test.py:1",
+            ),
+            Issue(
+                title="Issue 2",
+                description="Test",
+                severity=Severity.HIGH,
+                source="test.py:2",
+            ),
         ]
 
         table = gen.generate_top_issues_table(issues, limit=5)
         assert "| Severity | Issue | Location |" in table
         assert "Issue 1" in table
-

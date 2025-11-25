@@ -45,7 +45,7 @@ class TestQualityEngine:
         engine = QualityEngine([rule])
 
         # Create temp file with TODO
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write("# TODO: Fix this\n")
             f.write("def foo():\n")
             f.write("    pass\n")
@@ -73,7 +73,7 @@ class TestQualityEngine:
         engine = QualityEngine([rule])
 
         # Create temp file without TODO
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write("def foo():\n")
             f.write("    pass\n")
             temp_path = Path(f.name)
@@ -98,7 +98,7 @@ class TestQualityEngine:
         engine = QualityEngine([rule])
 
         # Create temp JavaScript file
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.js', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".js", delete=False) as f:
             f.write("// TODO: Fix this\n")
             temp_path = Path(f.name)
 
@@ -139,7 +139,7 @@ class TestQualityEngine:
         engine = QualityEngine(rules)
 
         # Create temp file with both issues
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write("# TODO: Fix this\n")
             f.write("# FIXME: Broken\n")
             temp_path = Path(f.name)
@@ -173,4 +173,3 @@ class TestQualityRulesLoader:
             assert rule.pattern
             assert rule.languages
             assert rule.category
-

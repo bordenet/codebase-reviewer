@@ -6,39 +6,43 @@ from pathlib import Path
 
 class DashboardGenerator:
     """Generates HTML dashboards for team metrics."""
-    
+
     def __init__(self):
         """Initialize dashboard generator."""
         pass
-    
-    def generate_multi_repo_dashboard(self, repo_analyses: List[dict], aggregate: dict, output_path: Path) -> None:
+
+    def generate_multi_repo_dashboard(
+        self, repo_analyses: List[dict], aggregate: dict, output_path: Path
+    ) -> None:
         """Generate multi-repository dashboard.
-        
+
         Args:
             repo_analyses: List of repository analyses
             aggregate: Aggregate metrics
             output_path: Path to save dashboard HTML
         """
         html = self._generate_html(repo_analyses, aggregate)
-        
-        with open(output_path, 'w', encoding='utf-8') as f:
+
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(html)
-    
+
     def _generate_html(self, repo_analyses: List[dict], aggregate: dict) -> str:
         """Generate HTML for dashboard.
-        
+
         Args:
             repo_analyses: List of repository analyses
             aggregate: Aggregate metrics
-            
+
         Returns:
             HTML string
         """
         # Generate repository cards
         repo_cards = []
-        for repo in sorted(repo_analyses, key=lambda r: r['total_issues'], reverse=True):
-            severity_class = self._get_severity_class(repo['total_issues'])
-            
+        for repo in sorted(
+            repo_analyses, key=lambda r: r["total_issues"], reverse=True
+        ):
+            severity_class = self._get_severity_class(repo["total_issues"])
+
             card = f"""
             <div class="repo-card {severity_class}">
                 <h3>{repo['repo_name']}</h3>
@@ -71,7 +75,7 @@ class DashboardGenerator:
             </div>
             """
             repo_cards.append(card)
-        
+
         # Generate aggregate summary
         summary = f"""
         <div class="summary">
@@ -104,7 +108,7 @@ class DashboardGenerator:
             </div>
         </div>
         """
-        
+
         # Complete HTML
         html = f"""
 <!DOCTYPE html>
@@ -154,22 +158,21 @@ class DashboardGenerator:
 </body>
 </html>
         """
-        
+
         return html
-    
+
     def _get_severity_class(self, total_issues: int) -> str:
         """Get CSS class based on issue count.
-        
+
         Args:
             total_issues: Total number of issues
-            
+
         Returns:
             CSS class name
         """
         if total_issues >= 50:
-            return 'high-risk'
+            return "high-risk"
         elif total_issues >= 20:
-            return 'medium-risk'
+            return "medium-risk"
         else:
-            return 'low-risk'
-
+            return "low-risk"

@@ -37,7 +37,9 @@ class PromptTemplate:
         self.deliverable: str = template_data["deliverable"]
         self.ai_model_hints: Dict[str, Any] = template_data.get("ai_model_hints", {})
         self.dependencies: List[str] = template_data.get("dependencies", [])
-        self.context_requirements: List[str] = template_data.get("context_requirements", [])
+        self.context_requirements: List[str] = template_data.get(
+            "context_requirements", []
+        )
         self.conditional: Optional[str] = template_data.get("conditional")
 
     def _validate_required_fields(self, data: Dict[str, Any]) -> None:
@@ -113,7 +115,8 @@ class PromptTemplateLoader:
 
         if not template_file.exists():
             raise PromptTemplateError(
-                f"Template file not found: {template_file}. " f"Expected templates in {self.templates_dir}"
+                f"Template file not found: {template_file}. "
+                f"Expected templates in {self.templates_dir}"
             )
 
         try:
@@ -125,7 +128,9 @@ class PromptTemplateLoader:
             raise PromptTemplateError(f"Error reading {template_file}: {e}") from e
 
         if not data or "prompts" not in data:
-            raise PromptTemplateError(f"Template file {template_file} missing 'prompts' key")
+            raise PromptTemplateError(
+                f"Template file {template_file} missing 'prompts' key"
+            )
 
         templates = []
         for prompt_data in data["prompts"]:
@@ -133,7 +138,9 @@ class PromptTemplateLoader:
                 template = PromptTemplate(prompt_data)
                 templates.append(template)
             except (TypeError, ValueError) as e:
-                raise PromptTemplateError(f"Invalid prompt template in {template_file}: {e}") from e
+                raise PromptTemplateError(
+                    f"Invalid prompt template in {template_file}: {e}"
+                ) from e
 
         return templates
 
@@ -157,7 +164,8 @@ class PromptTemplateLoader:
 
         if not template_file.exists():
             raise PromptTemplateError(
-                f"Template file not found: {template_file}. " f"Expected templates in {self.templates_dir}"
+                f"Template file not found: {template_file}. "
+                f"Expected templates in {self.templates_dir}"
             )
 
         try:
@@ -170,7 +178,8 @@ class PromptTemplateLoader:
 
         if not isinstance(data, dict) or "prompts" not in data:
             raise PromptTemplateError(
-                f"Invalid template structure in {template_file}. " "Expected top-level 'prompts' key."
+                f"Invalid template structure in {template_file}. "
+                "Expected top-level 'prompts' key."
             )
 
         templates = []
@@ -179,7 +188,8 @@ class PromptTemplateLoader:
                 templates.append(PromptTemplate(prompt_data))
             except PromptTemplateError as e:
                 raise PromptTemplateError(
-                    f"Error in template {prompt_data.get('id', 'unknown')} " f"in {template_file}: {e}"
+                    f"Error in template {prompt_data.get('id', 'unknown')} "
+                    f"in {template_file}: {e}"
                 ) from e
 
         # Cache the loaded templates

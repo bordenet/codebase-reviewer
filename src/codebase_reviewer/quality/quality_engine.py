@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 class QualitySeverity(Enum):
     """Severity levels for quality findings."""
+
     HIGH = "high"
     MEDIUM = "medium"
     LOW = "low"
@@ -36,6 +37,7 @@ class QualitySeverity(Enum):
 @dataclass
 class QualityRule:
     """A quality rule for detecting code quality issues."""
+
     id: str
     name: str
     description: str
@@ -60,6 +62,7 @@ class QualityRule:
 @dataclass
 class QualityFinding:
     """A quality finding from applying a rule."""
+
     rule_id: str
     rule_name: str
     severity: QualitySeverity
@@ -87,31 +90,35 @@ class QualityEngine:
         findings = []
 
         # Filter rules by language
-        applicable_rules = [r for r in self.rules if language in r.languages and r.compiled_pattern]
+        applicable_rules = [
+            r for r in self.rules if language in r.languages and r.compiled_pattern
+        ]
 
         if not applicable_rules:
             return findings
 
         try:
-            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+            with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
                 lines = f.readlines()
 
             for rule in applicable_rules:
                 for line_num, line in enumerate(lines, 1):
                     if rule.compiled_pattern.search(line):
-                        findings.append(QualityFinding(
-                            rule_id=rule.id,
-                            rule_name=rule.name,
-                            severity=rule.severity,
-                            file_path=str(file_path),
-                            line_number=line_num,
-                            line_content=line.strip(),
-                            description=rule.description,
-                            remediation=rule.remediation,
-                            code_example=rule.code_example,
-                            category=rule.category,
-                            effort_minutes=rule.effort_minutes,
-                        ))
+                        findings.append(
+                            QualityFinding(
+                                rule_id=rule.id,
+                                rule_name=rule.name,
+                                severity=rule.severity,
+                                file_path=str(file_path),
+                                line_number=line_num,
+                                line_content=line.strip(),
+                                description=rule.description,
+                                remediation=rule.remediation,
+                                code_example=rule.code_example,
+                                category=rule.category,
+                                effort_minutes=rule.effort_minutes,
+                            )
+                        )
 
         except Exception as e:
             logger.error(f"Error scanning file {file_path}: {e}")
@@ -120,7 +127,9 @@ class QualityEngine:
         self.findings.extend(findings)
         return findings
 
-    def scan_directory(self, directory: Path, language_map: Dict[str, str]) -> List[QualityFinding]:
+    def scan_directory(
+        self, directory: Path, language_map: Dict[str, str]
+    ) -> List[QualityFinding]:
         """Scan a directory for quality issues."""
         all_findings = []
 
@@ -149,4 +158,3 @@ class QualityEngine:
                 grouped[finding.category] = []
             grouped[finding.category].append(finding)
         return grouped
-

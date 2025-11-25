@@ -56,7 +56,9 @@ class ImprovementRecommendation:
         for criterion, impact in self.expected_impact.items():
             lines.append(f"- **{criterion.title()}**: {impact}")
 
-        lines.extend(["", f"**Affected Prompts**: {', '.join(self.affected_prompts)}", ""])
+        lines.extend(
+            ["", f"**Affected Prompts**: {', '.join(self.affected_prompts)}", ""]
+        )
 
         return "\n".join(lines)
 
@@ -68,7 +70,9 @@ class ImprovementEngine:
         """Initialize the improvement engine."""
         self.recommendations: List[ImprovementRecommendation] = []
 
-    def analyze_results(self, results: List[EvaluationResult], threshold: float = 3.5) -> List[ImprovementRecommendation]:
+    def analyze_results(
+        self, results: List[EvaluationResult], threshold: float = 3.5
+    ) -> List[ImprovementRecommendation]:
         """Analyze evaluation results and generate recommendations.
 
         Args:
@@ -138,7 +142,9 @@ class ImprovementEngine:
             priority = "LOW"
 
         # Generate recommendation based on criterion
-        issue, root_cause, current, improved, impact = self._get_criterion_guidance(criterion, avg_score)
+        issue, root_cause, current, improved, impact = self._get_criterion_guidance(
+            criterion, avg_score
+        )
 
         return ImprovementRecommendation(
             recommendation_id=f"{prompt_id}_{criterion}",
@@ -149,7 +155,11 @@ class ImprovementEngine:
             improved_prompt_excerpt=improved,
             expected_impact={criterion: impact},
             affected_prompts=[prompt_id],
-            metadata={"avg_score": avg_score, "num_tests": len(results), "feedback": feedback_items},
+            metadata={
+                "avg_score": avg_score,
+                "num_tests": len(results),
+                "feedback": feedback_items,
+            },
         )
 
     def _get_criterion_guidance(
@@ -230,10 +240,12 @@ class ImprovementEngine:
         lines.extend(["", "---", ""])
 
         # Add each recommendation
-        for rec in sorted(self.recommendations, key=lambda r: (r.priority != "HIGH", r.priority != "MEDIUM")):
+        for rec in sorted(
+            self.recommendations,
+            key=lambda r: (r.priority != "HIGH", r.priority != "MEDIUM"),
+        ):
             lines.append(rec.to_markdown())
             lines.append("---\n")
 
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text("\n".join(lines), encoding="utf-8")
-

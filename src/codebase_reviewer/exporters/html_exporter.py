@@ -7,7 +7,12 @@ from ..models import CodeAnalysis, Issue
 class HTMLExporter:
     """Export analysis results to HTML format."""
 
-    def export(self, analysis: CodeAnalysis, output_path: str, title: str = "Code Analysis Report") -> None:
+    def export(
+        self,
+        analysis: CodeAnalysis,
+        output_path: str,
+        title: str = "Code Analysis Report",
+    ) -> None:
         """Export analysis to HTML file.
 
         Args:
@@ -16,11 +21,13 @@ class HTMLExporter:
             title: Report title
         """
         html = self.to_html(analysis, title)
-        
-        with open(output_path, 'w', encoding='utf-8') as f:
+
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(html)
 
-    def to_html(self, analysis: CodeAnalysis, title: str = "Code Analysis Report") -> str:
+    def to_html(
+        self, analysis: CodeAnalysis, title: str = "Code Analysis Report"
+    ) -> str:
         """Convert analysis to HTML.
 
         Args:
@@ -31,9 +38,13 @@ class HTMLExporter:
             HTML string
         """
         issues = analysis.quality_issues if analysis.quality_issues else []
-        
+
         # Calculate summary stats
-        total_files = sum(lang.file_count for lang in analysis.structure.languages) if analysis.structure and analysis.structure.languages else 0
+        total_files = (
+            sum(lang.file_count for lang in analysis.structure.languages)
+            if analysis.structure and analysis.structure.languages
+            else 0
+        )
         total_issues = len(issues)
         critical_count = len([i for i in issues if i.severity.value == "critical"])
         high_count = len([i for i in issues if i.severity.value == "high"])
@@ -174,10 +185,10 @@ class HTMLExporter:
 
     def _escape_html(self, text: str) -> str:
         """Escape HTML special characters."""
-        return (text
-                .replace('&', '&amp;')
-                .replace('<', '&lt;')
-                .replace('>', '&gt;')
-                .replace('"', '&quot;')
-                .replace("'", '&#39;'))
-
+        return (
+            text.replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace('"', "&quot;")
+            .replace("'", "&#39;")
+        )
