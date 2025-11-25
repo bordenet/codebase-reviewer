@@ -3,6 +3,7 @@
 from codebase_reviewer.exporters.json_exporter import JSONExporter
 from codebase_reviewer.exporters.html_exporter import HTMLExporter
 from codebase_reviewer.exporters.sarif_exporter import SARIFExporter
+from codebase_reviewer.exporters.interactive_html_exporter import InteractiveHTMLExporter
 
-__all__ = ["JSONExporter", "HTMLExporter", "SARIFExporter"]
+__all__ = ["JSONExporter", "HTMLExporter", "SARIFExporter", "InteractiveHTMLExporter"]
 

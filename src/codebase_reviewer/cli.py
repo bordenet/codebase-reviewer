@@ -21,6 +21,7 @@ from codebase_reviewer.analyzers.code import CodeAnalyzer
 from codebase_reviewer.exporters.json_exporter import JSONExporter
 from codebase_reviewer.exporters.html_exporter import HTMLExporter
 from codebase_reviewer.exporters.sarif_exporter import SARIFExporter
+from codebase_reviewer.exporters.interactive_html_exporter import InteractiveHTMLExporter
 from codebase_reviewer.analytics.trend_analyzer import TrendAnalyzer, MetricSnapshot
 from codebase_reviewer.analytics.hotspot_detector import HotspotDetector
 from codebase_reviewer.analytics.risk_scorer import RiskScorer
@@ -750,7 +751,7 @@ def evolve(
 @click.option(
     "--format",
     "-f",
-    type=click.Choice(["json", "html", "sarif", "markdown"]),
+    type=click.Choice(["json", "html", "interactive-html", "sarif", "markdown"]),
     default="json",
     help="Output format (default: json)",
 )
@@ -881,6 +882,12 @@ def analyze(repo_path, output, format, with_analytics, track_trends):
             exporter = HTMLExporter()
             exporter.export(analysis, output, title=f"Code Analysis - {Path(repo_path).name}")
             click.echo(f"✅ HTML report saved to: {output}")
+
+        elif format == "interactive-html":
+            exporter = InteractiveHTMLExporter()
+            exporter.export(analysis, output, title=f"Interactive Code Analysis - {Path(repo_path).name}")
+            click.echo(f"✅ Interactive HTML report saved to: {output}")
+            click.echo(f"💡 Open in browser for filtering, search, and drill-down capabilities")
 
         elif format == "sarif":
             exporter = SARIFExporter()
