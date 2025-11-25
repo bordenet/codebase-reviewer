@@ -44,13 +44,7 @@ class WorkflowProgress:
     @property
     def pending(self) -> int:
         """Calculate pending prompts."""
-        return (
-            self.total_prompts
-            - self.completed
-            - self.failed
-            - self.skipped
-            - self.running
-        )
+        return self.total_prompts - self.completed - self.failed - self.skipped - self.running
 
     @property
     def completion_percentage(self) -> float:
@@ -75,9 +69,7 @@ class WorkflowExecutor:
         self._executions: Dict[str, PromptExecution] = {}
         self._progress: Optional[WorkflowProgress] = None
 
-    def execute(
-        self, workflow_name: str, repo_analysis: RepositoryAnalysis
-    ) -> tuple[List[Prompt], WorkflowProgress]:
+    def execute(self, workflow_name: str, repo_analysis: RepositoryAnalysis) -> tuple[List[Prompt], WorkflowProgress]:
         """Execute a workflow and return generated prompts with progress.
 
         Args:
@@ -132,9 +124,7 @@ class WorkflowExecutor:
             return prompt_ref.custom.id
         return "unknown"
 
-    def _execute_workflow(
-        self, workflow_def: WorkflowDefinition, repo_analysis: RepositoryAnalysis
-    ) -> List[Prompt]:
+    def _execute_workflow(self, workflow_def: WorkflowDefinition, repo_analysis: RepositoryAnalysis) -> List[Prompt]:
         """Execute all prompts in the workflow.
 
         Args:

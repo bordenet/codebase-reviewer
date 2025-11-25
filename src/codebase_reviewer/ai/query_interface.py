@@ -58,9 +58,7 @@ class QueryInterface:
             },
             {
                 "pattern": r"(?:show|find|list|get)\s+(?:me\s+)?(?:all\s+)?(?:issues\s+)?in\s+(.+\.py)",
-                "filter": lambda issue, filename: issue.get("file_path", "").endswith(
-                    filename
-                ),
+                "filter": lambda issue, filename: issue.get("file_path", "").endswith(filename),
                 "description": "Issues in specific file",
                 "extract_param": lambda match: match.group(1),
             },
@@ -174,9 +172,7 @@ class QueryInterface:
                 return {
                     "success": True,
                     "message": f"Worst file: {worst_file[0]} with {worst_file[1]} issues",
-                    "issues": [
-                        i for i in filtered if i.get("file_path") == worst_file[0]
-                    ],
+                    "issues": [i for i in filtered if i.get("file_path") == worst_file[0]],
                     "count": worst_file[1],
                     "file_path": worst_file[0],
                 }

@@ -137,10 +137,7 @@ class PromptEvaluator:
                     all_scores[criterion] = []
                 all_scores[criterion].append(score)
 
-        avg_by_criterion = {
-            criterion: sum(scores) / len(scores)
-            for criterion, scores in all_scores.items()
-        }
+        avg_by_criterion = {criterion: sum(scores) / len(scores) for criterion, scores in all_scores.items()}
         overall_avg = sum(avg_by_criterion.values()) / len(avg_by_criterion)
 
         # Generate markdown report
@@ -160,9 +157,7 @@ class PromptEvaluator:
         ]
 
         for criterion, avg_score in sorted(avg_by_criterion.items()):
-            lines.append(
-                f"- **{criterion.title()}**: {avg_score:.2f} / {self.rubric.scale_max}"
-            )
+            lines.append(f"- **{criterion.title()}**: {avg_score:.2f} / {self.rubric.scale_max}")
 
         lines.extend(["", "## Detailed Results", ""])
 
@@ -178,9 +173,7 @@ class PromptEvaluator:
 
             for criterion, score in result.scores.items():
                 feedback = result.feedback.get(criterion, "No feedback provided")
-                lines.append(
-                    f"- **{criterion.title()}**: {score}/{self.rubric.scale_max} - {feedback}"
-                )
+                lines.append(f"- **{criterion.title()}**: {score}/{self.rubric.scale_max} - {feedback}")
 
             lines.append("")
 
