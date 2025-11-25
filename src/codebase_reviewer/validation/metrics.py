@@ -109,9 +109,7 @@ def calculate_metrics_from_comparison(comparison_result) -> FidelityMetrics:
 
     # Content coverage: how many sections from LLM are in tool output
     if comparison_result.sections_compared > 0:
-        content_coverage = (
-            comparison_result.sections_matched / comparison_result.sections_compared
-        )
+        content_coverage = comparison_result.sections_matched / comparison_result.sections_compared
     else:
         content_coverage = 1.0
 
@@ -128,9 +126,7 @@ def calculate_metrics_from_comparison(comparison_result) -> FidelityMetrics:
 
     # Completeness: all expected sections present
     if comparison_result.sections_compared > 0:
-        completeness = 1.0 - (
-            len(comparison_result.missing_in_tool) / comparison_result.sections_compared
-        )
+        completeness = 1.0 - (len(comparison_result.missing_in_tool) / comparison_result.sections_compared)
     else:
         completeness = 1.0
 

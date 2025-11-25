@@ -90,9 +90,7 @@ class QualityEngine:
         findings: List[QualityFinding] = []
 
         # Filter rules by language
-        applicable_rules = [
-            r for r in self.rules if language in r.languages and r.compiled_pattern
-        ]
+        applicable_rules = [r for r in self.rules if language in r.languages and r.compiled_pattern]
 
         if not applicable_rules:
             return findings
@@ -127,9 +125,7 @@ class QualityEngine:
         self.findings.extend(findings)
         return findings
 
-    def scan_directory(
-        self, directory: Path, language_map: Dict[str, str]
-    ) -> List[QualityFinding]:
+    def scan_directory(self, directory: Path, language_map: Dict[str, str]) -> List[QualityFinding]:
         """Scan a directory for quality issues."""
         all_findings = []
 
@@ -145,9 +141,7 @@ class QualityEngine:
 
     def get_findings_by_severity(self) -> Dict[QualitySeverity, List[QualityFinding]]:
         """Group findings by severity level."""
-        grouped: Dict[QualitySeverity, List[QualityFinding]] = {
-            severity: [] for severity in QualitySeverity
-        }
+        grouped: Dict[QualitySeverity, List[QualityFinding]] = {severity: [] for severity in QualitySeverity}
         for finding in self.findings:
             grouped[finding.severity].append(finding)
         return grouped

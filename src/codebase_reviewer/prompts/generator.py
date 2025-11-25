@@ -38,9 +38,7 @@ class PhaseGenerator:
 
         for template in templates:
             # Check conditional requirements
-            if template.conditional and not self._check_conditional(
-                template.conditional, analysis
-            ):
+            if template.conditional and not self._check_conditional(template.conditional, analysis):
                 continue
 
             # Build context for this template
@@ -52,9 +50,7 @@ class PhaseGenerator:
 
         return prompts
 
-    def _check_phase_prerequisites(
-        self, phase: int, analysis: RepositoryAnalysis
-    ) -> bool:
+    def _check_phase_prerequisites(self, phase: int, analysis: RepositoryAnalysis) -> bool:
         """Check if phase prerequisites are met."""
         prerequisites = {
             0: lambda a: a.documentation is not None,
@@ -65,18 +61,14 @@ class PhaseGenerator:
         }
         return prerequisites.get(phase, lambda a: True)(analysis)
 
-    def _check_conditional(
-        self, conditional: str, analysis: RepositoryAnalysis
-    ) -> bool:
+    def _check_conditional(self, conditional: str, analysis: RepositoryAnalysis) -> bool:
         """Check if conditional requirement is met."""
         checker = self._conditional_checkers.get(conditional)
         if checker:
             return checker(analysis)
         return False
 
-    def _build_context(
-        self, template_id: str, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_context(self, template_id: str, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context dictionary for a template."""
         builder = self._context_builders.get(template_id)
         if builder:
@@ -87,20 +79,10 @@ class PhaseGenerator:
         """Register conditional checker functions."""
         self._conditional_checkers = {
             "has_architecture_docs": lambda a: (
-                a.documentation
-                and any(
-                    d.doc_type == "architecture"
-                    for d in a.documentation.discovered_docs
-                )
+                a.documentation and any(d.doc_type == "architecture" for d in a.documentation.discovered_docs)
             ),
-            "has_setup_docs": lambda a: (
-                a.documentation and a.documentation.setup_instructions is not None
-            ),
-            "has_dependencies": lambda a: (
-                a.code
-                and a.code.dependencies is not None
-                and len(a.code.dependencies) > 0
-            ),
+            "has_setup_docs": lambda a: (a.documentation and a.documentation.setup_instructions is not None),
+            "has_dependencies": lambda a: (a.code and a.code.dependencies is not None and len(a.code.dependencies) > 0),
         }
 
     def _register_context_builders(self):
@@ -141,9 +123,7 @@ class PhaseGenerator:
 
     # ========== Phase 0 Context Builders ==========
 
-    def _build_readme_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_readme_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for README analysis prompt."""
         docs = analysis.documentation
         if not docs:
@@ -158,9 +138,7 @@ class PhaseGenerator:
             "total_docs_found": len(docs.discovered_docs),
         }
 
-    def _build_architecture_docs_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_architecture_docs_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for architecture documentation prompt."""
         docs = analysis.documentation
         if not docs:
@@ -170,21 +148,15 @@ class PhaseGenerator:
         if not arch_docs:
             return None
 
-        arch_content = "\n\n---\n\n".join(
-            f"## {d.path}\n{d.content[:3000]}" for d in arch_docs[:3]
-        )
+        arch_content = "\n\n---\n\n".join(f"## {d.path}\n{d.content[:3000]}" for d in arch_docs[:3])
 
         return {
             "architecture_docs": arch_content,
             "doc_count": len(arch_docs),
-            "claimed_pattern": (
-                docs.claimed_architecture.pattern if docs.claimed_architecture else None
-            ),
+            "claimed_pattern": (docs.claimed_architecture.pattern if docs.claimed_architecture else None),
         }
 
-    def _build_setup_docs_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_setup_docs_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for setup documentation prompt."""
         docs = analysis.documentation
         if not docs or not docs.setup_instructions:
@@ -200,9 +172,7 @@ class PhaseGenerator:
 
     # ========== Phase 1 Context Builders ==========
 
-    def _build_architecture_validation_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_architecture_validation_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for architecture validation prompt."""
         code = analysis.code
         docs = analysis.documentation
@@ -256,15 +226,9 @@ class PhaseGenerator:
         return {
             "claimed_architecture": (
                 {
-                    "pattern": docs.claimed_architecture.pattern
-                    if docs and docs.claimed_architecture
-                    else None,
-                    "layers": docs.claimed_architecture.layers
-                    if docs and docs.claimed_architecture
-                    else [],
-                    "components": docs.claimed_architecture.components
-                    if docs and docs.claimed_architecture
-                    else [],
+                    "pattern": docs.claimed_architecture.pattern if docs and docs.claimed_architecture else None,
+                    "layers": docs.claimed_architecture.layers if docs and docs.claimed_architecture else [],
+                    "components": docs.claimed_architecture.components if docs and docs.claimed_architecture else [],
                 }
                 if docs and docs.claimed_architecture
                 else {"pattern": None, "layers": [], "components": []}
@@ -272,22 +236,10 @@ class PhaseGenerator:
             "actual_structure": {
                 "languages": [
                     {"name": l.name, "percentage": l.percentage}
-                    for l in (
-                        code.structure.languages if code and code.structure else []
-                    )
+                    for l in (code.structure.languages if code and code.structure else [])
                 ],
-                "frameworks": [
-                    f.name
-                    for f in (
-                        code.structure.frameworks if code and code.structure else []
-                    )
-                ],
-                "entry_points": [
-                    ep.path
-                    for ep in (
-                        code.structure.entry_points if code and code.structure else []
-                    )
-                ],
+                "frameworks": [f.name for f in (code.structure.frameworks if code and code.structure else [])],
+                "entry_points": [ep.path for ep in (code.structure.entry_points if code and code.structure else [])],
                 "main_modules": main_modules,
                 "packages": packages[:10],  # Limit to first 10 for readability
                 "file_counts": file_counts,
@@ -307,9 +259,7 @@ class PhaseGenerator:
             ),
         }
 
-    def _build_dependency_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_dependency_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for dependency analysis prompt."""
         code = analysis.code
         docs = analysis.documentation
@@ -329,17 +279,13 @@ class PhaseGenerator:
             ],
             "total_count": len(code.dependencies),
             "documented_prerequisites": (
-                docs.setup_instructions.prerequisites
-                if docs and docs.setup_instructions
-                else []
+                docs.setup_instructions.prerequisites if docs and docs.setup_instructions else []
             ),
         }
 
     # ========== Phase 2 Context Builders ==========
 
-    def _build_quality_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_quality_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for code quality assessment prompt."""
         code = analysis.code
         if not code:
@@ -352,19 +298,12 @@ class PhaseGenerator:
 
         return {
             "todo_count": len(todos),
-            "sample_todos": [
-                {"title": t.title, "description": t.description} for t in todos[:10]
-            ],
+            "sample_todos": [{"title": t.title, "description": t.description} for t in todos[:10]],
             "security_issues_count": len(security_issues),
-            "sample_security_issues": [
-                {"title": s.title, "description": s.description}
-                for s in security_issues[:5]
-            ],
+            "sample_security_issues": [{"title": s.title, "description": s.description} for s in security_issues[:5]],
         }
 
-    def _build_observability_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_observability_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for observability review prompt."""
         import re
 
@@ -417,16 +356,12 @@ class PhaseGenerator:
                     # Count print statements
                     print_count = len(re.findall(r"\bprint\(", content))
                     if print_count > 0:
-                        print_statements.append(
-                            {"file": rel_path, "count": print_count}
-                        )
+                        print_statements.append({"file": rel_path, "count": print_count})
 
                     # Count exception handlers
                     except_count = len(re.findall(r"\bexcept\s+", content))
                     if except_count > 0:
-                        exception_handlers.append(
-                            {"file": rel_path, "count": except_count}
-                        )
+                        exception_handlers.append({"file": rel_path, "count": except_count})
 
             except (IOError, UnicodeDecodeError):
                 pass
@@ -440,17 +375,13 @@ class PhaseGenerator:
             "files_with_exception_handling": exception_handlers[:10],
             "has_structured_logging": len(logging_imports) > 0,
             "print_vs_logging_ratio": (
-                len(print_statements) / max(len(logging_calls), 1)
-                if logging_calls
-                else "N/A (no logging)"
+                len(print_statements) / max(len(logging_calls), 1) if logging_calls else "N/A (no logging)"
             ),
         }
 
     # ========== Phase 3 Context Builders ==========
 
-    def _build_setup_validation_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_setup_validation_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for setup validation prompt."""
         docs = analysis.documentation
         validation = analysis.validation
@@ -483,28 +414,16 @@ class PhaseGenerator:
             "documented_setup": (
                 {
                     "prerequisites": (
-                        docs.setup_instructions.prerequisites
-                        if docs and docs.setup_instructions
-                        else []
+                        docs.setup_instructions.prerequisites if docs and docs.setup_instructions else []
                     ),
-                    "build_steps": (
-                        docs.setup_instructions.build_steps
-                        if docs and docs.setup_instructions
-                        else []
-                    ),
-                    "env_vars": (
-                        docs.setup_instructions.environment_vars
-                        if docs and docs.setup_instructions
-                        else []
-                    ),
+                    "build_steps": (docs.setup_instructions.build_steps if docs and docs.setup_instructions else []),
+                    "env_vars": (docs.setup_instructions.environment_vars if docs and docs.setup_instructions else []),
                 }
                 if docs and docs.setup_instructions
                 else {"prerequisites": [], "build_steps": [], "env_vars": []}
             ),
             "setup_files_found": setup_files,
-            "dependencies_count": len(analysis.code.dependencies)
-            if analysis.code
-            else 0,
+            "dependencies_count": len(analysis.code.dependencies) if analysis.code else 0,
             "validation_results": (
                 [
                     {
@@ -517,14 +436,10 @@ class PhaseGenerator:
                 if validation and validation.setup_drift
                 else []
             ),
-            "undocumented_features": validation.undocumented_features
-            if validation
-            else [],
+            "undocumented_features": validation.undocumented_features if validation else [],
         }
 
-    def _build_testing_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_testing_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for testing strategy prompt."""
         import glob
         import os
@@ -535,9 +450,7 @@ class PhaseGenerator:
         test_patterns = ["**/test_*.py", "**/*_test.py", "**/tests/**/*.py"]
         test_files = []
         for pattern in test_patterns:
-            test_files.extend(
-                glob.glob(os.path.join(repo_path, pattern), recursive=True)
-            )
+            test_files.extend(glob.glob(os.path.join(repo_path, pattern), recursive=True))
 
         # Deduplicate and get relative paths
         test_files = list(set([os.path.relpath(f, repo_path) for f in test_files]))
@@ -567,17 +480,13 @@ class PhaseGenerator:
             "has_tests": len(test_files) > 0,
         }
 
-    def _build_cicd_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_cicd_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for CI/CD review prompt."""
         return {"repository_path": analysis.repository_path}
 
     # ========== Phase 4 Context Builders ==========
 
-    def _build_remediation_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_remediation_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for interactive remediation prompt."""
         validation = analysis.validation
         code = analysis.code
@@ -637,31 +546,21 @@ class PhaseGenerator:
 
     # ========== Security Context Builders ==========
 
-    def _build_security_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_security_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for security vulnerability assessment."""
         return self._build_quality_context(analysis)  # Reuse quality context for now
 
-    def _build_error_handling_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_error_handling_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for error handling verification."""
         return self._build_quality_context(analysis)  # Reuse quality context for now
 
-    def _build_dependency_security_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_dependency_security_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for dependency security audit."""
-        return self._build_dependency_context(
-            analysis
-        )  # Reuse dependency context for now
+        return self._build_dependency_context(analysis)  # Reuse dependency context for now
 
     # ========== Architecture Insights Context Builders ==========
 
-    def _build_call_graph_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_call_graph_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for call graph and dependency tracing."""
         import ast
         import re
@@ -709,24 +608,15 @@ class PhaseGenerator:
                                 imports.append(node.module)
 
                     # Separate internal vs external imports
-                    internal = [
-                        imp
-                        for imp in imports
-                        if imp.startswith("codebase_reviewer") or imp.startswith("src.")
-                    ]
+                    internal = [imp for imp in imports if imp.startswith("codebase_reviewer") or imp.startswith("src.")]
                     external = [
-                        imp
-                        for imp in imports
-                        if not imp.startswith("codebase_reviewer")
-                        and not imp.startswith("src.")
+                        imp for imp in imports if not imp.startswith("codebase_reviewer") and not imp.startswith("src.")
                     ]
 
                     if internal:
                         internal_imports[py_file] = internal
                     if external:
-                        external_imports[py_file] = external[
-                            :10
-                        ]  # Limit external imports
+                        external_imports[py_file] = external[:10]  # Limit external imports
 
                 except SyntaxError:
                     # Skip files with syntax errors
@@ -748,20 +638,12 @@ class PhaseGenerator:
         return {
             "total_python_files": len(python_files),
             "files_analyzed": min(30, len(python_files)),
-            "internal_dependencies": dict(
-                list(internal_imports.items())[:10]
-            ),  # Show first 10 files
-            "most_imported_internal": [
-                {"module": mod, "count": count} for mod, count in internal_counts
-            ],
-            "external_dependencies_sample": dict(
-                list(external_imports.items())[:5]
-            ),  # Show 5 examples
+            "internal_dependencies": dict(list(internal_imports.items())[:10]),  # Show first 10 files
+            "most_imported_internal": [{"module": mod, "count": count} for mod, count in internal_counts],
+            "external_dependencies_sample": dict(list(external_imports.items())[:5]),  # Show 5 examples
         }
 
-    def _build_git_hotspots_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_git_hotspots_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for git hotspots analysis."""
         try:
             from collections import Counter
@@ -798,32 +680,24 @@ class PhaseGenerator:
                     if isinstance(commit.message, str)
                     else commit.message.decode("utf-8", errors="ignore")
                 )
-                commit_messages.append(
-                    msg.split("\n")[0][:100]
-                )  # First line, max 100 chars
+                commit_messages.append(msg.split("\n")[0][:100])  # First line, max 100 chars
 
             # Get most frequently changed files
             hotspots = file_changes.most_common(15)
 
             # Analyze commit message patterns
             bug_fix_commits = [
-                msg
-                for msg in commit_messages
-                if any(word in msg.lower() for word in ["fix", "bug", "error", "issue"])
+                msg for msg in commit_messages if any(word in msg.lower() for word in ["fix", "bug", "error", "issue"])
             ]
             refactor_commits = [
                 msg
                 for msg in commit_messages
-                if any(
-                    word in msg.lower() for word in ["refactor", "cleanup", "improve"]
-                )
+                if any(word in msg.lower() for word in ["refactor", "cleanup", "improve"])
             ]
 
             return {
                 "total_commits_analyzed": len(commits),
-                "hotspot_files": [
-                    {"file": file, "change_count": count} for file, count in hotspots
-                ],
+                "hotspot_files": [{"file": file, "change_count": count} for file, count in hotspots],
                 "bug_fix_commit_count": len(bug_fix_commits),
                 "refactor_commit_count": len(refactor_commits),
                 "recent_commit_messages": commit_messages[:10],
@@ -840,54 +714,32 @@ class PhaseGenerator:
                 "repository_path": analysis.repository_path,
             }
 
-    def _build_duplication_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_duplication_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for code duplication analysis."""
         return self._build_quality_context(analysis)  # Reuse quality context for now
 
-    def _build_cohesion_coupling_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_cohesion_coupling_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for cohesion and coupling analysis."""
-        return self._build_architecture_validation_context(
-            analysis
-        )  # Reuse architecture context for now
+        return self._build_architecture_validation_context(analysis)  # Reuse architecture context for now
 
     # ========== Strategy Context Builders ==========
 
-    def _build_documentation_strategy_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_documentation_strategy_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for living documentation strategy."""
-        return self._build_architecture_docs_context(
-            analysis
-        )  # Reuse docs context for now
+        return self._build_architecture_docs_context(analysis)  # Reuse docs context for now
 
-    def _build_observability_strategy_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_observability_strategy_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for observability and instrumentation strategy."""
-        return self._build_observability_context(
-            analysis
-        )  # Reuse observability context for now
+        return self._build_observability_context(analysis)  # Reuse observability context for now
 
-    def _build_testing_strategy_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_testing_strategy_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for test coverage and quality strategy."""
         return self._build_testing_context(analysis)  # Reuse testing context for now
 
-    def _build_tech_debt_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_tech_debt_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for technical debt and refactoring roadmap."""
-        return self._build_remediation_context(
-            analysis
-        )  # Reuse remediation context for now
+        return self._build_remediation_context(analysis)  # Reuse remediation context for now
 
-    def _build_mentorship_context(
-        self, analysis: RepositoryAnalysis
-    ) -> Optional[Dict[str, Any]]:
+    def _build_mentorship_context(self, analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for team mentorship and best practices guide."""
         return self._build_quality_context(analysis)  # Reuse quality context for now

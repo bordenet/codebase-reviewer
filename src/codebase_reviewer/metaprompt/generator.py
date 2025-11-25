@@ -18,10 +18,7 @@ class MetaPromptGenerator:
         if template_path is None:
             # Use built-in template
             template_path = (
-                Path(__file__).parent.parent.parent.parent
-                / "prompts"
-                / "templates"
-                / "meta-prompt-template.md"
+                Path(__file__).parent.parent.parent.parent / "prompts" / "templates" / "meta-prompt-template.md"
             )
 
         self.template_path = template_path
@@ -67,12 +64,8 @@ class MetaPromptGenerator:
             "repositories": analysis.get("repositories", "See Phase 1 prompt"),
             "patterns": analysis.get("patterns", "See Phase 1 prompt"),
             # User requirements
-            "documentation_needs": reqs.get(
-                "documentation_needs", "Comprehensive documentation"
-            ),
-            "quality_standards": reqs.get(
-                "quality_standards", "95% coverage, <5% errors"
-            ),
+            "documentation_needs": reqs.get("documentation_needs", "Comprehensive documentation"),
+            "quality_standards": reqs.get("quality_standards", "95% coverage, <5% errors"),
             "update_frequency": reqs.get("update_frequency", "As needed"),
             # Thresholds
             "files_changed_threshold": reqs.get("files_changed_threshold", 20),
