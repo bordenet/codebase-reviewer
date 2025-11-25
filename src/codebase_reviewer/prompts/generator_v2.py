@@ -25,7 +25,7 @@ class ScanParameters:
 class Phase1PromptGeneratorV2:
     """Generates Phase 1 prompts using v2.0 template architecture."""
 
-    def __init__(self, template_path: Optional[str] = None):
+    def __init__(self, template_path: Optional[Path] = None):
         """Initialize the generator.
 
         Args:
