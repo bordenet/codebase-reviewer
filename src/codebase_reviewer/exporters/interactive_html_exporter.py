@@ -27,7 +27,9 @@ class InteractiveHTMLExporter:
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(html)
 
-    def to_html(self, analysis: CodeAnalysis, title: str = "Interactive Code Analysis Report") -> str:
+    def to_html(
+        self, analysis: CodeAnalysis, title: str = "Interactive Code Analysis Report"
+    ) -> str:
         """Convert analysis to interactive HTML.
 
         Args:
@@ -45,7 +47,9 @@ class InteractiveHTMLExporter:
                 {
                     "id": i.title,
                     "file": i.source.split(":")[0] if ":" in i.source else i.source,
-                    "line": i.source.split(":")[1] if ":" in i.source and len(i.source.split(":")) > 1 else "0",
+                    "line": i.source.split(":")[1]
+                    if ":" in i.source and len(i.source.split(":")) > 1
+                    else "0",
                     "severity": i.severity.value,
                     "description": i.description,
                     "category": "security" if "SEC" in i.title else "quality",

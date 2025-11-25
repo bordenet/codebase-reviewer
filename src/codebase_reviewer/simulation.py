@@ -51,7 +51,9 @@ class LLMSimulator:
         self.use_mock_llm = use_mock_llm
         self.mock_llm = MockLLM() if use_mock_llm else None
 
-    def simulate_prompt(self, prompt: Prompt, analysis: RepositoryAnalysis) -> SimulatedResponse:
+    def simulate_prompt(
+        self, prompt: Prompt, analysis: RepositoryAnalysis
+    ) -> SimulatedResponse:
         """Simulate an LLM response to a single prompt.
 
         This is where YOU (Claude) will act as the LLM and provide responses.
@@ -120,7 +122,9 @@ class LLMSimulator:
 
         return "\n".join(sections)
 
-    def _generate_analysis_response(self, prompt: Prompt, analysis: RepositoryAnalysis) -> str:
+    def _generate_analysis_response(
+        self, prompt: Prompt, analysis: RepositoryAnalysis
+    ) -> str:
         """Generate a simulated analysis response.
 
         This creates a structured response showing what information the LLM would analyze.
@@ -164,7 +168,9 @@ class LLMSimulator:
 
         return "\n".join(response_parts)
 
-    def run_simulation(self, repo_path: str, workflow: str = "default") -> SimulationResult:
+    def run_simulation(
+        self, repo_path: str, workflow: str = "default"
+    ) -> SimulationResult:
         """Run a full simulation on a repository.
 
         Args:
@@ -212,7 +218,9 @@ class LLMSimulator:
         """Save simulation results to disk."""
         timestamp_str = result.timestamp.strftime("%Y%m%d_%H%M%S")
         workflow_name = result.workflow.replace("/", "_")
-        output_file = self.output_dir / f"simulation_{workflow_name}_{timestamp_str}.json"
+        output_file = (
+            self.output_dir / f"simulation_{workflow_name}_{timestamp_str}.json"
+        )
 
         # Convert to JSON-serializable format
         data = {
@@ -241,7 +249,9 @@ class LLMSimulator:
         # Also save a human-readable markdown report
         self._save_markdown_report(result, timestamp_str, workflow_name)
 
-    def _save_markdown_report(self, result: SimulationResult, timestamp_str: str, workflow_name: str) -> None:
+    def _save_markdown_report(
+        self, result: SimulationResult, timestamp_str: str, workflow_name: str
+    ) -> None:
         """Save a human-readable markdown report."""
         report_file = self.output_dir / f"simulation_{workflow_name}_{timestamp_str}.md"
 
@@ -296,5 +306,7 @@ class LLMSimulator:
         print(f"Timestamp: {result.timestamp.strftime('%Y-%m-%d %H:%M:%S')}")
         print("\nPrompts:")
         for i, response in enumerate(result.responses, 1):
-            print(f"  {i}. {response.metadata.get('prompt_name', 'Unknown')} ({response.prompt_id})")
+            print(
+                f"  {i}. {response.metadata.get('prompt_name', 'Unknown')} ({response.prompt_id})"
+            )
         print("=" * 80 + "\n")

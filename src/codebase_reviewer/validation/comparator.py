@@ -67,7 +67,9 @@ class DocumentationComparator:
                 tool_section_content = tool_sections[section_name]
 
                 # Calculate similarity
-                similarity = self._calculate_similarity(llm_section_content, tool_section_content)
+                similarity = self._calculate_similarity(
+                    llm_section_content, tool_section_content
+                )
 
                 if similarity >= self.similarity_threshold:
                     sections_matched += 1
@@ -92,7 +94,9 @@ class DocumentationComparator:
         overall_similarity = self._calculate_similarity(llm_content, tool_content)
 
         # Assess quality
-        quality = self._assess_quality(overall_similarity, sections_matched, sections_compared)
+        quality = self._assess_quality(
+            overall_similarity, sections_matched, sections_compared
+        )
 
         return ComparisonResult(
             llm_doc_path=str(llm_doc_path),

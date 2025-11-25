@@ -88,7 +88,11 @@ class ROICalculator:
         time_value = hours_saved * hourly_rate
 
         # Calculate bugs prevented
-        total_issues = metrics.critical_issues_found + metrics.high_issues_found + metrics.medium_issues_found
+        total_issues = (
+            metrics.critical_issues_found
+            + metrics.high_issues_found
+            + metrics.medium_issues_found
+        )
         bugs_prevented = int(total_issues * metrics.production_bug_prevention_rate)
 
         # Calculate value of bug prevention
@@ -96,18 +100,24 @@ class ROICalculator:
 
         # Calculate tool costs
         setup_cost = metrics.tool_setup_hours * hourly_rate
-        maintenance_cost = metrics.tool_maintenance_hours_per_month * hourly_rate * months
+        maintenance_cost = (
+            metrics.tool_maintenance_hours_per_month * hourly_rate * months
+        )
         license_cost = metrics.tool_license_cost_per_month * months
         total_tool_cost = setup_cost + maintenance_cost + license_cost
 
         # Calculate total value and ROI
         total_value = time_value + bug_prevention_value
         net_value = total_value - total_tool_cost
-        roi_percentage = (net_value / total_tool_cost * 100) if total_tool_cost > 0 else 0
+        roi_percentage = (
+            (net_value / total_tool_cost * 100) if total_tool_cost > 0 else 0
+        )
 
         # Calculate payback period
         monthly_value = total_value / months
-        payback_period_days = (total_tool_cost / monthly_value * 30) if monthly_value > 0 else 0
+        payback_period_days = (
+            (total_tool_cost / monthly_value * 30) if monthly_value > 0 else 0
+        )
 
         # Create breakdown
         breakdown = {

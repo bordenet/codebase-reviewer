@@ -95,7 +95,9 @@ class WorkflowLoader:
             data = yaml.safe_load(f)
 
         if "workflow" not in data:
-            raise ValueError(f"Invalid workflow file: {workflow_path}. Missing 'workflow' key.")
+            raise ValueError(
+                f"Invalid workflow file: {workflow_path}. Missing 'workflow' key."
+            )
 
         workflow = WorkflowDefinition(**data["workflow"])
         self._cache[workflow_name] = workflow
@@ -115,7 +117,9 @@ class WorkflowLoader:
         """Clear the workflow cache."""
         self._cache.clear()
 
-    def resolve_template_reference(self, template_ref: str) -> tuple[str, Optional[str]]:
+    def resolve_template_reference(
+        self, template_ref: str
+    ) -> tuple[str, Optional[str]]:
         """Resolve a template reference like 'phase0.yml#0.1'.
 
         Args:

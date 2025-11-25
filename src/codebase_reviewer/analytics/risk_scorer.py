@@ -128,7 +128,9 @@ class RiskScorer:
 
         return risk_scores
 
-    def _determine_impact(self, severity: str, file_path: str, hotspot_files: set) -> str:
+    def _determine_impact(
+        self, severity: str, file_path: str, hotspot_files: set
+    ) -> str:
         """Determine business impact of an issue.
 
         Args:
