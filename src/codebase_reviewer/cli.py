@@ -26,6 +26,8 @@ from codebase_reviewer.analytics.hotspot_detector import HotspotDetector
 from codebase_reviewer.analytics.risk_scorer import RiskScorer
 from codebase_reviewer.enterprise.multi_repo_analyzer import MultiRepoAnalyzer
 from codebase_reviewer.enterprise.dashboard_generator import DashboardGenerator
+from codebase_reviewer.ai.fix_generator import FixGenerator
+from codebase_reviewer.ai.query_interface import QueryInterface
 
 
 @click.group()
@@ -910,6 +912,92 @@ def analyze(repo_path, output, format, with_analytics, track_trends):
         else:
             click.echo(click.style("\n✅ Quality gate passed", fg="green"))
             sys.exit(0)
+
+    except Exception as e:
+        click.echo(click.style(f"\n✗ Error: {str(e)}", fg="red"), err=True)
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+
+
+@cli.command()
+@click.argument("query", required=True)
+@click.option(
+    "--results",
+    "-r",
+    type=click.Path(exists=True),
+    help="Path to analysis results JSON file (if not provided, analyzes current directory)",
+)
+def ask(query, results):
+    """Ask natural language questions about code analysis results.
+
+    This command provides a natural language interface for querying
+    code analysis results. You can ask questions like:
+    - "Show me all SQL injection vulnerabilities"
+    - "Find all critical issues"
+    - "What's the worst file?"
+
+    Examples:
+        codebase-reviewer ask "Show me all SQL injection vulnerabilities"
+        codebase-reviewer ask "Find all critical issues" --results analysis.json
+        codebase-reviewer ask "How many total issues?"
+    """
+    try:
+        import json
+        from pathlib import Path
+
+        # Load or generate analysis results
+        if results:
+            with open(results, 'r') as f:
+                data = json.load(f)
+                issues = data.get('issues', [])
+        else:
+            # Run analysis on current directory
+            click.echo("📊 Analyzing current directory...")
+            from codebase_reviewer.analyzers.quality_checker import QualityChecker
+
+            checker = QualityChecker()
+            analysis = checker.check_quality(Path.cwd())
+            issues = [
+                {
+                    'rule_id': issue.rule_id,
+                    'file_path': issue.file_path,
+                    'line_number': issue.line_number,
+                    'severity': issue.severity.value,
+                    'description': issue.description,
+                }
+                for issue in analysis.quality_issues
+            ]
+
+        # Execute query
+        query_interface = QueryInterface()
+        result = query_interface.query(query, issues)
+
+        if result['success']:
+            click.echo(click.style(f"\n✅ {result['message']}", fg="green"))
+
+            # Display matched issues
+            if result['issues']:
+                click.echo(f"\n📋 Results ({result['count']} issues):\n")
+                for i, issue in enumerate(result['issues'][:10], 1):  # Show first 10
+                    severity_color = {
+                        'critical': 'red',
+                        'high': 'yellow',
+                        'medium': 'blue',
+                        'low': 'white',
+                    }.get(issue.get('severity', 'low'), 'white')
+
+                    click.echo(f"{i}. {click.style(issue.get('severity', 'unknown').upper(), fg=severity_color)} - {issue.get('file_path', 'unknown')}:{issue.get('line_number', 0)}")
+                    click.echo(f"   {issue.get('description', 'No description')}")
+                    click.echo()
+
+                if result['count'] > 10:
+                    click.echo(f"... and {result['count'] - 10} more issues")
+        else:
+            click.echo(click.style(f"\n❌ {result['message']}", fg="red"))
+            click.echo("\n💡 Try one of these queries:")
+            for suggestion in query_interface.get_suggestions()[:5]:
+                click.echo(f"  - {suggestion}")
 
     except Exception as e:
         click.echo(click.style(f"\n✗ Error: {str(e)}", fg="red"), err=True)
