@@ -1,0 +1,358 @@
+# Java Security Rules
+# Advanced security patterns for Java codebases
+
+rules:
+  # Deserialization Vulnerabilities
+  - id: java-unsafe-deserialization
+    name: Unsafe Object Deserialization
+    description: Deserializing untrusted data can lead to remote code execution
+    severity: critical
+    pattern: "ObjectInputStream\\s*\\([^)]*\\)\\.readObject\\("
+    languages:
+      - java
+    owasp_category: A08:2021 - Software and Data Integrity Failures
+    cwe_id: CWE-502
+    effort_minutes: 120
+    remediation: Validate serialized data or use safe alternatives like JSON
+    code_example: "Use JSON libraries instead of Java serialization"
+
+  - id: java-xmldecoder-usage
+    name: Unsafe XMLDecoder Usage
+    description: XMLDecoder can execute arbitrary code during deserialization
+    severity: critical
+    pattern: "XMLDecoder\\s*\\("
+    languages:
+      - java
+    owasp_category: A08:2021 - Software and Data Integrity Failures
+    cwe_id: CWE-502
+    effort_minutes: 90
+    remediation: Avoid XMLDecoder. Use safer alternatives like Jackson or JAXB
+    code_example: "Use Jackson ObjectMapper for XML parsing"
+
+  # SQL Injection
+  - id: java-sql-injection-statement
+    name: SQL Injection via Statement
+    description: Using Statement with string concatenation is vulnerable to SQL injection
+    severity: critical
+    pattern: "Statement\\s+\\w+\\s*=.*\\.createStatement\\(|statement\\.execute(Query|Update)?\\([^)]*\\+[^)]*\\)"
+    languages:
+      - java
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-89
+    effort_minutes: 60
+    remediation: Use PreparedStatement with parameterized queries
+    code_example: "PreparedStatement ps = conn.prepareStatement(\"SELECT * FROM users WHERE id = ?\")"
+
+  - id: java-sql-injection-hibernate
+    name: SQL Injection in Hibernate HQL
+    description: Using string concatenation in HQL queries
+    severity: critical
+    pattern: "createQuery\\([^)]*\\+[^)]*\\)"
+    languages:
+      - java
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-89
+    effort_minutes: 60
+    remediation: Use parameterized HQL queries
+    code_example: "session.createQuery(\"FROM User WHERE id = :id\").setParameter(\"id\", userId)"
+
+  # Command Injection
+  - id: java-command-injection-runtime
+    name: Command Injection via Runtime.exec()
+    description: Runtime.exec() with user input is vulnerable to command injection
+    severity: critical
+    pattern: "Runtime\\.getRuntime\\(\\)\\.exec\\([^)]*\\+[^)]*\\)"
+    languages:
+      - java
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-78
+    effort_minutes: 90
+    remediation: Use ProcessBuilder with argument array
+    code_example: "new ProcessBuilder(\"command\", arg1, arg2).start()"
+
+  - id: java-command-injection-processbuilder
+    name: Command Injection via ProcessBuilder
+    description: ProcessBuilder with concatenated strings is vulnerable
+    severity: critical
+    pattern: "ProcessBuilder\\([^)]*\\+[^)]*\\)"
+    languages:
+      - java
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-78
+    effort_minutes: 90
+    remediation: Use ProcessBuilder with separate arguments
+    code_example: "new ProcessBuilder(Arrays.asList(\"command\", arg1, arg2))"
+
+  # XXE (XML External Entity)
+  - id: java-xxe-documentbuilder
+    name: XML External Entity (XXE) Attack
+    description: DocumentBuilder without disabling external entities
+    severity: high
+    pattern: "DocumentBuilderFactory\\.newInstance\\(\\)(?!.*setFeature)"
+    languages:
+      - java
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-611
+    effort_minutes: 60
+    remediation: Disable external entities in XML parser
+    code_example: "factory.setFeature(\"http://apache.org/xml/features/disallow-doctype-decl\", true)"
+
+  - id: java-xxe-saxparser
+    name: XXE in SAXParser
+    description: SAXParser without disabling external entities
+    severity: high
+    pattern: "SAXParserFactory\\.newInstance\\(\\)(?!.*setFeature)"
+    languages:
+      - java
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-611
+    effort_minutes: 60
+    remediation: Disable external entities
+    code_example: "factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true)"
+
+  # Path Traversal
+  - id: java-path-traversal
+    name: Path Traversal in File Operations
+    description: File operations with user input without validation
+    severity: high
+    pattern: "new\\s+File\\([^)]*request\\.getParameter|new\\s+FileInputStream\\([^)]*request\\.getParameter"
+    languages:
+      - java
+    owasp_category: A01:2021 - Broken Access Control
+    cwe_id: CWE-22
+    effort_minutes: 90
+    remediation: Validate and sanitize file paths
+    code_example: "Validate path is within allowed directory using Path.normalize()"
+
+  # LDAP Injection
+  - id: java-ldap-injection
+    name: LDAP Injection
+    description: User input in LDAP queries without sanitization
+    severity: high
+    pattern: "search\\([^)]*request\\.getParameter"
+    languages:
+      - java
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-90
+    effort_minutes: 90
+    remediation: Sanitize and validate LDAP query parameters
+    code_example: "Escape special LDAP characters in user input"
+
+  # XPath Injection
+  - id: java-xpath-injection
+    name: XPath Injection
+    description: User input in XPath queries without sanitization
+    severity: high
+    pattern: "compile\\([^)]*request\\.getParameter|evaluate\\([^)]*request\\.getParameter"
+    languages:
+      - java
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-643
+    effort_minutes: 90
+    remediation: Use parameterized XPath queries or sanitize input
+    code_example: "Use XPath variables instead of string concatenation"
+
+  # Weak Cryptography
+  - id: java-weak-hash-md5
+    name: Weak Cryptographic Hash - MD5
+    description: MD5 is cryptographically broken
+    severity: medium
+    pattern: "MessageDigest\\.getInstance\\([\"']MD5[\"']\\)"
+    languages:
+      - java
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-327
+    effort_minutes: 30
+    remediation: Use SHA-256 or stronger
+    code_example: "MessageDigest.getInstance(\"SHA-256\")"
+
+  - id: java-weak-hash-sha1
+    name: Weak Cryptographic Hash - SHA1
+    description: SHA1 is cryptographically weak
+    severity: medium
+    pattern: "MessageDigest\\.getInstance\\([\"']SHA-1[\"']\\)"
+    languages:
+      - java
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-327
+    effort_minutes: 30
+    remediation: Use SHA-256 or stronger
+    code_example: "MessageDigest.getInstance(\"SHA-256\")"
+
+  - id: java-weak-cipher-des
+    name: Weak Encryption Algorithm - DES
+    description: DES is cryptographically broken
+    severity: high
+    pattern: "Cipher\\.getInstance\\([\"']DES"
+    languages:
+      - java
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-327
+    effort_minutes: 60
+    remediation: Use AES-256 instead
+    code_example: "Cipher.getInstance(\"AES/GCM/NoPadding\")"
+
+  - id: java-weak-cipher-rc4
+    name: Weak Encryption Algorithm - RC4
+    description: RC4 is cryptographically broken
+    severity: high
+    pattern: "Cipher\\.getInstance\\([\"']RC4"
+    languages:
+      - java
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-327
+    effort_minutes: 60
+    remediation: Use AES-256 instead
+    code_example: "Cipher.getInstance(\"AES/GCM/NoPadding\")"
+
+  # Insecure Random
+  - id: java-weak-random
+    name: Weak Random Number Generation
+    description: java.util.Random is not cryptographically secure
+    severity: medium
+    pattern: "new\\s+Random\\(\\)"
+    languages:
+      - java
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-338
+    effort_minutes: 30
+    remediation: Use SecureRandom for security-sensitive operations
+    code_example: "new SecureRandom()"
+
+  # JNDI Injection
+  - id: java-jndi-injection
+    name: JNDI Injection (Log4Shell-style)
+    description: JNDI lookup with user input can lead to remote code execution
+    severity: critical
+    pattern: "InitialContext\\(\\)\\.lookup\\([^)]*request\\.getParameter|jndiTemplate\\.lookup\\([^)]*request\\.getParameter"
+    languages:
+      - java
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-917
+    effort_minutes: 120
+    remediation: Validate and sanitize JNDI names, or disable JNDI lookups
+    code_example: "Whitelist allowed JNDI names or disable remote class loading"
+
+  # SSRF
+  - id: java-ssrf-url-connection
+    name: Server-Side Request Forgery (SSRF)
+    description: Making HTTP requests with user-controlled URLs
+    severity: high
+    pattern: "URL\\([^)]*request\\.getParameter.*\\.openConnection\\(|HttpClient.*request\\.getParameter"
+    languages:
+      - java
+    owasp_category: A10:2021 - Server-Side Request Forgery
+    cwe_id: CWE-918
+    effort_minutes: 90
+    remediation: Validate and whitelist allowed URLs/domains
+    code_example: "Validate URL against whitelist before making request"
+
+  # Hardcoded Secrets
+  - id: java-hardcoded-password
+    name: Hardcoded Password
+    description: Password hardcoded in source code
+    severity: critical
+    pattern: "(password|passwd|pwd)\\s*=\\s*[\"'][^\"']{8,}[\"']"
+    languages:
+      - java
+    owasp_category: A07:2021 - Identification and Authentication Failures
+    cwe_id: CWE-798
+    effort_minutes: 30
+    remediation: Use environment variables or secure configuration
+    code_example: "String password = System.getenv(\"DB_PASSWORD\")"
+
+  # Reflection Abuse
+  - id: java-reflection-class-forname
+    name: Unsafe Class Loading via Reflection
+    description: Class.forName() with user input can load arbitrary classes
+    severity: high
+    pattern: "Class\\.forName\\([^)]*request\\.getParameter"
+    languages:
+      - java
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-470
+    effort_minutes: 90
+    remediation: Whitelist allowed class names
+    code_example: "Validate class name against whitelist before Class.forName()"
+
+  # Template Injection
+  - id: java-template-injection-velocity
+    name: Server-Side Template Injection - Velocity
+    description: Using user input in Velocity templates
+    severity: critical
+    pattern: "Velocity\\.evaluate\\([^)]*request\\.getParameter"
+    languages:
+      - java
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-94
+    effort_minutes: 120
+    remediation: Sanitize template content and use sandboxed environment
+    code_example: "Validate and sanitize template input"
+
+  - id: java-template-injection-freemarker
+    name: Server-Side Template Injection - FreeMarker
+    description: Using user input in FreeMarker templates
+    severity: critical
+    pattern: "Template\\([^)]*request\\.getParameter|Configuration.*getTemplate\\([^)]*request\\.getParameter"
+    languages:
+      - java
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-94
+    effort_minutes: 120
+    remediation: Sanitize template content
+    code_example: "Validate template names against whitelist"
+
+  # Spring Security Issues
+  - id: java-spring-csrf-disabled
+    name: CSRF Protection Disabled
+    description: Disabling CSRF protection in Spring Security
+    severity: high
+    pattern: "csrf\\(\\)\\.disable\\(\\)"
+    languages:
+      - java
+    owasp_category: A01:2021 - Broken Access Control
+    cwe_id: CWE-352
+    effort_minutes: 45
+    remediation: Enable CSRF protection for state-changing operations
+    code_example: "Remove .csrf().disable() or use proper CSRF tokens"
+
+  - id: java-spring-security-permitall
+    name: Overly Permissive Security Configuration
+    description: Using permitAll() may expose sensitive endpoints
+    severity: medium
+    pattern: "\\.permitAll\\(\\)"
+    languages:
+      - java
+    owasp_category: A01:2021 - Broken Access Control
+    cwe_id: CWE-284
+    effort_minutes: 60
+    remediation: Review and restrict access to sensitive endpoints
+    code_example: "Use .authenticated() or role-based access control"
+
+  # Cookie Security
+  - id: java-insecure-cookie
+    name: Cookie Without Secure Flag
+    description: Cookies without secure flag can be transmitted over HTTP
+    severity: medium
+    pattern: "new\\s+Cookie\\([^)]*\\)(?!.*setSecure)"
+    languages:
+      - java
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-614
+    effort_minutes: 15
+    remediation: Set secure flag on cookies
+    code_example: "cookie.setSecure(true)"
+
+  - id: java-cookie-no-httponly
+    name: Cookie Without HttpOnly Flag
+    description: Cookies without HttpOnly flag are vulnerable to XSS
+    severity: medium
+    pattern: "new\\s+Cookie\\([^)]*\\)(?!.*setHttpOnly)"
+    languages:
+      - java
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-1004
+    effort_minutes: 15
+    remediation: Set HttpOnly flag on sensitive cookies
+    code_example: "cookie.setHttpOnly(true)"
+
