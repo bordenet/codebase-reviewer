@@ -58,7 +58,10 @@ class QualityChecker:
         todo_pattern = re.compile(r"#\s*(TODO|FIXME|HACK|XXX):\s*(.+)", re.IGNORECASE)
 
         for root, _, files in os.walk(repo_path):
-            if any(skip in root for skip in [".git", "node_modules", ".venv", "__pycache__"]):
+            if any(
+                skip in root
+                for skip in [".git", "node_modules", ".venv", "__pycache__"]
+            ):
                 continue
 
             for file in files:
@@ -236,7 +239,11 @@ class QualityChecker:
             Severity enum value
         """
         # Get the string value from the security Severity enum
-        severity_value = security_severity.value if hasattr(security_severity, "value") else str(security_severity)
+        severity_value = (
+            security_severity.value
+            if hasattr(security_severity, "value")
+            else str(security_severity)
+        )
 
         severity_map = {
             "critical": Severity.CRITICAL,

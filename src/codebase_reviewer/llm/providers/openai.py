@@ -27,7 +27,10 @@ class OpenAIProvider(LLMClient):
         """
         api_key = api_key or os.getenv("OPENAI_API_KEY")
         if not api_key:
-            raise LLMError("OpenAI API key required. " "Set OPENAI_API_KEY env var or pass api_key parameter.")
+            raise LLMError(
+                "OpenAI API key required. "
+                "Set OPENAI_API_KEY env var or pass api_key parameter."
+            )
 
         super().__init__(api_key, model)
         self.client = openai.OpenAI(api_key=api_key)

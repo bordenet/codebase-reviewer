@@ -42,13 +42,19 @@ class AutoConfig:
             Project type (web, cli, library, etc.)
         """
         # Check for common indicators
-        if (self.repo_path / "setup.py").exists() or (self.repo_path / "pyproject.toml").exists():
+        if (self.repo_path / "setup.py").exists() or (
+            self.repo_path / "pyproject.toml"
+        ).exists():
             return "python-package"
         elif (self.repo_path / "package.json").exists():
             package_json = json.loads((self.repo_path / "package.json").read_text())
-            if "dependencies" in package_json and "react" in package_json.get("dependencies", {}):
+            if "dependencies" in package_json and "react" in package_json.get(
+                "dependencies", {}
+            ):
                 return "react-app"
-            elif "dependencies" in package_json and "express" in package_json.get("dependencies", {}):
+            elif "dependencies" in package_json and "express" in package_json.get(
+                "dependencies", {}
+            ):
                 return "node-server"
             return "node-package"
         elif (self.repo_path / "Cargo.toml").exists():
@@ -138,7 +144,9 @@ class AutoConfig:
             Test framework name or None
         """
         # Python
-        if (self.repo_path / "pytest.ini").exists() or list(self.repo_path.rglob("test_*.py")):
+        if (self.repo_path / "pytest.ini").exists() or list(
+            self.repo_path.rglob("test_*.py")
+        ):
             return "pytest"
 
         # JavaScript

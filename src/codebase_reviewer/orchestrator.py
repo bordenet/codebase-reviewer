@@ -4,7 +4,11 @@ import time
 from datetime import datetime
 from typing import Callable, Optional
 
-from codebase_reviewer.analyzers import CodeAnalyzer, DocumentationAnalyzer, ValidationEngine
+from codebase_reviewer.analyzers import (
+    CodeAnalyzer,
+    DocumentationAnalyzer,
+    ValidationEngine,
+)
 from codebase_reviewer.models import RepositoryAnalysis
 from codebase_reviewer.prompt_generator import PromptGenerator
 
@@ -52,20 +56,28 @@ class AnalysisOrchestrator:
         # Step 1: ALWAYS analyze documentation first
         report_progress("Phase 0: Analyzing documentation...")
         doc_analysis = self.doc_analyzer.analyze(repo_path)
-        report_progress(f"  Found {len(doc_analysis.discovered_docs)} documentation files")
+        report_progress(
+            f"  Found {len(doc_analysis.discovered_docs)} documentation files"
+        )
         report_progress(f"  Extracted {len(doc_analysis.claims)} testable claims")
 
         # Step 2: Analyze code structure and quality
         report_progress("Phase 1-2: Analyzing code structure...")
         code_analysis = self.code_analyzer.analyze(repo_path)
         if code_analysis.structure:
-            report_progress(f"  Detected {len(code_analysis.structure.languages)} languages")
-            report_progress(f"  Detected {len(code_analysis.structure.frameworks)} frameworks")
+            report_progress(
+                f"  Detected {len(code_analysis.structure.languages)} languages"
+            )
+            report_progress(
+                f"  Detected {len(code_analysis.structure.frameworks)} frameworks"
+            )
         report_progress(f"  Found {len(code_analysis.quality_issues)} quality issues")
 
         # Step 3: CRITICAL - Validate docs against code
         report_progress("Validation: Comparing documentation vs code...")
-        validation_results = self.validation_engine.validate(docs=doc_analysis, code=code_analysis)
+        validation_results = self.validation_engine.validate(
+            docs=doc_analysis, code=code_analysis
+        )
         drift_count = (
             len(validation_results.architecture_drift)
             + len(validation_results.setup_drift)
@@ -85,7 +97,9 @@ class AnalysisOrchestrator:
             timestamp=datetime.now(),
         )
 
-        prompts = self.prompt_generator.generate_all_phases(repo_analysis, workflow=workflow)
+        prompts = self.prompt_generator.generate_all_phases(
+            repo_analysis, workflow=workflow
+        )
         total_prompts = len(prompts.all_prompts())
         report_progress(f"  Generated {total_prompts} AI prompts")
 

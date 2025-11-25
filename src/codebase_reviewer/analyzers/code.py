@@ -84,7 +84,10 @@ class CodeAnalyzer:
         total_dirs = 0
 
         for root, dirs, files in os.walk(repo_path):
-            if any(skip in root for skip in [".git", "node_modules", ".venv", "__pycache__"]):
+            if any(
+                skip in root
+                for skip in [".git", "node_modules", ".venv", "__pycache__"]
+            ):
                 continue
             total_dirs += len(dirs)
             total_files += len(files)
