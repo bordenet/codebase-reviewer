@@ -301,6 +301,17 @@ temporary_repos/
 *WIDGET*.json
 *WIDGET*.md
 
+# Acme-specific patterns (CRITICAL - DO NOT REMOVE)
+*acme*.json
+*acme*.md
+*Acme*.json
+*Acme*.md
+*ACME*.json
+*ACME*.md
+*acme*/
+*Acme*/
+*ACME*/
+
 # Backup files that might contain analysis data
 *.bak
 *.backup

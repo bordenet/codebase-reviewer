@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Phase 1 Task 3 Output Schema",
+  "description": "Go tool specifications for Phase 2 tools",
+  "type": "object",
+  "required": ["tools"],
+  "properties": {
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "description"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "cli_flags": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["flag", "description"],
+              "properties": {
+                "flag": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "outputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "internal_modules": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "self_obsolescence_checks": {
+            "type": "object",
+            "properties": {
+              "file_existence": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "git_diff_threshold": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "structural_changes": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+

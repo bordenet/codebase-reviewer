@@ -1,351 +1,224 @@
-# Meta-Prompt for Phase 2 Tool Generation
-
-**Generation**: {{generation}}
-**Codebase**: {{codebase_name}}
-**Date**: {{date}}
-
----
-
-## 🎯 Mission
-
-Generate a **self-contained Go tool** that:
-1. Analyzes the codebase with **industry-standard security and quality analysis**
-2. Generates comprehensive documentation with **visualizations and actionable insights**
-3. Runs **offline** without requiring AI/LLM access
-4. Tracks metrics and detects when it becomes obsolete
-5. **Re-emits this meta-prompt** when regeneration is needed
-6. Includes learnings from previous generations
-
-## 🏆 Quality Standards
-
-**Target**: Meet or exceed **Semgrep** and **SonarQube** industry standards.
-
-### Required Capabilities
-
-#### 1. **Security Analysis** (Critical)
-- Detect OWASP Top 10 vulnerabilities:
-  - SQL Injection (all variants)
-  - XSS (reflected, stored, DOM-based)
-  - Authentication/authorization flaws
-  - Insecure cryptography
-  - Command injection, path traversal, SSRF
-  - Hardcoded secrets (API keys, passwords, tokens)
-  - Insecure deserialization
-  - CSRF vulnerabilities
-- Minimum **50+ security rules** for B+ grade
-- Minimum **200+ security rules** for A- grade
-- Severity scoring: Critical/High/Medium/Low/Info
-- Remediation guidance with code examples
-
-#### 2. **Code Quality Analysis** (Critical)
-- Complexity metrics:
-  - Cyclomatic complexity
-  - Cognitive complexity
-  - Nesting depth
-  - Function/method length
-- Maintainability issues:
-  - Code duplication
-  - Dead code detection
-  - Unused imports/variables
-  - Magic numbers
-  - Code smells (long methods, large classes, too many parameters)
-- Technical debt calculation
-- Test coverage integration (if available)
-
-#### 3. **Visualization & Reporting** (Critical)
-- Executive summary with key findings (✅/⚠️/❌ indicators)
-- Mermaid diagrams:
-  - Architecture diagrams
-  - Data flow diagrams
-  - Sequence diagrams
-- Tables:
-  - Technology stack
-  - Quality metrics
-  - Security findings
-  - Comparison matrices
-- Charts:
-  - Language distribution
-  - Issue trends
-  - Complexity heatmaps
-- Prioritized recommendations (High/Medium/Low)
-- Grading system (A+/A/A-/B+/B/B-/C+/C/C-/D/F)
-
-#### 4. **Dependency Analysis** (Important)
-- Software Composition Analysis (SCA)
-- Known CVEs in dependencies
-- Outdated package detection
-- License compliance checking
-- Transitive dependency analysis
-
-#### 5. **Integration & Export** (Important)
-- JSON export for CI/CD integration
-- HTML reports with interactive elements
-- Markdown reports for documentation
-- GitHub Actions / GitLab CI examples
-- Quality gate support (pass/fail thresholds)
-
----
-
-## 📊 Codebase Analysis
-
-### Structure
-{{codebase_structure}}
-
-### Languages
-{{languages}}
-
-### Repositories
-{{repositories}}
-
-### Key Patterns
-{{patterns}}
-
----
-
-## 📋 User Requirements
-
-### Documentation Needs
-{{documentation_needs}}
-
-### Quality Standards
-{{quality_standards}}
-
-### Update Frequency
-{{update_frequency}}
-
----
-
-## 🔧 Tool Generation Instructions
-
-### 1. **Core Functionality**
-
-Generate a Go tool with this structure:
-
-```
-phase2-tools-gen{{generation}}/
-├── cmd/
-│   └── generate-docs/
-│       └── main.go          # Entry point
-├── pkg/
-│   ├── analyzer/            # Codebase analysis
-│   ├── generator/           # Doc generation
-│   ├── metrics/             # Metrics tracking
-│   ├── obsolescence/        # Obsolescence detection
-│   └── metaprompt/          # Meta-prompt management
-├── go.mod
-├── go.sum
-└── README.md
-```
-
-### 2. **Meta-Prompt Embedding**
-
-**CRITICAL**: Bake this entire meta-prompt into the tool as a constant:
-
-```go
-package metaprompt
-
-// META_PROMPT is the DNA of this tool
-// It will be re-emitted when regeneration is needed
-const META_PROMPT = `
-{{full_meta_prompt}}
-`
-```
-
-### 3. **Obsolescence Detection**
-
-Implement thresholds:
-
-```go
-type ObsolescenceThresholds struct {
-    FilesChangedPercent float64  // {{files_changed_threshold}}%
-    NewLanguages        bool     // Trigger if new language detected
-    CoverageMin         float64  // {{coverage_threshold}}%
-    StaleDaysMax        int      // {{staleness_threshold}} days
-    ErrorRateMax        float64  // {{error_threshold}}%
-}
-```
-
-### 4. **Regeneration Prompt Emission**
-
-When obsolete, emit enhanced meta-prompt:
-
-```go
-func emitRegenerationPrompt(metrics Metrics) {
-    // Load original meta-prompt
-    original := metaprompt.META_PROMPT
-
-    // Add learnings
-    enhanced := addLearnings(original, metrics)
-
-    // Save to file
-    path := fmt.Sprintf("/tmp/codebase-reviewer/%s/regeneration-prompt-gen%d.md",
-        codebaseName, generation+1)
-    ioutil.WriteFile(path, []byte(enhanced), 0644)
-
-    // Display instructions
-    displayRegenerationInstructions(path)
-}
-```
-
----
-
-## 📈 Metrics to Track
-
-Track these metrics on every run:
-
-```go
-type Metrics struct {
-    // Coverage
-    FilesTotal          int
-    FilesAnalyzed       int
-    FilesDocumented     int
-    CoveragePercent     float64
-
-    // Change detection
-    FilesChanged        int
-    FilesChangedPercent float64
-    FilesAdded          int
-    FilesDeleted        int
-
-    // Quality
-    ErrorCount          int
-    ErrorRate           float64
-    WarningCount        int
-
-    // Staleness
-    LastRunDate         time.Time
-    StaleDays           int
-
-    // Patterns
-    LanguagesDetected   []string
-    NewLanguages        []string
-    PatternsDetected    []string
-    NewPatterns         []string
-}
-```
-
----
-
-## 🔄 Self-Evolution Logic
-
-### Learnings from Previous Generations
-
-{{learnings}}
-
-### Improvements for This Generation
-
-{{improvements}}
-
----
-
-## ✅ Success Criteria
-
-The generated tool must:
-
-- [ ] Compile successfully with `go build`
-- [ ] Run offline without network access
-- [ ] Generate documentation matching user requirements
-- [ ] Track all required metrics
-- [ ] Detect obsolescence correctly
-- [ ] Re-emit meta-prompt when needed
-- [ ] Include this meta-prompt in the binary
-- [ ] Achieve ≥{{fidelity_target}}% fidelity vs AI-generated docs
-- [ ] Achieve ≥{{coverage_target}}% coverage
-- [ ] Run in <{{performance_target}} seconds
-
----
-
-## 🎨 Code Generation Guidelines
-
-### Style
-- Idiomatic Go code
-- Clear variable names
-- Comprehensive comments
-- Error handling on all operations
-
-### Structure
-- Modular packages
-- Clear separation of concerns
-- Testable functions
-- Minimal dependencies
-
-### Performance
-- Concurrent analysis where possible
-- Efficient file I/O
-- Caching of expensive operations
-- Progress indicators for long operations
-
----
-
-## 📦 Deliverables
-
-Generate the following files:
-
-1. **cmd/generate-docs/main.go** - Entry point
-2. **pkg/analyzer/** - Codebase analysis logic
-3. **pkg/generator/** - Documentation generation
-4. **pkg/metrics/** - Metrics tracking
-5. **pkg/obsolescence/** - Obsolescence detection
-6. **pkg/metaprompt/metaprompt.go** - Meta-prompt constant
-7. **go.mod** - Go module definition
-8. **README.md** - Tool documentation
-
----
-
-## 🚀 Example Usage
-
-The generated tool should work like this:
-
-```bash
-# Build
-cd phase2-tools-gen{{generation}}
-go build -o bin/generate-docs ./cmd/generate-docs
-
-# Run
-./bin/generate-docs /path/to/codebase
-
-# Output
-Analyzing codebase...
-├── Found 1,234 files
-├── Detected languages: Go, Python, JavaScript
-├── Analyzing patterns...
-└── Generating documentation...
-
-Documentation generated: /tmp/codebase-reviewer/MyProject/
-
-Metrics:
-├── Coverage: 94% (1,160/1,234 files)
-├── Files changed: 45 (3.6%)
-├── Errors: 2 (0.2%)
-└── Status: ✅ Healthy
-
-Next run: ./bin/generate-docs /path/to/codebase
-```
-
----
-
-## 🎯 AI Assistant Instructions
-
-**Dear AI Assistant** (that's you!),
-
-Please generate the complete Go tool based on this meta-prompt.
-
-**Include**:
-- All source files with complete implementations
-- This meta-prompt baked into `pkg/metaprompt/metaprompt.go`
-- Comprehensive error handling
-- Clear progress indicators
-- Detailed README
-
-**Format**:
-- Use markdown code blocks with file paths
-- Example: ` ```go\n# File: cmd/generate-docs/main.go\n... `
-- Include all files needed for a working tool
-
-**Quality**:
-- Production-ready code
-- No TODOs or placeholders
-- Complete implementations
-- Tested logic
-
-Thank you! 🚀
+# Phase II Meta-Prompt Template - Version 2.0
+# Enhanced self-evolution and regeneration guidance embedded in Phase II tools.
+# Improves obsolescence detection, metrics, learning capture, and workflow robustness.
+
+metadata:
+  version: "2.0"
+  template_type: "phase2_tool_self_evolution"
+  security_level: "CRITICAL - Proprietary analyses included only in safe output paths"
+
+prompt:
+  role: "self-improving_go_tool_generator"
+
+  context: |
+    You are the core meta-prompt embedded in Phase II Go tools for {{codebase_name}}, generation {{generation}} dated {{date}}.
+    Your mission is to facilitate continual self-evolution by generating Go tools that analyze this codebase with industry-leading security and quality standards offline.
+    This meta-prompt is your DNA; it must be re-emitted with learned improvements whenever the tools detect obsolescence, enabling next-generation tool synthesis by humans augmented with LLMs.
+
+    IMPORTANT:
+    - The meta-prompt is versioned; maintain backward compatibility.
+    - Always exclude proprietary code snippets from git-tracked outputs.
+    - Use structured schemas for all outputs; adhere strictly to defined interfaces.
+    - Include detailed metrics and learnings in every regeneration emission.
+    - Human review gates exist between generations; provide detailed changelogs for human consumption.
+    - Support partial/incremental regeneration to avoid excessive token use.
+
+  obsolescence_detection:
+    thresholds:
+      files_changed_percent: {{files_changed_threshold}}        # e.g., 30.0
+      new_languages_detected: true
+      coverage_min_percent: {{coverage_threshold}}             # e.g., 85.0
+      stale_run_days_max: {{staleness_threshold}}              # e.g., 30
+      error_rate_max_percent: {{error_threshold}}              # e.g., 5.0
+    heuristics:
+      - checksum_diff_on_critical_dirs: true
+      - semantic_api_changes: true
+      - false_positive_spike_detection: true
+      - regeneration_frequency_cooldown_days: 7
+    fallback_strategy:
+      - suppress_regeneration_if_failed_last_attempt: true
+      - alert_human_if_chained_failures: true
+
+  metrics_tracked:
+    coverage:
+      files_total: int
+      files_analyzed: int
+      files_documented: int
+      coverage_percent: float
+    changes:
+      files_changed: int
+      files_changed_percent: float
+      files_added: int
+      files_deleted: int
+      new_languages: list[string]
+    quality:
+      error_count: int
+      error_rate_percent: float
+      warning_count: int
+      false_positive_estimate: float
+    performance:
+      avg_runtime_seconds: float
+      memory_usage_mb: float
+    staleness:
+      last_run_date: string (RFC3339)
+      days_since_last_run: int
+    patterns:
+      detected: list[string]
+      newly_detected: list[string]
+    tests:
+      regression_pass_count: int
+      regression_fail_count: int
+    user_feedback:
+      human_override_flags: int
+      notes: string
+
+  learning_capture:
+    format: |
+      List lessons learned in JSON array with fields:
+      - id: unique learning id or timestamp
+      - description: what was learned
+      - impact: positive/neutral/negative
+      - actions_taken: changes made in code or process
+      - validation: results or metrics confirming improvement
+      - pending_issues: unresolved problems or new concerns
+
+  improvements_planning:
+    include:
+      - prioritized feature backlog
+      - deprecated modules flagged for removal
+      - test gaps identified
+      - performance bottlenecks targeted
+      - security rule tuning ideas
+
+  regeneration_workflow:
+    gen_prompt_emission:
+      - save enhanced meta-prompt at: /tmp/codebase-reviewer/{{codebase_name}}/regeneration-prompt-gen{{generation_plus_one}}.md
+      - embed version and schema information in prompt header
+      - generate changelog diff summary vs previous generation
+      - package metrics and learnings as ancillary JSON alongside prompt
+      - notify human operators via configured workflow or alert system
+
+    human_in_loop:
+      - human reviews emitted meta-prompt before AI re-generation
+      - human can adjust thresholds, specs, or provide new inputs
+      - manual approvals required for major version bumps or paradigm shifts
+      - rollback to prior stable generation supported
+
+    incremental_regeneration_support:
+      - allow separated tool regen: analyzer, metrics, docs, obsolescence modules
+      - specify regeneration scope explicitly for efficient updates
+
+  codebase_context:
+    structure: "{{codebase_structure}}"
+    languages: "{{languages}}"
+    repositories: "{{repositories}}"
+    patterns: "{{patterns}}"
+
+  user_requirements:
+    documentation_needs: "{{documentation_needs}}"
+    quality_standards: "{{quality_standards}}"
+    update_frequency: "{{update_frequency}}"
+
+  success_criteria:
+    go_build_success: true
+    offline_operation_verified: true
+    documentation_completeness: meets_requirements
+    metrics_tracking_accuracy: within_threshold
+    obsolescence_detection_reliable: true
+    meta_prompt_embedded: true
+    fidelity_target_percent: "{{fidelity_target}}"
+    coverage_target_percent: "{{coverage_target}}"
+    max_runtime_seconds: "{{performance_target}}"
+    stable_regeneration_history: true
+
+  quality_standards:
+    security_rules:
+      min_required: 50
+      target_for_A_minus: 200
+      severity_levels: [Critical, High, Medium, Low, Info]
+      remediation_guidance_required: true
+
+    code_quality_metrics:
+      cyclomatic_complexity: true
+      cognitive_complexity: true
+      nesting_depth: true
+      function_length: true
+      duplication_detection: true
+      dead_code_detection: true
+      unused_code_detection: true
+      magic_number_detection: true
+      technical_debt_estimation: true
+      test_coverage_integration: true
+
+    reporting_and_visualization:
+      executive_summary: true
+      architectural_mermaid_diagrams: true
+      data_flow_diagrams: true
+      sequence_diagrams: true
+      tables_and_charts: true
+      prioritized_recommendations: true
+      grading_system: [A+, A, A-, B+, B, B-, C+, C, C-, D, F]
+
+  deliverables:
+    - cmd/generate-docs/main.go
+    - pkg/analyzer/**
+    - pkg/generator/**
+    - pkg/metrics/**
+    - pkg/obsolescence/**
+    - pkg/metaprompt/metaprompt.go (with embedded updated meta-prompt constant)
+    - go.mod
+    - README.md
+
+  developer_instructions: |
+    Use idiomatic Go, modular design, concurrency where appropriate, comprehensive error handling.
+    Support progress reporting, logging, and config-driven thresholds.
+    Ensure embedded meta-prompt is up-to-date and versioned.
+    Implement human-review hooks and rollback mechanisms as described.
+
+  robustness_guidelines:
+    - Support multiple languages and frameworks—detect and adapt analysis dynamically.
+    - Enable config customization per codebase size and domain.
+    - Detect and handle monorepos, microservices, and hybrid layouts.
+    - Provide extensible security and quality rules framework.
+    - Log detailed diagnostics and errors for human troubleshooting.
+    - Provide schema validation for all outputs and emitted meta-prompts.
+    - Avoid regeneration thrashing with cooldowns and fallback domains.
+
+  sample_obsolescence_check: |
+    // Pseudocode example of multivariate obsolescence detection
+    func detectObsolescence(metrics Metrics, thresholds ObsolescenceThresholds) bool {
+      if metrics.FilesChangedPercent > thresholds.FilesChangedPercent {
+        return true
+      }
+      if len(metrics.NewLanguages) > 0 && thresholds.NewLanguagesDetected {
+        return true
+      }
+      if metrics.CoveragePercent < thresholds.CoverageMinPercent {
+        return true
+      }
+      if metrics.DaysSinceLastRun > thresholds.StaleRunDaysMax {
+        return true
+      }
+      if metrics.ErrorRatePercent > thresholds.ErrorRateMaxPercent {
+        return true
+      }
+      // additional semantic heuristics can be applied here
+      return false
+    }
+
+  example_learning_entry: |
+    {
+      "id": "2025-11-25T09:00:00Z",
+      "description": "Improved false positive rate by tweaking SQL injection detection regexes",
+      "impact": "positive",
+      "actions_taken": ["Refined regex pattern", "Added context-sensitive heuristics"],
+      "validation": "Reduced alerts by 15%, no missed CVEs detected",
+      "pending_issues": "Further evaluation needed on complex nested queries"
+    }
+
+  example_regeneration_summary: |
+    Generation 3 included substantial improvements to obsolescence detection thresholds
+    and added user feedback incorporation, resulting in stable runs and 20% fewer false positives.
+
+  learnings_from_previous_generations: "{{learnings}}"
+  improvements_for_this_generation: "{{improvements}}"

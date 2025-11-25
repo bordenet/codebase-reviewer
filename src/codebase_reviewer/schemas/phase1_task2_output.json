@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Phase 1 Task 2 Output Schema",
+  "description": "Materials plan for documentation generation",
+  "type": "object",
+  "required": ["materials"],
+  "properties": {
+    "materials": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "description", "importance", "target_audience", "effort_estimate"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "importance": {
+            "type": "string",
+            "enum": ["Critical", "High", "Medium", "Low"]
+          },
+          "target_audience": {
+            "type": "string"
+          },
+          "effort_estimate": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
+
