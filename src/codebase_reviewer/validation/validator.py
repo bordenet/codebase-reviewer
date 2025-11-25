@@ -205,41 +205,25 @@ class Validator:
 
         # Analyze strengths
         if metrics.overall_similarity >= 0.90:
-            strengths.append(
-                f"High overall similarity ({metrics.overall_similarity:.1%})"
-            )
+            strengths.append(f"High overall similarity ({metrics.overall_similarity:.1%})")
         if metrics.content_coverage >= 0.90:
-            strengths.append(
-                f"Excellent content coverage ({metrics.content_coverage:.1%})"
-            )
+            strengths.append(f"Excellent content coverage ({metrics.content_coverage:.1%})")
         if metrics.completeness >= 0.95:
-            strengths.append(
-                f"All expected sections present ({metrics.completeness:.1%})"
-            )
+            strengths.append(f"All expected sections present ({metrics.completeness:.1%})")
 
         # Analyze weaknesses
         if metrics.overall_similarity < 0.85:
-            weaknesses.append(
-                f"Low overall similarity ({metrics.overall_similarity:.1%})"
-            )
+            weaknesses.append(f"Low overall similarity ({metrics.overall_similarity:.1%})")
         if metrics.content_coverage < 0.85:
-            weaknesses.append(
-                f"Insufficient content coverage ({metrics.content_coverage:.1%})"
-            )
+            weaknesses.append(f"Insufficient content coverage ({metrics.content_coverage:.1%})")
         if metrics.sections_missing > 0:
-            weaknesses.append(
-                f"{metrics.sections_missing} sections missing from tool output"
-            )
+            weaknesses.append(f"{metrics.sections_missing} sections missing from tool output")
 
         # Generate improvements
         if metrics.overall_similarity < 0.95:
-            improvements.append(
-                "Improve text generation to match LLM output more closely"
-            )
+            improvements.append("Improve text generation to match LLM output more closely")
         if metrics.sections_missing > 0:
-            improvements.append(
-                f"Add missing sections: {', '.join(comparison.missing_in_tool[:3])}"
-            )
+            improvements.append(f"Add missing sections: {', '.join(comparison.missing_in_tool[:3])}")
         if metrics.structure_similarity < 0.90:
             improvements.append("Improve section structure to match LLM output")
 

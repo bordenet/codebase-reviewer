@@ -26,9 +26,7 @@ class HTMLExporter:
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(html)
 
-    def to_html(
-        self, analysis: CodeAnalysis, title: str = "Code Analysis Report"
-    ) -> str:
+    def to_html(self, analysis: CodeAnalysis, title: str = "Code Analysis Report") -> str:
         """Convert analysis to HTML.
 
         Args:

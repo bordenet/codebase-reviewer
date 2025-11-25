@@ -88,9 +88,7 @@ class FixGenerator:
             },
         }
 
-    def generate_fix(
-        self, issue_id: str, file_path: str, line_number: int, code_line: str
-    ) -> Optional[CodeFix]:
+    def generate_fix(self, issue_id: str, file_path: str, line_number: int, code_line: str) -> Optional[CodeFix]:
         """Generate automated fix for an issue.
 
         Args:

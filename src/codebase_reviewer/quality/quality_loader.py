@@ -42,9 +42,7 @@ class QualityRulesLoader:
                     )
                     rules.append(rule)
                 except Exception as e:
-                    logger.error(
-                        f"Failed to load rule {rule_data.get('id', 'unknown')}: {e}"
-                    )
+                    logger.error(f"Failed to load rule {rule_data.get('id', 'unknown')}: {e}")
                     continue
 
             logger.info(f"Loaded {len(rules)} quality rules from {file_path}")

@@ -33,9 +33,7 @@ class RunResult:
 class Phase2Runner:
     """Runs Phase 2 tools to generate documentation."""
 
-    def run_tools(
-        self, binary_path: Path, codebase_path: Path, verbose: bool = False
-    ) -> RunResult:
+    def run_tools(self, binary_path: Path, codebase_path: Path, verbose: bool = False) -> RunResult:
         """Execute Phase 2 tools to generate documentation.
 
         Args:
@@ -124,8 +122,6 @@ class Phase2Runner:
                     missing.append(file_name)
 
             if missing:
-                raise Exception(
-                    f"Expected output files not found: {', '.join(missing)}"
-                )
+                raise Exception(f"Expected output files not found: {', '.join(missing)}")
 
         return result

@@ -26,9 +26,7 @@ class ChartGenerator:
         ]
 
         for lang in analysis.structure.languages:
-            lines.append(
-                f"| {lang.name} | {lang.file_count} | {lang.percentage:.1f}% |"
-            )
+            lines.append(f"| {lang.name} | {lang.file_count} | {lang.percentage:.1f}% |")
 
         return "\n".join(lines)
 
@@ -91,9 +89,7 @@ class ChartGenerator:
             else 0
         )
         total_languages = (
-            len(analysis.structure.languages)
-            if analysis.structure and analysis.structure.languages
-            else 0
+            len(analysis.structure.languages) if analysis.structure and analysis.structure.languages else 0
         )
         total_dependencies = len(analysis.dependencies) if analysis.dependencies else 0
         total_issues = len(analysis.quality_issues) if analysis.quality_issues else 0
@@ -158,9 +154,7 @@ class ChartGenerator:
             Severity.MEDIUM: 2,
             Severity.LOW: 3,
         }
-        sorted_issues = sorted(
-            issues, key=lambda i: severity_order.get(i.severity, 999)
-        )
+        sorted_issues = sorted(issues, key=lambda i: severity_order.get(i.severity, 999))
 
         lines = [
             "| Severity | Issue | Location |",
@@ -170,9 +164,7 @@ class ChartGenerator:
         for issue in sorted_issues[:limit]:
             emoji = self._get_severity_emoji(issue.severity.value.capitalize())
             title = issue.title[:50] + "..." if len(issue.title) > 50 else issue.title
-            location = (
-                issue.source[:40] + "..." if len(issue.source) > 40 else issue.source
-            )
+            location = issue.source[:40] + "..." if len(issue.source) > 40 else issue.source
             lines.append(f"| {emoji} | {title} | `{location}` |")
 
         return "\n".join(lines)

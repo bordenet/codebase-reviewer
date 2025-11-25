@@ -37,9 +37,7 @@ class RulesLoader:
                     rule = RulesLoader._parse_rule(rule_data)
                     rules.append(rule)
                 except Exception as e:
-                    logger.error(
-                        f"Failed to parse rule {rule_data.get('id', 'unknown')}: {e}"
-                    )
+                    logger.error(f"Failed to parse rule {rule_data.get('id', 'unknown')}: {e}")
 
             logger.info(f"Loaded {len(rules)} rules from {yaml_path}")
             return rules
