@@ -193,8 +193,8 @@ Then read the generated prompt and provide it to Claude!
 
 ---
 
-**Questions?** Read `README.md` and `INSTRUCTIONS-FOR-CLAUDE.md`  
-**Issues?** Check `QUICK-START.md` troubleshooting section  
+**Questions?** Read `README.md` and `INSTRUCTIONS-FOR-CLAUDE.md`
+**Issues?** Check `QUICK-START.md` troubleshooting section
 **Want to learn more?** Read `docs/EVOLUTION-SYSTEM.md`
 
 **Let's go!** 🚀

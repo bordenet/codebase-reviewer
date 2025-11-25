@@ -196,4 +196,3 @@ Powered by:
 - **Static Analysis**: Semgrep-inspired rule engine
 - **LLM Integration**: Claude (Anthropic), GPT-4 (OpenAI)
 - **Language Support**: Tree-sitter parsers
-

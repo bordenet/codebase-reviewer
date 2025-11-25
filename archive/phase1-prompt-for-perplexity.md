@@ -336,4 +336,3 @@ guidance_spec:
 4. Recommendations for better task decomposition or ordering
 5. Suggestions for improving the balance between guidance and creative freedom
 6. Any potential issues with the prompt that could lead to suboptimal results
-

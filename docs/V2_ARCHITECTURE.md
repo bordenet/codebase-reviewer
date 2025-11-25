@@ -208,4 +208,3 @@ The v2.0 architecture is a complete redesign. Key differences:
 - [Phase 1 Prompt Template](../prompts/templates/phase1-prompt-template.yaml)
 - [Phase 2 Meta-Prompt Template](../prompts/templates/meta-prompt-template.md)
 - [Security Validation Script](../scripts/validate_security.sh)
-
