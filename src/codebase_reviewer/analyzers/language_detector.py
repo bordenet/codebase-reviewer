@@ -6,10 +6,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Dict, List
 
-from codebase_reviewer.analyzers.constants import (
-    FRAMEWORK_PATTERNS,
-    LANGUAGE_EXTENSIONS,
-)
+from codebase_reviewer.analyzers.constants import FRAMEWORK_PATTERNS, LANGUAGE_EXTENSIONS
 from codebase_reviewer.models import EntryPoint, Framework, Language
 
 
