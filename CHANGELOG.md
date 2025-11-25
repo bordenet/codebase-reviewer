@@ -7,11 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.1.0] - 2025-11-25
 
-### 🚀 Major Feature: v2.0 Prompt Architecture
+### 🚀 Major Feature: v2.0 Prompt Architecture + Phase II Regeneration Flow
 
-This release introduces a completely redesigned prompt architecture with enhanced schemas, security controls, and self-evolution capabilities.
+This release introduces a completely redesigned prompt architecture with enhanced schemas, security controls, and **fully tested self-evolution capabilities**.
 
 ### Added
+
+- **Phase II Regeneration Flow** ✅:
+  - Complete self-evolution cycle tested end-to-end
+  - Test script: `test_phase2_regeneration.sh`
+  - Demonstrates: analysis → metrics → changes → obsolescence → regeneration
+  - Validates all 3 obsolescence triggers (files changed, new languages, coverage drop)
+  - Generates enhanced prompts for next generation with learnings
+  - Documentation updated with complete flow diagrams
 
 - **v2.0 Prompt Templates**:
   - Phase 1 prompt template with structured output schemas
@@ -31,18 +39,21 @@ This release introduces a completely redesigned prompt architecture with enhance
   - Metrics structure schema
   - Learning capture schema
 
-- **Obsolescence Detection**:
-  - Multi-variate heuristics (files changed %, new languages, coverage drops)
+- **Obsolescence Detection** ✅ **Tested**:
+  - Multi-variate heuristics (files changed %, new languages, coverage drops, staleness, error rate)
+  - Configurable thresholds via `ObsolescenceThresholds` class
   - Checksum diff on critical directories
   - Semantic API change detection
   - False positive spike detection
   - Regeneration frequency cooldown (7 days default)
   - Fallback strategies for suppression
+  - **Test coverage**: 9 tests covering all detection scenarios
 
-- **Comprehensive Metrics Tracking**:
+- **Comprehensive Metrics Tracking** ✅ **Tested**:
   - 8 dimensions: coverage, changes, quality, performance, staleness, patterns, tests, user feedback
   - JSON persistence to /tmp/
   - Metrics comparison for obsolescence detection
+  - **Test coverage**: 7 tests covering initialization, updates, persistence
 
 - **Learning Capture Framework**:
   - Structured learning entries with impact classification
@@ -69,8 +80,8 @@ This release introduces a completely redesigned prompt architecture with enhance
   - `prompts/generator_v2.py`: Phase 1 prompt generator
   - `models_v2.py`: v2.0 data models
   - `validation/schema_validator.py`: JSON schema validation
-  - `obsolescence/detector.py`: Obsolescence detection
-  - `metrics/tracker.py`: Metrics tracking
+  - `obsolescence/detector.py`: Obsolescence detection ✅ **Tested**
+  - `metrics/tracker.py`: Metrics tracking ✅ **Tested**
 
 ### Changed
 
