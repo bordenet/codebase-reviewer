@@ -137,4 +137,3 @@ class TestObsolescenceDetector:
 
             assert detector.thresholds.files_changed_percent == 50.0
             assert detector.thresholds.stale_run_days_max == 60
-
