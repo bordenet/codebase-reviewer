@@ -1,0 +1,244 @@
+# Maintainability Quality Rules
+# Rules for code maintainability and readability
+
+rules:
+  # Function/Method Length
+  - id: function-too-long
+    name: Function Too Long
+    description: Function exceeds recommended length (>50 lines)
+    severity: medium
+    pattern: "^\\s*(def|function|func|public|private|protected)\\s+\\w+[^{]*\\{[^}]{2000,}\\}"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - go
+      - csharp
+    category: maintainability
+    remediation: Break down large functions into smaller, focused functions
+    code_example: "Split function into multiple smaller functions with single responsibilities"
+    effort_minutes: 90
+
+  # Class Length
+  - id: class-too-long
+    name: Class Too Long
+    description: Class exceeds recommended length (>500 lines)
+    severity: medium
+    pattern: "^\\s*class\\s+\\w+[^{]*\\{[^}]{10000,}\\}"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - csharp
+    category: maintainability
+    remediation: Split large classes into smaller, focused classes
+    code_example: "Extract related functionality into separate classes"
+    effort_minutes: 180
+
+  # Deep Nesting
+  - id: deep-nesting
+    name: Deep Nesting Level
+    description: Code has excessive nesting (>4 levels)
+    severity: medium
+    pattern: "\\{[^}]*\\{[^}]*\\{[^}]*\\{[^}]*\\{[^}]*\\{"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - go
+      - csharp
+    category: maintainability
+    remediation: Reduce nesting by extracting functions or using early returns
+    code_example: "Use guard clauses and early returns to reduce nesting"
+    effort_minutes: 60
+
+  # Long Parameter List
+  - id: long-parameter-list
+    name: Long Parameter List
+    description: Function has too many parameters (>5)
+    severity: medium
+    pattern: "(def|function|func|public|private|protected)\\s+\\w+\\s*\\([^)]*,[^)]*,[^)]*,[^)]*,[^)]*,[^)]*"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - go
+      - csharp
+    category: maintainability
+    remediation: Use parameter objects or builder pattern
+    code_example: "Group related parameters into objects"
+    effort_minutes: 60
+
+  # Magic Numbers
+  - id: magic-number
+    name: Magic Number
+    description: Unexplained numeric literal in code
+    severity: low
+    pattern: "\\b(if|while|for|return)\\s*[^=]*[=<>!]+\\s*\\d{2,}\\b"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - go
+      - csharp
+    category: maintainability
+    remediation: Replace magic numbers with named constants
+    code_example: "const MAX_RETRIES = 3; if (retries > MAX_RETRIES)"
+    effort_minutes: 15
+
+  # Commented Out Code
+  - id: commented-code
+    name: Commented Out Code
+    description: Code that is commented out instead of removed
+    severity: low
+    pattern: "^\\s*#\\s*(def|class|import|from)|^\\s*//\\s*(function|class|import|const|let|var)"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - go
+      - csharp
+    category: maintainability
+    remediation: Remove commented code, use version control instead
+    code_example: "Delete commented code and rely on git history"
+    effort_minutes: 5
+
+  # Long Lines
+  - id: line-too-long
+    name: Line Too Long
+    description: Line exceeds recommended length (>120 characters)
+    severity: low
+    pattern: "^.{121,}$"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - go
+      - csharp
+      - ruby
+      - php
+    category: maintainability
+    remediation: Break long lines into multiple lines
+    code_example: "Split long lines for better readability"
+    effort_minutes: 10
+
+  # Inconsistent Naming
+  - id: inconsistent-naming-camelcase
+    name: Inconsistent Naming - Mixed Case
+    description: Mixing camelCase and snake_case in same file
+    severity: low
+    pattern: "(camelCase.*snake_case|snake_case.*camelCase)"
+    languages:
+      - javascript
+      - typescript
+      - python
+    category: maintainability
+    remediation: Use consistent naming convention throughout file
+    code_example: "Stick to one naming convention (camelCase or snake_case)"
+    effort_minutes: 30
+
+  # Duplicate Code
+  - id: duplicate-code-block
+    name: Duplicate Code Block
+    description: Identical or very similar code blocks
+    severity: medium
+    pattern: "\\{[^}]{100,}\\}.*\\{[^}]{100,}\\}"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - go
+      - csharp
+    category: maintainability
+    remediation: Extract duplicate code into reusable functions
+    code_example: "Create a shared function for duplicate logic"
+    effort_minutes: 60
+
+  # God Object
+  - id: god-object
+    name: God Object Anti-Pattern
+    description: Class with too many responsibilities (>10 methods)
+    severity: high
+    pattern: "class\\s+\\w+[^{]*\\{([^}]*(def|function|public|private|protected)\\s+\\w+[^}]*){11,}\\}"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - csharp
+    category: maintainability
+    remediation: Split class into smaller, focused classes following SRP
+    code_example: "Apply Single Responsibility Principle"
+    effort_minutes: 180
+
+  # Primitive Obsession
+  - id: primitive-obsession
+    name: Primitive Obsession
+    description: Using primitives instead of small objects
+    severity: low
+    pattern: "(email|phone|address|zipcode|ssn)\\s*:\\s*(str|string|String)"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+    category: maintainability
+    remediation: Create value objects for domain concepts
+    code_example: "class Email { constructor(value) { this.value = value; } }"
+    effort_minutes: 45
+
+  # Feature Envy
+  - id: feature-envy
+    name: Feature Envy Code Smell
+    description: Method uses more features of another class than its own
+    severity: medium
+    pattern: "\\w+\\.\\w+\\.\\w+\\.\\w+\\.\\w+"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - csharp
+    category: maintainability
+    remediation: Move method to the class it's most interested in
+    code_example: "Move method to the class whose data it uses most"
+    effort_minutes: 90
+
+  # Data Clumps
+  - id: data-clumps
+    name: Data Clumps
+    description: Same group of parameters appearing together
+    severity: low
+    pattern: "(\\w+,\\s*\\w+,\\s*\\w+).*\\1"
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+    category: maintainability
+    remediation: Group related data into objects
+    code_example: "Create a class to hold related parameters"
+    effort_minutes: 60
+
+  # Shotgun Surgery
+  - id: shotgun-surgery
+    name: Shotgun Surgery Smell
+    description: Single change requires modifications in many classes
+    severity: medium
+    pattern: "import.*\\{[^}]{200,}\\}"
+    languages:
+      - javascript
+      - typescript
+    category: maintainability
+    remediation: Consolidate related changes into fewer classes
+    code_example: "Refactor to reduce coupling between classes"
+    effort_minutes: 120
+

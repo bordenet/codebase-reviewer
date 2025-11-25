@@ -1,0 +1,255 @@
+# Documentation Quality Rules
+# Rules for code documentation and comments
+
+rules:
+  # Missing Documentation
+  - id: missing-function-docstring
+    name: Missing Function Documentation
+    description: Public function without docstring/JSDoc
+    severity: medium
+    pattern: "^\\s*(export\\s+)?(function|def|public)\\s+\\w+\\s*\\([^)]*\\)\\s*\\{(?![^}]*(/\\*\\*|'''|\"\"\"))"
+    languages:
+      - javascript
+      - typescript
+      - python
+      - java
+    category: documentation
+    remediation: Add docstring/JSDoc to public functions
+    code_example: "/** Description of function */ or '''Docstring'''"
+    effort_minutes: 15
+
+  - id: missing-class-docstring
+    name: Missing Class Documentation
+    description: Public class without documentation
+    severity: medium
+    pattern: "^\\s*(export\\s+)?class\\s+\\w+(?![^{]*(/\\*\\*|'''|\"\"\"))"
+    languages:
+      - javascript
+      - typescript
+      - python
+      - java
+    category: documentation
+    remediation: Add class-level documentation
+    code_example: "/** Class description */"
+    effort_minutes: 20
+
+  - id: missing-module-docstring
+    name: Missing Module Documentation
+    description: Module/file without header documentation
+    severity: low
+    pattern: "^(?!\\s*(/\\*\\*|'''|\"\"\"|#))"
+    languages:
+      - python
+      - javascript
+      - typescript
+    category: documentation
+    remediation: Add module-level documentation
+    code_example: "Add file header with description and purpose"
+    effort_minutes: 10
+
+  # Poor Documentation Quality
+  - id: todo-in-docstring
+    name: TODO in Documentation
+    description: TODO comment in public documentation
+    severity: low
+    pattern: "(/\\*\\*|'''|\"\"\")[^}]*(TODO|FIXME)"
+    languages:
+      - javascript
+      - typescript
+      - python
+    category: documentation
+    remediation: Complete TODO or move to issue tracker
+    code_example: "Resolve TODO or create ticket"
+    effort_minutes: 30
+
+  - id: outdated-documentation
+    name: Potentially Outdated Documentation
+    description: Documentation mentioning old versions or deprecated features
+    severity: medium
+    pattern: "(/\\*\\*|'''|\"\"\")[^}]*(deprecated|old|legacy|obsolete)"
+    languages:
+      - javascript
+      - typescript
+      - python
+      - java
+    category: documentation
+    remediation: Update or remove outdated documentation
+    code_example: "Update docs to reflect current implementation"
+    effort_minutes: 30
+
+  - id: vague-documentation
+    name: Vague Documentation
+    description: Documentation that doesn't add value
+    severity: low
+    pattern: "(/\\*\\*|'''|\"\"\")\\s*(This function|This method|This class)\\s*(/\\*\\*|'''|\"\"\")"
+    languages:
+      - javascript
+      - typescript
+      - python
+    category: documentation
+    remediation: Add meaningful description
+    code_example: "Describe what, why, and how, not just 'this function'"
+    effort_minutes: 15
+
+  # Missing Parameter Documentation
+  - id: missing-param-docs
+    name: Missing Parameter Documentation
+    description: Function parameters not documented
+    severity: low
+    pattern: "function\\s+\\w+\\s*\\([^)]+\\)(?![^}]*@param)"
+    languages:
+      - javascript
+      - typescript
+    category: documentation
+    remediation: Document all parameters
+    code_example: "@param {string} name - User's name"
+    effort_minutes: 10
+
+  - id: missing-return-docs
+    name: Missing Return Documentation
+    description: Function return value not documented
+    severity: low
+    pattern: "function\\s+\\w+\\s*\\([^)]*\\)[^{]*\\{[^}]*return\\s+[^;]+;(?![^}]*@returns)"
+    languages:
+      - javascript
+      - typescript
+    category: documentation
+    remediation: Document return value
+    code_example: "@returns {Object} User object"
+    effort_minutes: 10
+
+  # Comment Quality
+  - id: commented-code-block
+    name: Large Commented Code Block
+    description: Large block of commented out code
+    severity: medium
+    pattern: "(//|#)[^\\n]*\\n\\s*(//|#)[^\\n]*\\n\\s*(//|#)[^\\n]*\\n\\s*(//|#)[^\\n]*\\n\\s*(//|#)"
+    languages:
+      - javascript
+      - typescript
+      - python
+      - java
+    category: documentation
+    remediation: Remove commented code, use version control
+    code_example: "Delete commented code and rely on git"
+    effort_minutes: 5
+
+  - id: obvious-comment
+    name: Obvious Comment
+    description: Comment stating the obvious
+    severity: low
+    pattern: "//\\s*increment\\s+i|//\\s*set\\s+\\w+\\s+to|#\\s*increment|#\\s*set"
+    languages:
+      - javascript
+      - typescript
+      - python
+    category: documentation
+    remediation: Remove obvious comments
+    code_example: "Remove comments that just repeat the code"
+    effort_minutes: 5
+
+  - id: misleading-comment
+    name: Potentially Misleading Comment
+    description: Comment that may not match the code
+    severity: medium
+    pattern: "//\\s*returns\\s+\\w+[^\\n]*\\n[^}]*return\\s+(?!\\1)"
+    languages:
+      - javascript
+      - typescript
+    category: documentation
+    remediation: Update comment to match code
+    code_example: "Ensure comments accurately describe code"
+    effort_minutes: 15
+
+  # API Documentation
+  - id: missing-api-example
+    name: Missing API Usage Example
+    description: Public API without usage example
+    severity: low
+    pattern: "export\\s+(class|function)\\s+\\w+(?![^}]*@example)"
+    languages:
+      - javascript
+      - typescript
+    category: documentation
+    remediation: Add usage example to documentation
+    code_example: "@example const result = myFunction('input');"
+    effort_minutes: 20
+
+  - id: missing-error-docs
+    name: Missing Error Documentation
+    description: Function that throws errors without documenting them
+    severity: medium
+    pattern: "throw\\s+new\\s+\\w+Error(?![^}]*@throws)"
+    languages:
+      - javascript
+      - typescript
+    category: documentation
+    remediation: Document possible errors
+    code_example: "@throws {ValidationError} When input is invalid"
+    effort_minutes: 15
+
+  # README Quality
+  - id: missing-readme
+    name: Missing README File
+    description: Project without README.md
+    severity: high
+    pattern: "^(?!.*README\\.md)"
+    languages:
+      - markdown
+    category: documentation
+    remediation: Create README.md with project description
+    code_example: "Add README.md with setup and usage instructions"
+    effort_minutes: 60
+
+  - id: incomplete-readme
+    name: Incomplete README
+    description: README missing essential sections
+    severity: medium
+    pattern: "README\\.md(?!.*Installation.*Usage.*Contributing)"
+    languages:
+      - markdown
+    category: documentation
+    remediation: Add missing sections to README
+    code_example: "Include Installation, Usage, and Contributing sections"
+    effort_minutes: 45
+
+  # Changelog
+  - id: missing-changelog
+    name: Missing CHANGELOG
+    description: Project without CHANGELOG.md
+    severity: low
+    pattern: "^(?!.*CHANGELOG\\.md)"
+    languages:
+      - markdown
+    category: documentation
+    remediation: Create CHANGELOG.md
+    code_example: "Add CHANGELOG.md following Keep a Changelog format"
+    effort_minutes: 30
+
+  # License
+  - id: missing-license
+    name: Missing LICENSE File
+    description: Project without LICENSE file
+    severity: medium
+    pattern: "^(?!.*LICENSE)"
+    languages:
+      - text
+    category: documentation
+    remediation: Add LICENSE file
+    code_example: "Add appropriate open source license"
+    effort_minutes: 15
+
+  # Code Examples
+  - id: broken-code-example
+    name: Broken Code Example
+    description: Code example in documentation has syntax errors
+    severity: medium
+    pattern: "@example[^}]*\\{[^}]*\\}(?!.*\\))"
+    languages:
+      - javascript
+      - typescript
+    category: documentation
+    remediation: Fix code examples
+    code_example: "Ensure code examples are syntactically correct"
+    effort_minutes: 20
+
