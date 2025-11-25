@@ -21,6 +21,9 @@ from codebase_reviewer.analyzers.code import CodeAnalyzer
 from codebase_reviewer.exporters.json_exporter import JSONExporter
 from codebase_reviewer.exporters.html_exporter import HTMLExporter
 from codebase_reviewer.exporters.sarif_exporter import SARIFExporter
+from codebase_reviewer.analytics.trend_analyzer import TrendAnalyzer, MetricSnapshot
+from codebase_reviewer.analytics.hotspot_detector import HotspotDetector
+from codebase_reviewer.analytics.risk_scorer import RiskScorer
 
 
 @click.group()
@@ -58,7 +61,7 @@ def cli():
     help="Workflow to use (default, reviewer_criteria, etc.)",
 )
 @click.option("--quiet", "-q", is_flag=True, help="Suppress progress output")
-def analyze(repo_path, output, prompts_output, format, workflow, quiet):  # pylint: disable=redefined-builtin
+def review(repo_path, output, prompts_output, format, workflow, quiet):  # pylint: disable=redefined-builtin
     """Analyze a codebase and generate AI review prompts."""
     try:
         # Resolve absolute path
@@ -747,7 +750,17 @@ def evolve(
     default="json",
     help="Output format (default: json)",
 )
-def analyze(repo_path, output, format):
+@click.option(
+    "--with-analytics",
+    is_flag=True,
+    help="Include trend analysis, hotspot detection, and risk scoring",
+)
+@click.option(
+    "--track-trends",
+    is_flag=True,
+    help="Record metrics for trend analysis",
+)
+def analyze(repo_path, output, format, with_analytics, track_trends):
     """Run code analysis and export results in specified format.
 
     This command analyzes the codebase for security issues, code quality problems,
@@ -765,6 +778,94 @@ def analyze(repo_path, output, format):
         # Run analysis
         analyzer = CodeAnalyzer()
         analysis = analyzer.analyze(repo_path)
+
+        # Run analytics if requested
+        analytics_data = {}
+        if with_analytics or track_trends:
+            click.echo("📊 Running analytics...")
+
+            # Prepare data for analytics
+            file_issues = {}
+            file_metrics = {}
+            all_issues = []
+
+            if analysis.quality_issues:
+                for issue in analysis.quality_issues:
+                    file_path = issue.file_path
+                    if file_path not in file_issues:
+                        file_issues[file_path] = []
+                    file_issues[file_path].append({
+                        'id': issue.rule_id,
+                        'severity': issue.severity.value,
+                        'file_path': file_path,
+                        'effort_minutes': 30  # Default effort
+                    })
+                    all_issues.append({
+                        'id': issue.rule_id,
+                        'severity': issue.severity.value,
+                        'file_path': file_path,
+                        'effort_minutes': 30
+                    })
+
+            # Hotspot detection
+            if with_analytics:
+                detector = HotspotDetector(Path(repo_path))
+                hotspots = detector.detect_hotspots(file_issues, file_metrics)
+                analytics_data['hotspots'] = [h.to_dict() for h in hotspots]
+
+                if hotspots:
+                    click.echo(f"  🔥 Found {len(hotspots)} hotspots")
+
+                # Risk scoring
+                scorer = RiskScorer()
+                risk_scores = scorer.score_issues(all_issues, [h.to_dict() for h in hotspots])
+                analytics_data['risk_scores'] = [r.to_dict() for r in risk_scores]
+
+                quick_wins = [r for r in risk_scores if r.is_quick_win]
+                if quick_wins:
+                    click.echo(f"  ⚡ Found {len(quick_wins)} quick wins")
+
+            # Trend tracking
+            if track_trends:
+                from datetime import datetime
+                trend_analyzer = TrendAnalyzer()
+
+                # Count issues by severity
+                critical_count = len([i for i in all_issues if i['severity'] == 'critical'])
+                high_count = len([i for i in all_issues if i['severity'] == 'high'])
+                medium_count = len([i for i in all_issues if i['severity'] == 'medium'])
+                low_count = len([i for i in all_issues if i['severity'] == 'low'])
+
+                # Create snapshot
+                snapshot = MetricSnapshot(
+                    timestamp=datetime.now(),
+                    total_issues=len(all_issues),
+                    critical_issues=critical_count,
+                    high_issues=high_count,
+                    medium_issues=medium_count,
+                    low_issues=low_count,
+                    total_files=len(file_issues),
+                    total_lines=sum(m.get('lines_of_code', 0) for m in file_metrics.values()),
+                    security_issues=len([i for i in all_issues if 'SEC' in i.get('id', '')]),
+                    quality_issues=len([i for i in all_issues if 'QUAL' in i.get('id', '')])
+                )
+
+                trend_analyzer.record_snapshot(snapshot)
+                trends = trend_analyzer.get_trends()
+
+                if trends:
+                    analytics_data['trends'] = [t.to_dict() for t in trends]
+                    click.echo(f"  📈 Recorded metrics snapshot")
+
+                    for trend in trends:
+                        if trend.direction == 'improving':
+                            click.echo(f"  ✅ {trend.metric_name}: {trend.direction} ({trend.change_percent:+.1f}%)")
+                        elif trend.direction == 'degrading':
+                            click.echo(f"  ⚠️  {trend.metric_name}: {trend.direction} ({trend.change_percent:+.1f}%)")
+
+        # Add analytics to analysis object if present
+        if analytics_data:
+            analysis.analytics = analytics_data
 
         # Export based on format
         if format == "json":
