@@ -32,6 +32,10 @@ from codebase_reviewer.phase2.validator import Phase2Validator
 from codebase_reviewer.prompt_generator import PromptGenerator
 from codebase_reviewer.simulation import LLMSimulator
 from codebase_reviewer.tuning.runner import TuningRunner
+from codebase_reviewer.prompts.generator_v2 import Phase1PromptGeneratorV2, ScanParameters
+from codebase_reviewer.metrics.tracker import MetricsTracker
+from codebase_reviewer.obsolescence.detector import ObsolescenceDetector
+from codebase_reviewer.validation.schema_validator import SchemaValidator
 
 
 @click.group()
@@ -1299,6 +1303,135 @@ def roi(team_size, salary, critical, high, medium, low, months):
 
     except Exception as e:
         click.echo(click.style(f"\n✗ Error: {str(e)}", fg="red"), err=True)
+        sys.exit(1)
+
+
+@cli.command()
+@click.argument("repo_path", type=click.Path(exists=True))
+@click.option(
+    "--output-dir",
+    "-o",
+    type=click.Path(),
+    default="/tmp/codebase-reviewer",
+    help="Output directory for analysis results (default: /tmp/codebase-reviewer)",
+)
+@click.option(
+    "--scan-mode",
+    "-m",
+    type=click.Choice(["review", "deep_scan", "scorch"]),
+    default="review",
+    help="Scan mode: review (quick), deep_scan (thorough), scorch (exhaustive)",
+)
+@click.option(
+    "--exclude",
+    "-e",
+    multiple=True,
+    help="Patterns to exclude (can be specified multiple times)",
+)
+@click.option(
+    "--include",
+    "-i",
+    multiple=True,
+    help="Patterns to include (can be specified multiple times)",
+)
+@click.option(
+    "--languages",
+    "-l",
+    multiple=True,
+    help="Languages to analyze (can be specified multiple times)",
+)
+@click.option("--quiet", "-q", is_flag=True, help="Suppress progress output")
+def analyze_v2(repo_path, output_dir, scan_mode, exclude, include, languages, quiet):
+    """Run Phase 1 analysis using v2.0 architecture (SECURITY: outputs to /tmp only)."""
+    try:
+        # Resolve absolute path
+        repo_path = str(Path(repo_path).resolve())
+
+        # Extract repo name for output directory
+        repo_name = Path(repo_path).name
+        output_path = os.path.join(output_dir, repo_name)
+
+        if not quiet:
+            click.echo(click.style(f"\n🔍 Codebase Reviewer v2.0 - Phase 1 Analysis\n", fg="cyan", bold=True))
+            click.echo(f"  Target: {repo_path}")
+            click.echo(f"  Mode: {scan_mode}")
+            click.echo(f"  Output: {output_path}")
+            click.echo("")
+
+        # Security check: Ensure output is in /tmp
+        if not output_path.startswith("/tmp/"):
+            click.echo(
+                click.style(
+                    "⚠️  WARNING: Output directory must be in /tmp/ for security. Using /tmp/codebase-reviewer instead.",
+                    fg="yellow",
+                ),
+                err=True,
+            )
+            output_path = f"/tmp/codebase-reviewer/{repo_name}"
+
+        # Create scan parameters
+        params = ScanParameters(
+            target_path=repo_path,
+            scan_mode=scan_mode,
+            output_path=output_path,
+            exclude_patterns=list(exclude) if exclude else None,
+            include_patterns=list(include) if include else None,
+            languages=list(languages) if languages else None,
+        )
+
+        # Generate Phase 1 prompt
+        if not quiet:
+            click.echo("📝 Generating Phase 1 prompt...")
+
+        generator = Phase1PromptGeneratorV2()
+        prompt = generator.generate_prompt(params)
+        prompt_file = generator.save_prompt(prompt, output_path)
+
+        if not quiet:
+            click.echo(click.style(f"✓ Prompt saved: {prompt_file}", fg="green"))
+            click.echo("")
+            click.echo("📊 Next steps:")
+            click.echo(f"  1. Review the prompt: {prompt_file}")
+            click.echo(f"  2. Send to LLM for analysis")
+            click.echo(f"  3. Save LLM response to: {output_path}/phase1_response.json")
+            click.echo(f"  4. Validate response with: codebase-reviewer validate-v2 {output_path}")
+            click.echo("")
+
+        # Initialize metrics tracker
+        metrics_tracker = MetricsTracker(repo_name, output_path)
+
+        # Scan the codebase to collect initial metrics
+        if not quiet:
+            click.echo("📈 Collecting initial metrics...")
+
+        # Count files
+        total_files = 0
+        for root, _, files in os.walk(repo_path):
+            # Skip common ignore patterns
+            if any(skip in root for skip in ['.git', 'node_modules', '__pycache__', '.venv', 'venv']):
+                continue
+            total_files += len(files)
+
+        metrics_tracker.update_coverage(
+            files_total=total_files,
+            files_analyzed=0,  # Will be updated after LLM analysis
+            files_documented=0,
+        )
+
+        metrics_tracker.save()
+
+        if not quiet:
+            click.echo(click.style(f"✓ Metrics initialized: {total_files} files found", fg="green"))
+            click.echo("")
+
+        click.echo(click.style("✅ Phase 1 prompt generation complete!", fg="green", bold=True))
+        click.echo(f"📁 All outputs saved to: {output_path}")
+
+    except Exception as e:
+        click.echo(click.style(f"\n✗ Error: {str(e)}", fg="red"), err=True)
+        import traceback
+        if not quiet:
+            traceback.print_exc()
         sys.exit(1)
 
 
