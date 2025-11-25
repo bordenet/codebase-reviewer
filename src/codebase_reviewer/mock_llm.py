@@ -189,7 +189,9 @@ grep -r "\.go$" . --include="*.go"
 - 🟡 **MEDIUM**: Add architecture diagram (30 min), Validate tech stack (15 min)
 - 🟢 **LOW**: Check documentation completeness score
 """
-        return self._generate_generic_response(prompt_id, prompt_text, context, repository)
+        return self._generate_generic_response(
+            prompt_id, prompt_text, context, repository
+        )
 
     def _generate_architecture_validation(
         self, prompt_id: str, prompt_text: str, context: Any, repository: str
@@ -365,7 +367,9 @@ done
 
 **Total Effort**: ~3 hours
 """
-        return self._generate_generic_response(prompt_id, prompt_text, context, repository)
+        return self._generate_generic_response(
+            prompt_id, prompt_text, context, repository
+        )
 
     def _generate_code_quality(
         self, prompt_id: str, prompt_text: str, context: Any, repository: str
@@ -586,7 +590,9 @@ pre-commit run --all-files  # Should pass
 
 **Total Effort**: ~8 hours
 """
-        return self._generate_generic_response(prompt_id, prompt_text, context, repository)
+        return self._generate_generic_response(
+            prompt_id, prompt_text, context, repository
+        )
 
     # Helper methods for formatting
     def _format_claims(self, claims: List[str]) -> str:
@@ -624,7 +630,9 @@ pre-commit run --all-files  # Should pass
             features.append("Workflow system")
         if "web" in content.lower():
             features.append("Web interface")
-        return "\n".join(f"- {f}" for f in features) if features else "- See documentation"
+        return (
+            "\n".join(f"- {f}" for f in features) if features else "- See documentation"
+        )
 
     def _validate_components(self, claimed: List[str], actual: List[str]) -> str:
         """Validate claimed components against actual packages."""
@@ -643,7 +651,9 @@ pre-commit run --all-files  # Should pass
         """Format language list."""
         if not languages:
             return "None detected"
-        return ", ".join(f"{lang['name']} ({lang['percentage']:.1f}%)" for lang in languages[:3])
+        return ", ".join(
+            f"{lang['name']} ({lang['percentage']:.1f}%)" for lang in languages[:3]
+        )
 
     def _format_packages(self, packages: List[str]) -> str:
         """Format package list."""
@@ -678,7 +688,9 @@ pre-commit run --all-files  # Should pass
             for i, todo in enumerate(todos[:5])
         )
 
-    def _format_top_security_and_todo_issues(self, security: List[Dict], todos: List[Dict]) -> str:
+    def _format_top_security_and_todo_issues(
+        self, security: List[Dict], todos: List[Dict]
+    ) -> str:
         """Format top priority security and TODO issues."""
         issues = []
         for i, sec in enumerate(security[:3], 1):
@@ -719,7 +731,9 @@ The context data is available but not yet processed by a specialized handler.
         return f"```\n{str(context)[:500]}...\n```"
 
     # Placeholder generators for other prompt types
-    def _generate_dependency_analysis(self, prompt_id, prompt_text, context, repository):
+    def _generate_dependency_analysis(
+        self, prompt_id, prompt_text, context, repository
+    ):
         """Generate dependency analysis response."""
         if isinstance(context, dict):
             deps = context.get("dependencies", [])
@@ -1014,7 +1028,9 @@ pytest
 - 🟠 **Medium Risk**: {len(outdated)} outdated dependencies may have security issues
 - 🟢 **Low Risk**: {"Most dependencies appear current" if len(outdated) < 5 else "Dependency hygiene needs improvement"}
 """
-        return self._generate_generic_response(prompt_id, prompt_text, context, repository)
+        return self._generate_generic_response(
+            prompt_id, prompt_text, context, repository
+        )
 
     def _generate_testing_review(self, prompt_id, prompt_text, context, repository):
         """Generate testing strategy review response."""
@@ -1265,9 +1281,13 @@ pytest --cov=src --cov-fail-under=80
 - No visible integration test directory
 - Consider adding performance/load tests
 """
-        return self._generate_generic_response(prompt_id, prompt_text, context, repository)
+        return self._generate_generic_response(
+            prompt_id, prompt_text, context, repository
+        )
 
-    def _generate_security_assessment(self, prompt_id, prompt_text, context, repository):
+    def _generate_security_assessment(
+        self, prompt_id, prompt_text, context, repository
+    ):
         """Generate security assessment response."""
         if isinstance(context, dict):
             security_count = context.get("security_issues_count", 0)
@@ -1597,11 +1617,15 @@ pytest tests/security/ -v
 - ✅ GDPR compliance for PII handling
 - ✅ Regular security audits (quarterly recommended)
 """
-        return self._generate_generic_response(prompt_id, prompt_text, context, repository)
+        return self._generate_generic_response(
+            prompt_id, prompt_text, context, repository
+        )
 
     def _generate_test_strategy(self, prompt_id, prompt_text, context, repository):
         """Generate test strategy response."""
-        return self._generate_testing_review(prompt_id, prompt_text, context, repository)
+        return self._generate_testing_review(
+            prompt_id, prompt_text, context, repository
+        )
 
     # Helper methods for new generators
     def _format_dependencies(self, deps: List) -> str:
@@ -1637,9 +1661,9 @@ pytest tests/security/ -v
         """Detect test types from file names."""
         types = set()
         for tf in test_files:
-            if 'integration' in tf.lower():
+            if "integration" in tf.lower():
                 types.add("Integration")
-            elif 'e2e' in tf.lower() or 'end_to_end' in tf.lower():
+            elif "e2e" in tf.lower() or "end_to_end" in tf.lower():
                 types.add("End-to-End")
             else:
                 types.add("Unit")
@@ -2003,7 +2027,9 @@ pydeps src/codebase_reviewer/cli.py --only codebase_reviewer
 - **Medium Risk**: Workflow loader changes impact multiple components
 - **Low Risk**: Analyzer modules are well-isolated
 """
-        return self._generate_generic_response(prompt_id, prompt_text, context, repository)
+        return self._generate_generic_response(
+            prompt_id, prompt_text, context, repository
+        )
 
     def _generate_git_hotspots(self, prompt_id, prompt_text, context, repository):
         """Generate git hotspots analysis response."""
@@ -2389,7 +2415,9 @@ code-maat -l gitlog.txt -c git2 -a coupling | head -10
 ## Temporal Coupling
 *Note: Use code-maat or similar tools to identify files that change together, indicating potential hidden dependencies or architectural issues*
 """
-        return self._generate_generic_response(prompt_id, prompt_text, context, repository)
+        return self._generate_generic_response(
+            prompt_id, prompt_text, context, repository
+        )
 
     def _generate_logging_review(self, prompt_id, prompt_text, context, repository):
         """Generate logging review response."""
@@ -2400,7 +2428,7 @@ code-maat -l gitlog.txt -c git2 -a coupling | head -10
             files_with_print = context.get("files_with_print", [])
             has_structured = context.get("has_structured_logging", False)
 
-            print_count = sum(f.get('count', 0) for f in files_with_print)
+            print_count = sum(f.get("count", 0) for f in files_with_print)
 
             return f"""# Logging and Observability Review
 
@@ -2753,12 +2781,18 @@ logger = structlog.get_logger()
 - No error tracking (Sentry, Rollbar)
 - No performance monitoring (APM)
 """
-        return self._generate_generic_response(prompt_id, prompt_text, context, repository)
+        return self._generate_generic_response(
+            prompt_id, prompt_text, context, repository
+        )
 
     # Helper methods for new generators
     def _format_entry_points(self, internal_deps: Dict) -> str:
         """Format entry points from dependencies."""
-        entry_points = [k for k in internal_deps.keys() if 'cli.py' in k or 'main.py' in k or '__main__.py' in k]
+        entry_points = [
+            k
+            for k in internal_deps.keys()
+            if "cli.py" in k or "main.py" in k or "__main__.py" in k
+        ]
         if not entry_points:
             return "- No clear entry points identified"
         return "\n".join(f"- `{ep}`" for ep in entry_points[:5])
@@ -2777,8 +2811,7 @@ logger = structlog.get_logger()
         if not modules:
             return "- No high fan-in modules detected"
         return "\n".join(
-            f"- `{mod['module']}`: {mod['count']} dependents"
-            for mod in modules
+            f"- `{mod['module']}`: {mod['count']} dependents" for mod in modules
         )
 
     def _format_sample_dependencies(self, deps: Dict) -> str:
@@ -2804,21 +2837,27 @@ logger = structlog.get_logger()
 
     def _format_critical_hotspots(self, hotspots: List[Dict]) -> str:
         """Format critical hotspots (>10 changes)."""
-        critical = [h for h in hotspots if h.get('change_count', 0) > 10]
+        critical = [h for h in hotspots if h.get("change_count", 0) > 10]
         if not critical:
             return "- No critical hotspots (all files <10 changes)"
-        return "\n".join(f"- `{h['file']}`: {h['change_count']} changes" for h in critical)
+        return "\n".join(
+            f"- `{h['file']}`: {h['change_count']} changes" for h in critical
+        )
 
     def _format_moderate_hotspots(self, hotspots: List[Dict]) -> str:
         """Format moderate hotspots (5-10 changes)."""
-        moderate = [h for h in hotspots if 5 <= h.get('change_count', 0) <= 10]
+        moderate = [h for h in hotspots if 5 <= h.get("change_count", 0) <= 10]
         if not moderate:
             return "- No moderate hotspots"
-        return "\n".join(f"- `{h['file']}`: {h['change_count']} changes" for h in moderate)
+        return "\n".join(
+            f"- `{h['file']}`: {h['change_count']} changes" for h in moderate
+        )
 
-    def _format_print_vs_logging(self, print_files: List[Dict], logging_files: List) -> str:
+    def _format_print_vs_logging(
+        self, print_files: List[Dict], logging_files: List
+    ) -> str:
         """Format print vs logging comparison."""
-        print_count = sum(f.get('count', 0) for f in print_files)
+        print_count = sum(f.get("count", 0) for f in print_files)
         return f"""
 **Print Statements**: {print_count} found in {len(print_files)} files
 **Logging Statements**: {len(logging_files)} files using logging
@@ -2834,8 +2873,7 @@ logger = structlog.get_logger()
         if not print_files:
             return "- None"
         return "\n".join(
-            f"- `{f['file']}`: {f['count']} print statements"
-            for f in print_files
+            f"- `{f['file']}`: {f['count']} print statements" for f in print_files
         )
 
     # Remaining unimplemented generators
@@ -3112,7 +3150,9 @@ grep -i "prerequisite\|requirement" README.md  # Should find prerequisites secti
 - **Setup Files**: {"100%" if setup_files else "0%"}
 - **Overall**: {self._calculate_setup_score(prereqs, setup_files, build_steps)}%
 """
-        return self._generate_generic_response(prompt_id, prompt_text, context, repository)
+        return self._generate_generic_response(
+            prompt_id, prompt_text, context, repository
+        )
 
     def _generate_static_analysis(self, prompt_id, prompt_text, context, repository):
         """Generate static analysis summary response."""
@@ -4826,9 +4866,13 @@ pydeps src/ --only src --cluster -o architecture.svg
 - **Visualization**: pyreverse, graphviz
 - **Analysis**: SonarQube, Code Climate
 """
-        return self._generate_generic_response(prompt_id, prompt_text, context, repository)
+        return self._generate_generic_response(
+            prompt_id, prompt_text, context, repository
+        )
 
-    def _generate_observability_strategy(self, prompt_id, prompt_text, context, repository):
+    def _generate_observability_strategy(
+        self, prompt_id, prompt_text, context, repository
+    ):
         """Generate observability strategy response."""
         return f"""# Observability & Instrumentation Strategy
 
@@ -5890,7 +5934,9 @@ python scripts/tech_debt_dashboard.py
 - **Debt Tracking**: SonarQube, Code Climate
 - **Visualization**: CodeScene, Understand
 """
-        return self._generate_generic_response(prompt_id, prompt_text, context, repository)
+        return self._generate_generic_response(
+            prompt_id, prompt_text, context, repository
+        )
 
     def _generate_mentorship_guide(self, prompt_id, prompt_text, context, repository):
         """Generate team mentorship and knowledge transfer guide."""
@@ -6682,7 +6728,9 @@ Document successful mentorship examples:
 
 This creates a feedback loop for continuous improvement of the mentorship program.
 """
-        return self._generate_generic_response(prompt_id, prompt_text, context, repository)
+        return self._generate_generic_response(
+            prompt_id, prompt_text, context, repository
+        )
 
     # Helper methods for new generators
 
@@ -6692,19 +6740,27 @@ This creates a feedback loop for continuous improvement of the mentorship progra
             return "- None"
         return "\n".join(f"- {item}" for item in items[:10])
 
-    def _generate_setup_recommendations(self, prereqs, setup_files, build_steps, env_vars, undocumented):
+    def _generate_setup_recommendations(
+        self, prereqs, setup_files, build_steps, env_vars, undocumented
+    ):
         """Generate setup recommendations based on findings."""
         recommendations = []
         if not prereqs:
-            recommendations.append("1. ❌ **CRITICAL**: Document prerequisites in README")
+            recommendations.append(
+                "1. ❌ **CRITICAL**: Document prerequisites in README"
+            )
         if not setup_files:
-            recommendations.append("2. ❌ **CRITICAL**: Add setup.py or requirements.txt")
+            recommendations.append(
+                "2. ❌ **CRITICAL**: Add setup.py or requirements.txt"
+            )
         if not build_steps:
             recommendations.append("3. ⚠️ **HIGH**: Document build/installation steps")
         if not env_vars:
             recommendations.append("4. ⚠️ **MEDIUM**: Document environment variables")
         if undocumented:
-            recommendations.append(f"5. ⚠️ **MEDIUM**: Document {len(undocumented)} undocumented features")
+            recommendations.append(
+                f"5. ⚠️ **MEDIUM**: Document {len(undocumented)} undocumented features"
+            )
 
         if not recommendations:
             return "✅ All setup documentation is complete"
@@ -6729,9 +6785,9 @@ This creates a feedback loop for continuous improvement of the mentorship progra
         formatted = []
         for i, issue in enumerate(issues[:10], 1):
             if isinstance(issue, dict):
-                severity = issue.get('severity', 'UNKNOWN')
-                description = issue.get('description', 'No description')
-                file_path = issue.get('file', 'Unknown file')
+                severity = issue.get("severity", "UNKNOWN")
+                description = issue.get("description", "No description")
+                file_path = issue.get("file", "Unknown file")
                 formatted.append(f"{i}. **[{severity}]** {description} ({file_path})")
             else:
                 formatted.append(f"{i}. {issue}")
@@ -6746,13 +6802,29 @@ This creates a feedback loop for continuous improvement of the mentorship progra
         rows = []
         for issue in issues[:5]:
             if isinstance(issue, dict):
-                name = issue.get('description', 'Unknown')[:40]
-                severity = issue.get('severity', 'MEDIUM')
+                name = issue.get("description", "Unknown")[:40]
+                severity = issue.get("severity", "MEDIUM")
                 impact = "High" if severity in ["HIGH", "CRITICAL"] else "Medium"
-                effort = "Low" if "TODO" in name or "comment" in name.lower() else "Medium"
-                priority = "P0" if severity == "CRITICAL" else "P1" if severity == "HIGH" else "P2"
-                timeline = "This sprint" if priority == "P0" else "Next sprint" if priority == "P1" else "Backlog"
-                rows.append(f"| {name} | {impact} | {effort} | {priority} | {timeline} |")
+                effort = (
+                    "Low" if "TODO" in name or "comment" in name.lower() else "Medium"
+                )
+                priority = (
+                    "P0"
+                    if severity == "CRITICAL"
+                    else "P1"
+                    if severity == "HIGH"
+                    else "P2"
+                )
+                timeline = (
+                    "This sprint"
+                    if priority == "P0"
+                    else "Next sprint"
+                    if priority == "P1"
+                    else "Backlog"
+                )
+                rows.append(
+                    f"| {name} | {impact} | {effort} | {priority} | {timeline} |"
+                )
 
         return "\n".join(rows) if rows else "| No issues | - | - | - | - |"
 
@@ -6764,10 +6836,13 @@ This creates a feedback loop for continuous improvement of the mentorship progra
         quick_wins = []
         for issue in issues:
             if isinstance(issue, dict):
-                desc = issue.get('description', '')
-                severity = issue.get('severity', '')
+                desc = issue.get("description", "")
+                severity = issue.get("severity", "")
                 # Quick wins: TODO comments, simple fixes, low-hanging fruit
-                if any(keyword in desc.lower() for keyword in ['todo', 'fixme', 'comment', 'print']):
+                if any(
+                    keyword in desc.lower()
+                    for keyword in ["todo", "fixme", "comment", "print"]
+                ):
                     quick_wins.append(f"- {desc} (Estimated: 1-2 hours)")
 
         if not quick_wins:
@@ -6783,14 +6858,15 @@ This creates a feedback loop for continuous improvement of the mentorship progra
         major_projects = []
         for issue in issues:
             if isinstance(issue, dict):
-                desc = issue.get('description', '')
-                severity = issue.get('severity', '')
+                desc = issue.get("description", "")
+                severity = issue.get("severity", "")
                 # Major refactoring: security issues, architecture problems
-                if severity in ['HIGH', 'CRITICAL'] and not any(keyword in desc.lower() for keyword in ['todo', 'comment']):
+                if severity in ["HIGH", "CRITICAL"] and not any(
+                    keyword in desc.lower() for keyword in ["todo", "comment"]
+                ):
                     major_projects.append(f"- {desc} (Estimated: 1-2 weeks)")
 
         if not major_projects:
             return "- Improve test coverage to 80%+\n- Reduce cyclomatic complexity\n- Break up large modules"
 
         return "\n".join(major_projects[:5])
-

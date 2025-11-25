@@ -29,27 +29,27 @@ def sample_analysis():
         ],
         frameworks=[Framework(name="Flask")],
     )
-    
+
     issues = [
         Issue(
             title="Hardcoded Password",
             description="Password found in source code",
             severity=Severity.CRITICAL,
-            source="app.py:42"
+            source="app.py:42",
         ),
         Issue(
             title="TODO Comment",
             description="TODO: Fix this later",
             severity=Severity.LOW,
-            source="utils.py:10"
+            source="utils.py:10",
         ),
     ]
-    
+
     dependencies = [
         DependencyInfo(name="flask", dependency_type="production", version="2.0.0"),
         DependencyInfo(name="pytest", dependency_type="development", version="7.0.0"),
     ]
-    
+
     return CodeAnalysis(
         structure=structure,
         dependencies=dependencies,
@@ -65,15 +65,15 @@ class TestJSONExporter:
         """Test exporting to JSON file."""
         exporter = JSONExporter()
         output_file = tmp_path / "analysis.json"
-        
+
         exporter.export(sample_analysis, str(output_file))
-        
+
         assert output_file.exists()
-        
+
         # Verify JSON is valid
         with open(output_file) as f:
             data = json.load(f)
-        
+
         assert data["version"] == "1.0.0"
         assert "structure" in data
         assert "quality_issues" in data
@@ -82,7 +82,7 @@ class TestJSONExporter:
         """Test converting analysis to dictionary."""
         exporter = JSONExporter()
         data = exporter.to_dict(sample_analysis)
-        
+
         assert data["version"] == "1.0.0"
         assert len(data["structure"]["languages"]) == 2
         assert len(data["quality_issues"]) == 2
@@ -93,7 +93,7 @@ class TestJSONExporter:
         """Test converting to JSON string."""
         exporter = JSONExporter()
         json_str = exporter.to_json_string(sample_analysis)
-        
+
         assert isinstance(json_str, str)
         data = json.loads(json_str)
         assert data["version"] == "1.0.0"
@@ -106,15 +106,15 @@ class TestHTMLExporter:
         """Test exporting to HTML file."""
         exporter = HTMLExporter()
         output_file = tmp_path / "report.html"
-        
+
         exporter.export(sample_analysis, str(output_file), title="Test Report")
-        
+
         assert output_file.exists()
-        
+
         # Verify HTML content
         with open(output_file) as f:
             html = f.read()
-        
+
         assert "<!DOCTYPE html>" in html
         assert "Test Report" in html
         assert "Hardcoded Password" in html
@@ -123,7 +123,7 @@ class TestHTMLExporter:
         """Test converting to HTML."""
         exporter = HTMLExporter()
         html = exporter.to_html(sample_analysis, title="Test Report")
-        
+
         assert "<!DOCTYPE html>" in html
         assert "Test Report" in html
         assert "Hardcoded Password" in html
@@ -133,19 +133,19 @@ class TestHTMLExporter:
     def test_html_escaping(self, sample_analysis):
         """Test HTML special character escaping."""
         exporter = HTMLExporter()
-        
+
         # Add issue with special characters
         sample_analysis.quality_issues.append(
             Issue(
                 title="Test <script>alert('xss')</script>",
                 description="Test & < > \" '",
                 severity=Severity.HIGH,
-                source="test.py:1"
+                source="test.py:1",
             )
         )
-        
+
         html = exporter.to_html(sample_analysis)
-        
+
         # Verify escaping
         assert "&lt;script&gt;" in html
         assert "&amp;" in html
@@ -159,15 +159,15 @@ class TestSARIFExporter:
         """Test exporting to SARIF file."""
         exporter = SARIFExporter()
         output_file = tmp_path / "results.sarif"
-        
+
         exporter.export(sample_analysis, str(output_file))
-        
+
         assert output_file.exists()
-        
+
         # Verify SARIF is valid JSON
         with open(output_file) as f:
             data = json.load(f)
-        
+
         assert data["version"] == "2.1.0"
         assert "$schema" in data
         assert "runs" in data
@@ -176,10 +176,10 @@ class TestSARIFExporter:
         """Test converting to SARIF format."""
         exporter = SARIFExporter()
         sarif = exporter.to_sarif(sample_analysis)
-        
+
         assert sarif["version"] == "2.1.0"
         assert len(sarif["runs"]) == 1
-        
+
         run = sarif["runs"][0]
         assert run["tool"]["driver"]["name"] == "Codebase Reviewer"
         assert len(run["results"]) == 2
@@ -188,7 +188,7 @@ class TestSARIFExporter:
     def test_severity_mapping(self, sample_analysis):
         """Test severity to SARIF level mapping."""
         exporter = SARIFExporter()
-        
+
         assert exporter._severity_to_sarif_level(Severity.CRITICAL) == "error"
         assert exporter._severity_to_sarif_level(Severity.HIGH) == "error"
         assert exporter._severity_to_sarif_level(Severity.MEDIUM) == "warning"
@@ -198,17 +198,16 @@ class TestSARIFExporter:
         """Test SARIF result structure."""
         exporter = SARIFExporter()
         sarif = exporter.to_sarif(sample_analysis)
-        
+
         result = sarif["runs"][0]["results"][0]
-        
+
         assert "ruleId" in result
         assert "level" in result
         assert "message" in result
         assert "locations" in result
         assert len(result["locations"]) == 1
-        
+
         location = result["locations"][0]
         assert "physicalLocation" in location
         assert "artifactLocation" in location["physicalLocation"]
         assert "region" in location["physicalLocation"]
-

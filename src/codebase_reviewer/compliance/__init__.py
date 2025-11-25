@@ -7,8 +7,7 @@ from codebase_reviewer.compliance.compliance_reporter import (
 )
 
 __all__ = [
-    'ComplianceFramework',
-    'ComplianceReport',
-    'ComplianceReporter',
+    "ComplianceFramework",
+    "ComplianceReport",
+    "ComplianceReporter",
 ]
-

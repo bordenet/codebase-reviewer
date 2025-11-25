@@ -13,24 +13,24 @@ from .metrics import FidelityMetrics, calculate_metrics_from_comparison
 @dataclass
 class ValidationReport:
     """Complete validation report."""
-    
+
     codebase_name: str
     generation: int
     validated_at: datetime
-    
+
     # Comparison results
     comparison: ComparisonResult
     metrics: FidelityMetrics
-    
+
     # Overall assessment
     passes_validation: bool
     recommendation: str
-    
+
     # Detailed findings
     strengths: List[str]
     weaknesses: List[str]
     improvements_needed: List[str]
-    
+
     def to_dict(self) -> Dict:
         """Convert to dictionary."""
         return {
@@ -52,11 +52,11 @@ class ValidationReport:
             "weaknesses": self.weaknesses,
             "improvements_needed": self.improvements_needed,
         }
-    
+
     def to_json(self) -> str:
         """Convert to JSON string."""
         return json.dumps(self.to_dict(), indent=2)
-    
+
     def to_markdown(self) -> str:
         """Convert to markdown report."""
         lines = [
@@ -88,47 +88,53 @@ class ValidationReport:
             f"- **Extra Sections**: {self.metrics.sections_extra}",
             "",
         ]
-        
+
         if self.strengths:
-            lines.extend([
-                "## Strengths",
-                "",
-                *[f"- {s}" for s in self.strengths],
-                "",
-            ])
-        
+            lines.extend(
+                [
+                    "## Strengths",
+                    "",
+                    *[f"- {s}" for s in self.strengths],
+                    "",
+                ]
+            )
+
         if self.weaknesses:
-            lines.extend([
-                "## Weaknesses",
-                "",
-                *[f"- {w}" for w in self.weaknesses],
-                "",
-            ])
-        
+            lines.extend(
+                [
+                    "## Weaknesses",
+                    "",
+                    *[f"- {w}" for w in self.weaknesses],
+                    "",
+                ]
+            )
+
         if self.improvements_needed:
-            lines.extend([
-                "## Improvements Needed",
-                "",
-                *[f"- {i}" for i in self.improvements_needed],
-                "",
-            ])
-        
+            lines.extend(
+                [
+                    "## Improvements Needed",
+                    "",
+                    *[f"- {i}" for i in self.improvements_needed],
+                    "",
+                ]
+            )
+
         return "\n".join(lines)
 
 
 class Validator:
     """Validate tool outputs against LLM outputs."""
-    
+
     def __init__(self, fidelity_threshold: float = 0.95):
         """
         Initialize validator.
-        
+
         Args:
             fidelity_threshold: Minimum fidelity score to pass (default: 0.95)
         """
         self.fidelity_threshold = fidelity_threshold
         self.comparator = DocumentationComparator()
-    
+
     def validate(
         self,
         codebase_name: str,
@@ -138,31 +144,31 @@ class Validator:
     ) -> ValidationReport:
         """
         Validate tool output against LLM output.
-        
+
         Args:
             codebase_name: Name of the codebase
             generation: Generation number
             llm_doc_path: Path to LLM-generated documentation
             tool_doc_path: Path to tool-generated documentation
-            
+
         Returns:
             ValidationReport with complete analysis
         """
         # Compare documents
         comparison = self.comparator.compare(llm_doc_path, tool_doc_path)
-        
+
         # Calculate metrics
         metrics = calculate_metrics_from_comparison(comparison)
-        
+
         # Determine if passes validation
         passes = metrics.fidelity_score >= self.fidelity_threshold
-        
+
         # Generate recommendation
         recommendation = self._generate_recommendation(metrics, passes)
-        
+
         # Identify strengths and weaknesses
         strengths, weaknesses, improvements = self._analyze_results(comparison, metrics)
-        
+
         return ValidationReport(
             codebase_name=codebase_name,
             generation=generation,
@@ -175,7 +181,7 @@ class Validator:
             weaknesses=weaknesses,
             improvements_needed=improvements,
         )
-    
+
     def _generate_recommendation(self, metrics: FidelityMetrics, passes: bool) -> str:
         """Generate recommendation based on metrics."""
         if passes:
@@ -186,7 +192,7 @@ class Validator:
             return "Tool output needs significant improvements. Consider regenerating with enhanced prompts."
         else:
             return "Tool output quality is insufficient. Regenerate tools with improved meta-prompt."
-    
+
     def _analyze_results(
         self,
         comparison: ComparisonResult,
@@ -196,30 +202,45 @@ class Validator:
         strengths = []
         weaknesses = []
         improvements = []
-        
+
         # Analyze strengths
         if metrics.overall_similarity >= 0.90:
-            strengths.append(f"High overall similarity ({metrics.overall_similarity:.1%})")
+            strengths.append(
+                f"High overall similarity ({metrics.overall_similarity:.1%})"
+            )
         if metrics.content_coverage >= 0.90:
-            strengths.append(f"Excellent content coverage ({metrics.content_coverage:.1%})")
+            strengths.append(
+                f"Excellent content coverage ({metrics.content_coverage:.1%})"
+            )
         if metrics.completeness >= 0.95:
-            strengths.append(f"All expected sections present ({metrics.completeness:.1%})")
-        
+            strengths.append(
+                f"All expected sections present ({metrics.completeness:.1%})"
+            )
+
         # Analyze weaknesses
         if metrics.overall_similarity < 0.85:
-            weaknesses.append(f"Low overall similarity ({metrics.overall_similarity:.1%})")
+            weaknesses.append(
+                f"Low overall similarity ({metrics.overall_similarity:.1%})"
+            )
         if metrics.content_coverage < 0.85:
-            weaknesses.append(f"Insufficient content coverage ({metrics.content_coverage:.1%})")
+            weaknesses.append(
+                f"Insufficient content coverage ({metrics.content_coverage:.1%})"
+            )
         if metrics.sections_missing > 0:
-            weaknesses.append(f"{metrics.sections_missing} sections missing from tool output")
-        
+            weaknesses.append(
+                f"{metrics.sections_missing} sections missing from tool output"
+            )
+
         # Generate improvements
         if metrics.overall_similarity < 0.95:
-            improvements.append("Improve text generation to match LLM output more closely")
+            improvements.append(
+                "Improve text generation to match LLM output more closely"
+            )
         if metrics.sections_missing > 0:
-            improvements.append(f"Add missing sections: {', '.join(comparison.missing_in_tool[:3])}")
+            improvements.append(
+                f"Add missing sections: {', '.join(comparison.missing_in_tool[:3])}"
+            )
         if metrics.structure_similarity < 0.90:
             improvements.append("Improve section structure to match LLM output")
-        
-        return strengths, weaknesses, improvements
 
+        return strengths, weaknesses, improvements

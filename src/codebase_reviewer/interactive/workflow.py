@@ -7,11 +7,11 @@ from typing import Optional
 
 class InteractiveWorkflow:
     """Manages interactive workflow with AI assistant."""
-    
+
     @staticmethod
     def display_prompt(prompt_path: Path, codebase_name: str):
         """Display Phase 1 prompt for user to copy to AI assistant.
-        
+
         Args:
             prompt_path: Path to Phase 1 prompt file
             codebase_name: Name of codebase being analyzed
@@ -23,7 +23,7 @@ class InteractiveWorkflow:
         print(f"Prompt saved to: {prompt_path}")
         print(f"Prompt size: {prompt_path.stat().st_size:,} bytes")
         print(f"Lines: {len(prompt_path.read_text().splitlines()):,}")
-        
+
         print("\n" + "─" * 80)
         print("  🤖 NEXT STEP: Give this prompt to your AI assistant")
         print("─" * 80)
@@ -38,37 +38,37 @@ class InteractiveWorkflow:
         print(f"   review-codebase evolve {codebase_name} \\")
         print(f"     --ai-response /tmp/ai-response.md \\")
         print(f"     --auto-run")
-        
+
         print("\n" + "=" * 80)
         print("  💡 TIP: The AI assistant will generate Go code for offline tools")
         print("=" * 80)
         print("\nThe AI will create tools that can regenerate documentation")
         print("WITHOUT needing the AI again - infinite free runs!")
         print("\n" + "=" * 80 + "\n")
-    
+
     @staticmethod
     def wait_for_response(response_path: Optional[Path] = None) -> Path:
         """Wait for user to provide AI response.
-        
+
         Args:
             response_path: Optional path to AI response file
-            
+
         Returns:
             Path to AI response file
-            
+
         Raises:
             FileNotFoundError: If response file doesn't exist
         """
         if response_path and response_path.exists():
             return response_path
-        
+
         print("\n" + "=" * 80)
         print("  ⏳ WAITING FOR AI RESPONSE")
         print("=" * 80)
         print("\nPlease provide the AI assistant's response.")
         print("\nOption 1: Paste directly (then press Ctrl+D)")
         print("─" * 80)
-        
+
         try:
             print("\nPaste AI response here:\n")
             lines = []
@@ -78,26 +78,26 @@ class InteractiveWorkflow:
                     lines.append(line)
                 except EOFError:
                     break
-            
+
             if not lines:
                 print("\n❌ No response provided")
                 sys.exit(1)
-            
+
             # Save to temp file
             temp_response = Path("/tmp/ai-response.md")
             temp_response.write_text("\n".join(lines))
-            
+
             print(f"\n✅ Response saved to: {temp_response}")
             return temp_response
-            
+
         except KeyboardInterrupt:
             print("\n\n❌ Cancelled by user")
             sys.exit(1)
-    
+
     @staticmethod
     def display_success(tools_dir: Path, binary_path: Path, codebase_path: Path):
         """Display success message with next steps.
-        
+
         Args:
             tools_dir: Directory containing generated tools
             binary_path: Path to compiled binary
@@ -108,7 +108,7 @@ class InteractiveWorkflow:
         print("=" * 80)
         print(f"\nTools Location: {tools_dir}")
         print(f"Binary: {binary_path}")
-        
+
         print("\n" + "─" * 80)
         print("  🚀 NEXT STEPS: Use your offline tools")
         print("─" * 80)
@@ -118,7 +118,7 @@ class InteractiveWorkflow:
         print(f"   ls /tmp/codebase-reviewer/{codebase_path.name}/")
         print("\n3. Re-run anytime (no AI needed!):")
         print(f"   {binary_path} {codebase_path}")
-        
+
         print("\n" + "─" * 80)
         print("  💰 COST ANALYSIS")
         print("─" * 80)
@@ -126,18 +126,18 @@ class InteractiveWorkflow:
         print("✅ Future runs: $0.00 (offline, no AI needed)")
         print("✅ Speed: 10x faster than AI")
         print("✅ Frequency: Unlimited")
-        
+
         print("\n" + "=" * 80)
         print("  🎯 MISSION ACCOMPLISHED!")
         print("=" * 80)
         print("\nYou now have self-contained tools that can regenerate")
         print("documentation as your codebase evolves - no AI required!")
         print("\n" + "=" * 80 + "\n")
-    
+
     @staticmethod
     def display_error(error: str):
         """Display error message.
-        
+
         Args:
             error: Error message to display
         """
@@ -146,4 +146,3 @@ class InteractiveWorkflow:
         print("=" * 80)
         print(f"\n{error}")
         print("\n" + "=" * 80 + "\n")
-

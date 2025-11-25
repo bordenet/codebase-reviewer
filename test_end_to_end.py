@@ -73,23 +73,23 @@ def main():
     print("  🧪 END-TO-END WORKFLOW TEST")
     print("=" * 80)
     print()
-    
+
     # Use this codebase as test subject
     codebase_path = Path(__file__).parent
     output_path = Path("/tmp/e2e-test") / datetime.now().strftime("%Y%m%d_%H%M%S")
-    
+
     print(f"Codebase: {codebase_path}")
     print(f"Output: {output_path}")
     print()
-    
+
     # Step 1: Generate LLM documentation
     llm_doc_path = generate_llm_documentation(codebase_path, output_path)
     print()
-    
+
     # Step 2: Generate tool documentation
     tool_doc_path = generate_tool_documentation(codebase_path, output_path)
     print()
-    
+
     # Step 3: Compare and validate
     print("🔍 Comparing LLM vs Tool documentation...")
     validator = Validator(fidelity_threshold=0.95)
@@ -99,17 +99,17 @@ def main():
         llm_doc_path=llm_doc_path,
         tool_doc_path=tool_doc_path,
     )
-    
+
     # Save report
     report_path = output_path / "validation_report.md"
     report_path.write_text(report.to_markdown())
-    
+
     json_path = output_path / "validation_report.json"
     json_path.write_text(report.to_json())
-    
+
     print(f"✅ Validation complete")
     print()
-    
+
     # Display results
     print("=" * 80)
     print("  📊 VALIDATION RESULTS")
@@ -127,32 +127,31 @@ def main():
     print()
     print(f"Recommendation: {report.recommendation}")
     print()
-    
+
     if report.strengths:
         print("Strengths:")
         for strength in report.strengths:
             print(f"  ✅ {strength}")
         print()
-    
+
     if report.weaknesses:
         print("Weaknesses:")
         for weakness in report.weaknesses:
             print(f"  ⚠️  {weakness}")
         print()
-    
+
     if report.improvements_needed:
         print("Improvements Needed:")
         for improvement in report.improvements_needed:
             print(f"  🔧 {improvement}")
         print()
-    
+
     print(f"Full report: {report_path}")
     print()
-    
+
     # Exit with appropriate code
     sys.exit(0 if report.passes_validation else 1)
 
 
 if __name__ == "__main__":
     main()
-

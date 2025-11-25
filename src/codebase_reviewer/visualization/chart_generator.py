@@ -25,7 +25,9 @@ class ChartGenerator:
         ]
 
         for lang in analysis.structure.languages:
-            lines.append(f"| {lang.name} | {lang.file_count} | {lang.percentage:.1f}% |")
+            lines.append(
+                f"| {lang.name} | {lang.file_count} | {lang.percentage:.1f}% |"
+            )
 
         return "\n".join(lines)
 
@@ -82,17 +84,27 @@ class ChartGenerator:
         ]
 
         # Calculate metrics
-        total_files = sum(lang.file_count for lang in analysis.structure.languages) if analysis.structure and analysis.structure.languages else 0
-        total_languages = len(analysis.structure.languages) if analysis.structure and analysis.structure.languages else 0
+        total_files = (
+            sum(lang.file_count for lang in analysis.structure.languages)
+            if analysis.structure and analysis.structure.languages
+            else 0
+        )
+        total_languages = (
+            len(analysis.structure.languages)
+            if analysis.structure and analysis.structure.languages
+            else 0
+        )
         total_dependencies = len(analysis.dependencies) if analysis.dependencies else 0
         total_issues = len(analysis.quality_issues) if analysis.quality_issues else 0
 
-        lines.extend([
-            f"| Total Files | {total_files} |",
-            f"| Languages | {total_languages} |",
-            f"| Dependencies | {total_dependencies} |",
-            f"| Quality Issues | {total_issues} |",
-        ])
+        lines.extend(
+            [
+                f"| Total Files | {total_files} |",
+                f"| Languages | {total_languages} |",
+                f"| Dependencies | {total_dependencies} |",
+                f"| Quality Issues | {total_issues} |",
+            ]
+        )
 
         # Add complexity metrics if available
         if analysis.complexity_metrics:
@@ -119,7 +131,7 @@ class ChartGenerator:
         ]
 
         for fw in analysis.structure.frameworks:
-            version = fw.version if hasattr(fw, 'version') and fw.version else "N/A"
+            version = fw.version if hasattr(fw, "version") and fw.version else "N/A"
             purpose = self._infer_framework_purpose(fw.name)
             lines.append(f"| {fw.name} | {version} | {purpose} |")
 
@@ -145,7 +157,9 @@ class ChartGenerator:
             Severity.MEDIUM: 2,
             Severity.LOW: 3,
         }
-        sorted_issues = sorted(issues, key=lambda i: severity_order.get(i.severity, 999))
+        sorted_issues = sorted(
+            issues, key=lambda i: severity_order.get(i.severity, 999)
+        )
 
         lines = [
             "| Severity | Issue | Location |",
@@ -155,7 +169,9 @@ class ChartGenerator:
         for issue in sorted_issues[:limit]:
             emoji = self._get_severity_emoji(issue.severity.value.capitalize())
             title = issue.title[:50] + "..." if len(issue.title) > 50 else issue.title
-            location = issue.source[:40] + "..." if len(issue.source) > 40 else issue.source
+            location = (
+                issue.source[:40] + "..." if len(issue.source) > 40 else issue.source
+            )
             lines.append(f"| {emoji} | {title} | `{location}` |")
 
         return "\n".join(lines)
@@ -183,4 +199,3 @@ class ChartGenerator:
             return "Database"
         else:
             return "Library"
-

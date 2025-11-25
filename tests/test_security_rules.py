@@ -27,7 +27,7 @@ class TestRuleEngine:
             languages=["python"],
             owasp_category="A07:2021",
         )
-        
+
         assert rule.id == "test-rule"
         assert rule.severity == Severity.HIGH
         assert rule.compiled_pattern is not None
@@ -43,18 +43,18 @@ class TestRuleEngine:
             languages=["python"],
             owasp_category="A07:2021",
         )
-        
+
         engine = RuleEngine([rule])
-        
+
         # Create a temporary file with vulnerable code
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write('password = "MySecretPassword123"\n')
             f.write('username = "admin"\n')
             temp_path = Path(f.name)
-        
+
         try:
             findings = engine.scan_file(temp_path, "python")
-            
+
             assert len(findings) == 1
             assert findings[0].rule_id == "hardcoded-password"
             assert findings[0].severity == Severity.CRITICAL
@@ -73,18 +73,18 @@ class TestRuleEngine:
             languages=["python"],
             owasp_category="A07:2021",
         )
-        
+
         engine = RuleEngine([rule])
-        
+
         # Create a temporary file with safe code
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
-            f.write('import os\n')
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
+            f.write("import os\n")
             f.write('password = os.environ.get("PASSWORD")\n')
             temp_path = Path(f.name)
-        
+
         try:
             findings = engine.scan_file(temp_path, "python")
-            
+
             assert len(findings) == 0
         finally:
             temp_path.unlink()
@@ -100,17 +100,17 @@ class TestRuleEngine:
             languages=["python"],
             owasp_category="Test",
         )
-        
+
         engine = RuleEngine([rule])
-        
+
         # Create a JavaScript file
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.js', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".js", delete=False) as f:
             f.write('const test = "test";\n')
             temp_path = Path(f.name)
-        
+
         try:
             findings = engine.scan_file(temp_path, "javascript")
-            
+
             # Should not find anything because rule is Python-only
             assert len(findings) == 0
         finally:
@@ -145,18 +145,18 @@ class TestRuleEngine:
                 owasp_category="Test",
             ),
         ]
-        
+
         engine = RuleEngine(rules)
-        
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
-            f.write('critical = True\n')
-            f.write('high = True\n')
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
+            f.write("critical = True\n")
+            f.write("high = True\n")
             temp_path = Path(f.name)
-        
+
         try:
             engine.scan_file(temp_path, "python")
             grouped = engine.get_findings_by_severity()
-            
+
             assert len(grouped[Severity.CRITICAL]) == 1
             assert len(grouped[Severity.HIGH]) == 1
             assert len(grouped[Severity.MEDIUM]) == 0
@@ -170,20 +170,20 @@ class TestRulesLoader:
     def test_load_builtin_rules(self):
         """Test loading built-in rules."""
         rules = RulesLoader.get_builtin_rules()
-        
+
         # Should have loaded our 50+ rules
         assert len(rules) >= 50
-        
+
         # Check that we have rules from different categories
         rule_ids = [rule.id for rule in rules]
-        assert any('sql-injection' in rid for rid in rule_ids)
-        assert any('xss' in rid for rid in rule_ids)
-        assert any('hardcoded' in rid for rid in rule_ids)
+        assert any("sql-injection" in rid for rid in rule_ids)
+        assert any("xss" in rid for rid in rule_ids)
+        assert any("hardcoded" in rid for rid in rule_ids)
 
     def test_rule_has_required_fields(self):
         """Test that loaded rules have all required fields."""
         rules = RulesLoader.get_builtin_rules()
-        
+
         for rule in rules:
             assert rule.id
             assert rule.name
@@ -193,4 +193,3 @@ class TestRulesLoader:
             assert rule.languages
             assert rule.owasp_category
             assert rule.compiled_pattern is not None
-

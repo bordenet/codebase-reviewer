@@ -15,7 +15,9 @@ class PromptGenerator:
         self.exporter = PromptExporter()
         self.workflow_loader = WorkflowLoader()
 
-    def generate_all_phases(self, repo_analysis: RepositoryAnalysis, workflow: str = "default") -> PromptCollection:
+    def generate_all_phases(
+        self, repo_analysis: RepositoryAnalysis, workflow: str = "default"
+    ) -> PromptCollection:
         """Generate complete prompt set for all phases.
 
         Args:
@@ -39,7 +41,9 @@ class PromptGenerator:
         workflow_def = self.workflow_loader.load(workflow)
         return self._generate_from_workflow(workflow_def, repo_analysis)
 
-    def _generate_from_workflow(self, workflow_def, repo_analysis: RepositoryAnalysis) -> PromptCollection:
+    def _generate_from_workflow(
+        self, workflow_def, repo_analysis: RepositoryAnalysis
+    ) -> PromptCollection:
         """Generate prompts from a workflow definition.
 
         Args:
@@ -57,16 +61,27 @@ class PromptGenerator:
             for prompt_ref in section.prompts:
                 if prompt_ref.template:
                     # Resolve template reference
-                    template_file, prompt_id = self.workflow_loader.resolve_template_reference(prompt_ref.template)
+                    (
+                        template_file,
+                        prompt_id,
+                    ) = self.workflow_loader.resolve_template_reference(
+                        prompt_ref.template
+                    )
 
                     # Check if it's a phase template or a named template
-                    if template_file.startswith("phase") and template_file.endswith(".yml"):
+                    if template_file.startswith("phase") and template_file.endswith(
+                        ".yml"
+                    ):
                         # Phase template (e.g., phase0.yml)
-                        phase_num = int(template_file.replace("phase", "").replace(".yml", ""))
+                        phase_num = int(
+                            template_file.replace("phase", "").replace(".yml", "")
+                        )
                         prompts = self.generator.generate(phase_num, repo_analysis)
                     else:
                         # Named template (e.g., security.yml, architecture_insights.yml)
-                        prompts = self._generate_from_template_file(template_file, repo_analysis)
+                        prompts = self._generate_from_template_file(
+                            template_file, repo_analysis
+                        )
 
                     # Find the specific prompt by ID if specified
                     if prompt_id:
@@ -98,7 +113,9 @@ class PromptGenerator:
             phase4=[],
         )
 
-    def _generate_from_template_file(self, template_filename: str, repo_analysis: RepositoryAnalysis) -> list:
+    def _generate_from_template_file(
+        self, template_filename: str, repo_analysis: RepositoryAnalysis
+    ) -> list:
         """Generate prompts from a named template file.
 
         Args:

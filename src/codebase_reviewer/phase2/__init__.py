@@ -20,4 +20,3 @@ __all__ = [
     "Phase2Validator",
     "ValidationReport",
 ]
-

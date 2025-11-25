@@ -159,4 +159,3 @@ def test_detect_architecture_pattern_none():
     content = "Just a simple application"
     pattern = detect_architecture_pattern(content)
     assert pattern is None
-

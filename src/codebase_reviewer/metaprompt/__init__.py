@@ -3,4 +3,3 @@
 from .generator import MetaPromptGenerator
 
 __all__ = ["MetaPromptGenerator"]
-
