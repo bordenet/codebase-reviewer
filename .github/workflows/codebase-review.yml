@@ -42,26 +42,28 @@ jobs:
           # The || true ensures the step doesn't fail even if analysis finds issues
           python -m codebase_reviewer.cli analyze . --output analysis-results.json --format json || echo "Analysis completed with findings"
           python -m codebase_reviewer.cli analyze . --output results.sarif --format sarif || echo "SARIF generation completed"
+          ls -la analysis-results.json results.sarif || echo "Files not found"
         continue-on-error: true
 
       - name: Upload SARIF to GitHub Security
         uses: github/codeql-action/upload-sarif@v4
-        if: always() && hashFiles('results.sarif') != ''
+        if: always()
         with:
           sarif_file: results.sarif
           category: codebase-reviewer
+        continue-on-error: true
 
       - name: Upload analysis results
         uses: actions/upload-artifact@v4
-        if: always() && hashFiles('analysis-results.json') != ''
+        if: always()
         with:
           name: analysis-results
           path: |
             analysis-results.json
             results.sarif
+        continue-on-error: true
 
       - name: Check quality gate
-        if: hashFiles('analysis-results.json') != ''
         continue-on-error: false
         run: |
           python -c "
