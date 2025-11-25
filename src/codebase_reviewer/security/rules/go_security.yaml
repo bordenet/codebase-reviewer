@@ -1,0 +1,362 @@
+# Go Security Rules
+# Advanced security patterns for Go codebases
+
+rules:
+  # Command Injection
+  - id: go-command-injection-exec
+    name: Command Injection via exec.Command
+    description: Using exec.Command with shell and user input
+    severity: critical
+    pattern: "exec\\.Command\\([\"']sh[\"']|exec\\.Command\\([\"']bash[\"']|exec\\.Command\\([\"']cmd[\"']"
+    languages:
+      - go
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-78
+    effort_minutes: 90
+    remediation: Use exec.Command with separate arguments, avoid shell
+    code_example: "exec.Command(\"program\", arg1, arg2) instead of exec.Command(\"sh\", \"-c\", cmd)"
+
+  # SQL Injection
+  - id: go-sql-injection-query
+    name: SQL Injection via String Concatenation
+    description: Building SQL queries with string concatenation
+    severity: critical
+    pattern: "(Query|Exec|QueryRow)\\([^)]*\\+[^)]*\\)|fmt\\.Sprintf\\([^)]*SELECT|fmt\\.Sprintf\\([^)]*INSERT|fmt\\.Sprintf\\([^)]*UPDATE|fmt\\.Sprintf\\([^)]*DELETE"
+    languages:
+      - go
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-89
+    effort_minutes: 60
+    remediation: Use parameterized queries with placeholders
+    code_example: "db.Query(\"SELECT * FROM users WHERE id = ?\", userID)"
+
+  # Path Traversal
+  - id: go-path-traversal
+    name: Path Traversal in File Operations
+    description: File operations with user input without validation
+    severity: high
+    pattern: "os\\.(Open|Create|ReadFile|WriteFile)\\([^)]*r\\.(URL\\.Query|FormValue|PostFormValue)"
+    languages:
+      - go
+    owasp_category: A01:2021 - Broken Access Control
+    cwe_id: CWE-22
+    effort_minutes: 90
+    remediation: Validate and sanitize file paths using filepath.Clean()
+    code_example: "Validate path is within allowed directory before file operations"
+
+  # Unsafe Package Usage
+  - id: go-unsafe-package
+    name: Unsafe Package Usage
+    description: Using unsafe package bypasses Go's type safety
+    severity: high
+    pattern: "import\\s+[\"']unsafe[\"']|unsafe\\."
+    languages:
+      - go
+    owasp_category: A04:2021 - Insecure Design
+    cwe_id: CWE-242
+    effort_minutes: 120
+    remediation: Avoid unsafe package unless absolutely necessary
+    code_example: "Use type-safe alternatives instead of unsafe"
+
+  # Weak Cryptography
+  - id: go-weak-hash-md5
+    name: Weak Cryptographic Hash - MD5
+    description: MD5 is cryptographically broken
+    severity: medium
+    pattern: "md5\\.(New|Sum)\\("
+    languages:
+      - go
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-327
+    effort_minutes: 30
+    remediation: Use SHA-256 or stronger
+    code_example: "sha256.New() instead of md5.New()"
+
+  - id: go-weak-hash-sha1
+    name: Weak Cryptographic Hash - SHA1
+    description: SHA1 is cryptographically weak
+    severity: medium
+    pattern: "sha1\\.(New|Sum)\\("
+    languages:
+      - go
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-327
+    effort_minutes: 30
+    remediation: Use SHA-256 or stronger
+    code_example: "sha256.New() instead of sha1.New()"
+
+  - id: go-weak-cipher-des
+    name: Weak Encryption Algorithm - DES
+    description: DES is cryptographically broken
+    severity: high
+    pattern: "des\\.(NewCipher|NewTripleDESCipher)\\("
+    languages:
+      - go
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-327
+    effort_minutes: 60
+    remediation: Use AES instead
+    code_example: "aes.NewCipher() instead of des.NewCipher()"
+
+  - id: go-weak-cipher-rc4
+    name: Weak Encryption Algorithm - RC4
+    description: RC4 is cryptographically broken
+    severity: high
+    pattern: "rc4\\.NewCipher\\("
+    languages:
+      - go
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-327
+    effort_minutes: 60
+    remediation: Use AES instead
+    code_example: "aes.NewCipher() instead of rc4.NewCipher()"
+
+  # Insecure Random
+  - id: go-weak-random
+    name: Weak Random Number Generation
+    description: math/rand is not cryptographically secure
+    severity: medium
+    pattern: "rand\\.(Int|Intn|Read)\\("
+    languages:
+      - go
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-338
+    effort_minutes: 30
+    remediation: Use crypto/rand for security-sensitive operations
+    code_example: "crypto/rand.Read() instead of math/rand"
+
+  # SSRF
+  - id: go-ssrf-http-request
+    name: Server-Side Request Forgery (SSRF)
+    description: Making HTTP requests with user-controlled URLs
+    severity: high
+    pattern: "http\\.(Get|Post|Head)\\([^)]*r\\.(URL\\.Query|FormValue|PostFormValue)"
+    languages:
+      - go
+    owasp_category: A10:2021 - Server-Side Request Forgery
+    cwe_id: CWE-918
+    effort_minutes: 90
+    remediation: Validate and whitelist allowed URLs/domains
+    code_example: "Validate URL against whitelist before http.Get(url)"
+
+  # Template Injection
+  - id: go-template-injection
+    name: Server-Side Template Injection
+    description: Using user input in templates without sanitization
+    severity: critical
+    pattern: "template\\.(New|Parse|ParseFiles)\\([^)]*r\\.(URL\\.Query|FormValue|PostFormValue)"
+    languages:
+      - go
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-94
+    effort_minutes: 120
+    remediation: Sanitize template content and validate input
+    code_example: "Validate template names against whitelist"
+
+  # XML External Entity (XXE)
+  - id: go-xxe-xml-decoder
+    name: XML External Entity (XXE) Attack
+    description: Parsing XML without disabling external entities
+    severity: high
+    pattern: "xml\\.NewDecoder\\("
+    languages:
+      - go
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-611
+    effort_minutes: 60
+    remediation: Disable external entities in XML parser
+    code_example: "Use custom decoder that disables external entities"
+
+  # Hardcoded Secrets
+  - id: go-hardcoded-password
+    name: Hardcoded Password
+    description: Password hardcoded in source code
+    severity: critical
+    pattern: "(password|passwd|pwd)\\s*:=\\s*[\"'][^\"']{8,}[\"']"
+    languages:
+      - go
+    owasp_category: A07:2021 - Identification and Authentication Failures
+    cwe_id: CWE-798
+    effort_minutes: 30
+    remediation: Use environment variables for passwords
+    code_example: "password := os.Getenv(\"DB_PASSWORD\")"
+
+  - id: go-hardcoded-api-key
+    name: Hardcoded API Key
+    description: API key hardcoded in source code
+    severity: critical
+    pattern: "(apiKey|api_key|apiSecret|api_secret)\\s*:=\\s*[\"'][A-Za-z0-9]{20,}[\"']"
+    languages:
+      - go
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-798
+    effort_minutes: 30
+    remediation: Use environment variables for API keys
+    code_example: "apiKey := os.Getenv(\"API_KEY\")"
+
+  # Insecure TLS Configuration
+  - id: go-tls-insecure-skip-verify
+    name: TLS Certificate Verification Disabled
+    description: Disabling TLS certificate verification
+    severity: high
+    pattern: "InsecureSkipVerify\\s*:\\s*true"
+    languages:
+      - go
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-295
+    effort_minutes: 45
+    remediation: Enable certificate verification
+    code_example: "InsecureSkipVerify: false or remove this setting"
+
+  - id: go-tls-min-version
+    name: Weak TLS Minimum Version
+    description: Using TLS 1.0 or 1.1 which are deprecated
+    severity: medium
+    pattern: "MinVersion\\s*:\\s*tls\\.(VersionTLS10|VersionTLS11)"
+    languages:
+      - go
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-327
+    effort_minutes: 30
+    remediation: Use TLS 1.2 or higher
+    code_example: "MinVersion: tls.VersionTLS12"
+
+  # Open Redirect
+  - id: go-open-redirect
+    name: Open Redirect Vulnerability
+    description: Redirecting to user-controlled URLs
+    severity: medium
+    pattern: "http\\.Redirect\\([^)]*r\\.(URL\\.Query|FormValue|PostFormValue)"
+    languages:
+      - go
+    owasp_category: A01:2021 - Broken Access Control
+    cwe_id: CWE-601
+    effort_minutes: 60
+    remediation: Validate redirect URLs against whitelist
+    code_example: "Validate URL is in allowed list before redirecting"
+
+  # Race Conditions
+  - id: go-race-condition-map
+    name: Concurrent Map Access Without Sync
+    description: Accessing maps concurrently without synchronization
+    severity: medium
+    pattern: "go\\s+func\\([^)]*\\)\\s*\\{[^}]*map\\["
+    languages:
+      - go
+    owasp_category: A04:2021 - Insecure Design
+    cwe_id: CWE-362
+    effort_minutes: 90
+    remediation: Use sync.Map or protect with sync.RWMutex
+    code_example: "Use sync.Map or mutex for concurrent map access"
+
+  # Integer Overflow
+  - id: go-integer-overflow
+    name: Potential Integer Overflow
+    description: Integer operations without overflow checks
+    severity: medium
+    pattern: "int(8|16|32)?\\([^)]*\\)\\s*\\*|int(8|16|32)?\\([^)]*\\)\\s*\\+"
+    languages:
+      - go
+    owasp_category: A04:2021 - Insecure Design
+    cwe_id: CWE-190
+    effort_minutes: 60
+    remediation: Check for overflow before arithmetic operations
+    code_example: "Use math package functions to check for overflow"
+
+  # Deserialization
+  - id: go-unsafe-deserialization-gob
+    name: Unsafe Gob Deserialization
+    description: Deserializing untrusted gob data
+    severity: high
+    pattern: "gob\\.NewDecoder\\([^)]*\\)\\.Decode\\("
+    languages:
+      - go
+    owasp_category: A08:2021 - Software and Data Integrity Failures
+    cwe_id: CWE-502
+    effort_minutes: 90
+    remediation: Validate and sanitize input before deserialization
+    code_example: "Use JSON for untrusted data instead of gob"
+
+  # LDAP Injection
+  - id: go-ldap-injection
+    name: LDAP Injection
+    description: User input in LDAP queries without sanitization
+    severity: high
+    pattern: "Search\\([^)]*r\\.(URL\\.Query|FormValue|PostFormValue)"
+    languages:
+      - go
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-90
+    effort_minutes: 90
+    remediation: Sanitize and validate LDAP query parameters
+    code_example: "Escape special LDAP characters in user input"
+
+  # Cookie Security
+  - id: go-insecure-cookie
+    name: Cookie Without Secure Flag
+    description: Cookies without secure flag can be transmitted over HTTP
+    severity: medium
+    pattern: "http\\.Cookie\\{[^}]*\\}(?!.*Secure\\s*:\\s*true)"
+    languages:
+      - go
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-614
+    effort_minutes: 15
+    remediation: Set Secure flag on cookies
+    code_example: "cookie.Secure = true"
+
+  - id: go-cookie-no-httponly
+    name: Cookie Without HttpOnly Flag
+    description: Cookies without HttpOnly flag are vulnerable to XSS
+    severity: medium
+    pattern: "http\\.Cookie\\{[^}]*\\}(?!.*HttpOnly\\s*:\\s*true)"
+    languages:
+      - go
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-1004
+    effort_minutes: 15
+    remediation: Set HttpOnly flag on sensitive cookies
+    code_example: "cookie.HttpOnly = true"
+
+  # NoSQL Injection (MongoDB)
+  - id: go-nosql-injection-mongo
+    name: NoSQL Injection in MongoDB
+    description: User input in MongoDB queries without validation
+    severity: high
+    pattern: "bson\\.(M|D)\\{[^}]*r\\.(URL\\.Query|FormValue|PostFormValue)"
+    languages:
+      - go
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-943
+    effort_minutes: 90
+    remediation: Validate and sanitize user input
+    code_example: "Validate input types before using in queries"
+
+  # JWT Security
+  - id: go-jwt-no-verify
+    name: JWT Token Without Verification
+    description: Parsing JWT without verification
+    severity: critical
+    pattern: "jwt\\.Parse\\([^)]*\\)(?!.*jwt\\.WithValidMethods)"
+    languages:
+      - go
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-347
+    effort_minutes: 45
+    remediation: Always verify JWT signatures
+    code_example: "Use jwt.ParseWithClaims with proper validation"
+
+  # Regex DoS
+  - id: go-regex-dos
+    name: Regular Expression Denial of Service
+    description: Complex regex patterns can cause performance issues
+    severity: medium
+    pattern: "regexp\\.MustCompile\\([\"'][^\"']*\\([^)]*\\*[^)]*\\+[^\"']*[\"']\\)"
+    languages:
+      - go
+    owasp_category: A06:2021 - Vulnerable and Outdated Components
+    cwe_id: CWE-1333
+    effort_minutes: 60
+    remediation: Simplify regex patterns and set timeout limits
+    code_example: "Use simpler patterns or validate input length"
+
