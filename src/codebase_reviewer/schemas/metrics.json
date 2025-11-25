@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Metrics Schema",
+  "description": "Comprehensive metrics for obsolescence detection",
+  "type": "object",
+  "properties": {
+    "coverage": {
+      "type": "object",
+      "properties": {
+        "files_total": {"type": "integer", "minimum": 0},
+        "files_analyzed": {"type": "integer", "minimum": 0},
+        "files_documented": {"type": "integer", "minimum": 0},
+        "coverage_percent": {"type": "number", "minimum": 0, "maximum": 100}
+      }
+    },
+    "changes": {
+      "type": "object",
+      "properties": {
+        "files_changed": {"type": "integer", "minimum": 0},
+        "files_changed_percent": {"type": "number", "minimum": 0, "maximum": 100},
+        "files_added": {"type": "integer", "minimum": 0},
+        "files_deleted": {"type": "integer", "minimum": 0},
+        "new_languages": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "quality": {
+      "type": "object",
+      "properties": {
+        "error_count": {"type": "integer", "minimum": 0},
+        "error_rate_percent": {"type": "number", "minimum": 0, "maximum": 100},
+        "warning_count": {"type": "integer", "minimum": 0},
+        "false_positive_estimate": {"type": "integer", "minimum": 0}
+      }
+    },
+    "performance": {
+      "type": "object",
+      "properties": {
+        "avg_runtime_seconds": {"type": "number", "minimum": 0},
+        "memory_usage_mb": {"type": "number", "minimum": 0}
+      }
+    },
+    "staleness": {
+      "type": "object",
+      "properties": {
+        "last_run_date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "days_since_last_run": {"type": "integer", "minimum": 0}
+      }
+    },
+    "patterns": {
+      "type": "object",
+      "properties": {
+        "detected": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "newly_detected": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "tests": {
+      "type": "object",
+      "properties": {
+        "regression_pass_count": {"type": "integer", "minimum": 0},
+        "regression_fail_count": {"type": "integer", "minimum": 0}
+      }
+    },
+    "user_feedback": {
+      "type": "object",
+      "properties": {
+        "human_override_flags": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "notes": {"type": "string"}
+      }
+    }
+  }
+}
+

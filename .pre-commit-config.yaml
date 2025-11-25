@@ -80,3 +80,15 @@ repos:
     hooks:
       - id: requirements-txt-fixer
         files: requirements.txt
+
+  # CRITICAL: Check for proprietary codebase references
+  - repo: local
+    hooks:
+      - id: check-proprietary-refs
+        name: Check for proprietary codebase references
+        entry: bash
+        args: ['-c', 'if git diff --cached --name-only | xargs grep -l "CallBox\|/Users/matt/GitHub/CallBox" 2>/dev/null; then echo "ERROR: Found CallBox references in staged files!"; exit 1; fi']
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]

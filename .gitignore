@@ -301,6 +301,17 @@ temporary_repos/
 *CARI*.json
 *CARI*.md
 
+# CallBox-specific patterns (CRITICAL - DO NOT REMOVE)
+*callbox*.json
+*callbox*.md
+*CallBox*.json
+*CallBox*.md
+*CALLBOX*.json
+*CALLBOX*.md
+*callbox*/
+*CallBox*/
+*CALLBOX*/
+
 # Backup files that might contain analysis data
 *.bak
 *.backup
