@@ -24,6 +24,8 @@ from codebase_reviewer.exporters.sarif_exporter import SARIFExporter
 from codebase_reviewer.analytics.trend_analyzer import TrendAnalyzer, MetricSnapshot
 from codebase_reviewer.analytics.hotspot_detector import HotspotDetector
 from codebase_reviewer.analytics.risk_scorer import RiskScorer
+from codebase_reviewer.enterprise.multi_repo_analyzer import MultiRepoAnalyzer
+from codebase_reviewer.enterprise.dashboard_generator import DashboardGenerator
 
 
 @click.group()
@@ -907,6 +909,87 @@ def analyze(repo_path, output, format, with_analytics, track_trends):
             sys.exit(1)
         else:
             click.echo(click.style("\n✅ Quality gate passed", fg="green"))
+            sys.exit(0)
+
+    except Exception as e:
+        click.echo(click.style(f"\n✗ Error: {str(e)}", fg="red"), err=True)
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+
+
+@cli.command()
+@click.argument("repos", nargs=-1, type=click.Path(exists=True), required=True)
+@click.option(
+    "--output",
+    "-o",
+    type=click.Path(),
+    required=True,
+    help="Output file path for dashboard HTML",
+)
+@click.option(
+    "--workers",
+    "-w",
+    type=int,
+    default=4,
+    help="Number of parallel workers (default: 4)",
+)
+def multi_repo(repos, output, workers):
+    """Analyze multiple repositories and generate aggregate dashboard.
+
+    This command analyzes multiple repositories in parallel and generates
+    a comprehensive dashboard with aggregate metrics and per-repo breakdowns.
+
+    Examples:
+        codebase-reviewer multi-repo /path/to/repo1 /path/to/repo2 --output dashboard.html
+        codebase-reviewer multi-repo ~/projects/* --output team-dashboard.html --workers 8
+    """
+    try:
+        click.echo(f"🏢 Analyzing {len(repos)} repositories...")
+        click.echo(f"⚙️  Using {workers} parallel workers")
+
+        # Convert to Path objects
+        repo_paths = [Path(r) for r in repos]
+
+        # Run multi-repo analysis
+        analyzer = MultiRepoAnalyzer(max_workers=workers)
+
+        def progress_callback(message):
+            click.echo(f"  {message}")
+
+        analyses = analyzer.analyze_repos(repo_paths, progress_callback=progress_callback)
+
+        # Get aggregate metrics
+        aggregate = analyzer.get_aggregate_metrics()
+
+        # Generate dashboard
+        dashboard_gen = DashboardGenerator()
+        dashboard_gen.generate_multi_repo_dashboard(
+            [a.to_dict() for a in analyses],
+            aggregate.to_dict(),
+            Path(output)
+        )
+
+        click.echo(f"\n✅ Dashboard saved to: {output}")
+
+        # Print summary
+        click.echo(f"\n📊 Summary:")
+        click.echo(f"  Total repositories: {aggregate.total_repos}")
+        click.echo(f"  Total issues: {aggregate.total_issues}")
+        click.echo(f"  🔴 Critical: {aggregate.total_critical}")
+        click.echo(f"  🟠 High: {aggregate.total_high}")
+        click.echo(f"  🟡 Medium: {aggregate.total_medium}")
+        click.echo(f"  ⚪ Low: {aggregate.total_low}")
+        click.echo(f"\n  📈 Average issues per repo: {aggregate.avg_issues_per_repo:.1f}")
+        click.echo(f"  🏆 Best repository: {aggregate.best_repo}")
+        click.echo(f"  ⚠️  Worst repository: {aggregate.worst_repo}")
+
+        # Exit code based on critical issues
+        if aggregate.total_critical > 0:
+            click.echo(click.style(f"\n❌ Found {aggregate.total_critical} critical issues across repositories", fg="red"))
+            sys.exit(1)
+        else:
+            click.echo(click.style("\n✅ No critical issues found", fg="green"))
             sys.exit(0)
 
     except Exception as e:
