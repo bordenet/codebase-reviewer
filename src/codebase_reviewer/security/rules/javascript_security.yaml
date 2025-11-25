@@ -1,0 +1,431 @@
+# JavaScript/TypeScript Security Rules
+# Advanced security patterns for JavaScript and TypeScript codebases
+
+rules:
+  # Code Execution
+  - id: js-eval-usage
+    name: Dangerous eval() Usage
+    description: eval() executes arbitrary JavaScript code
+    severity: critical
+    pattern: "\\beval\\s*\\("
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-94
+    effort_minutes: 90
+    remediation: Avoid eval(). Use JSON.parse() for data or safer alternatives
+    code_example: "JSON.parse(data) instead of eval(data)"
+
+  - id: js-function-constructor
+    name: Function Constructor Usage
+    description: Function constructor can execute arbitrary code
+    severity: critical
+    pattern: "new\\s+Function\\s*\\("
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-94
+    effort_minutes: 90
+    remediation: Avoid Function constructor. Use regular functions
+    code_example: "Define functions normally instead of using Function constructor"
+
+  - id: js-settimeout-string
+    name: setTimeout with String Argument
+    description: setTimeout with string argument executes code like eval()
+    severity: high
+    pattern: "setTimeout\\s*\\(\\s*[\"'`]"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-94
+    effort_minutes: 45
+    remediation: Use function reference instead of string
+    code_example: "setTimeout(() => doSomething(), 1000)"
+
+  - id: js-setinterval-string
+    name: setInterval with String Argument
+    description: setInterval with string argument executes code like eval()
+    severity: high
+    pattern: "setInterval\\s*\\(\\s*[\"'`]"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-94
+    effort_minutes: 45
+    remediation: Use function reference instead of string
+    code_example: "setInterval(() => doSomething(), 1000)"
+
+  # XSS Vulnerabilities
+  - id: js-innerhtml-assignment
+    name: Potential XSS via innerHTML
+    description: Assigning user input to innerHTML can lead to XSS
+    severity: high
+    pattern: "\\.innerHTML\\s*=\\s*(?![\"\\'`])"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-79
+    effort_minutes: 60
+    remediation: Use textContent or sanitize HTML with DOMPurify
+    code_example: "element.textContent = userInput or DOMPurify.sanitize(html)"
+
+  - id: js-outerhtml-assignment
+    name: Potential XSS via outerHTML
+    description: Assigning user input to outerHTML can lead to XSS
+    severity: high
+    pattern: "\\.outerHTML\\s*=\\s*(?![\"\\'`])"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-79
+    effort_minutes: 60
+    remediation: Use textContent or sanitize HTML
+    code_example: "element.textContent = userInput"
+
+  - id: js-document-write
+    name: Dangerous document.write() Usage
+    description: document.write() with user input can lead to XSS
+    severity: high
+    pattern: "document\\.write\\("
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-79
+    effort_minutes: 45
+    remediation: Use DOM manipulation methods instead
+    code_example: "Use createElement() and appendChild() instead"
+
+  - id: js-insertadjacenthtml
+    name: Potential XSS via insertAdjacentHTML
+    description: insertAdjacentHTML with user input can lead to XSS
+    severity: high
+    pattern: "\\.insertAdjacentHTML\\("
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-79
+    effort_minutes: 60
+    remediation: Sanitize HTML or use safer DOM methods
+    code_example: "Use insertAdjacentText() or sanitize with DOMPurify"
+
+  # React-specific XSS
+  - id: react-dangerously-set-innerhtml
+    name: React dangerouslySetInnerHTML Usage
+    description: dangerouslySetInnerHTML can lead to XSS if not sanitized
+    severity: high
+    pattern: "dangerouslySetInnerHTML\\s*=\\s*\\{\\{\\s*__html:"
+    languages:
+      - javascript
+      - typescript
+      - jsx
+      - tsx
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-79
+    effort_minutes: 60
+    remediation: Sanitize HTML with DOMPurify before using
+    code_example: "dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(html)}}"
+
+  # Prototype Pollution
+  - id: js-prototype-pollution
+    name: Potential Prototype Pollution
+    description: Modifying Object.prototype or __proto__ can lead to prototype pollution
+    severity: high
+    pattern: "(Object\\.prototype|__proto__)\\s*\\[|\\.__proto__\\s*="
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A08:2021 - Software and Data Integrity Failures
+    cwe_id: CWE-1321
+    effort_minutes: 120
+    remediation: Avoid modifying prototypes. Use Object.create(null) for dictionaries
+    code_example: "Use Map or Object.create(null) instead of plain objects"
+
+  # Command Injection (Node.js)
+  - id: nodejs-child-process-exec
+    name: Command Injection via child_process.exec
+    description: exec() with user input is vulnerable to command injection
+    severity: critical
+    pattern: "child_process\\.exec\\(|require\\([\"']child_process[\"']\\)\\.exec\\("
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-78
+    effort_minutes: 90
+    remediation: Use execFile() or spawn() with argument array
+    code_example: "child_process.execFile('command', ['arg1', 'arg2'])"
+
+  - id: nodejs-child-process-spawn-shell
+    name: Command Injection via spawn with shell
+    description: spawn() with shell option is vulnerable to command injection
+    severity: critical
+    pattern: "spawn\\([^)]*shell\\s*:\\s*true"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-78
+    effort_minutes: 60
+    remediation: Use spawn() without shell option
+    code_example: "spawn('command', ['arg1', 'arg2'], {shell: false})"
+
+  # Path Traversal
+  - id: nodejs-path-traversal
+    name: Path Traversal in File Operations
+    description: File operations with user input without validation
+    severity: high
+    pattern: "fs\\.(readFile|writeFile|readFileSync|writeFileSync|unlink|unlinkSync)\\([^)]*req\\.(query|params|body)"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A01:2021 - Broken Access Control
+    cwe_id: CWE-22
+    effort_minutes: 90
+    remediation: Validate and sanitize file paths. Use path.resolve() and check against allowed directories
+    code_example: "Validate path is within allowed directory before file operations"
+
+  # SQL Injection (Node.js)
+  - id: nodejs-sql-injection-template
+    name: SQL Injection via Template Literals
+    description: Using template literals in SQL queries with user input
+    severity: critical
+    pattern: "(query|execute)\\s*\\(\\s*`[^`]*\\$\\{"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-89
+    effort_minutes: 60
+    remediation: Use parameterized queries
+    code_example: "db.query('SELECT * FROM users WHERE id = ?', [userId])"
+
+  # SSRF
+  - id: nodejs-ssrf-http-request
+    name: Potential SSRF via HTTP Request
+    description: Making HTTP requests with user-controlled URLs
+    severity: high
+    pattern: "(http|https)\\.request\\([^)]*req\\.(query|params|body)|fetch\\([^)]*req\\.(query|params|body)"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A10:2021 - Server-Side Request Forgery
+    cwe_id: CWE-918
+    effort_minutes: 90
+    remediation: Validate and whitelist allowed URLs/domains
+    code_example: "Validate URL against whitelist before making request"
+
+  # Insecure Randomness
+  - id: js-weak-random
+    name: Weak Random Number Generation
+    description: Math.random() is not cryptographically secure
+    severity: medium
+    pattern: "Math\\.random\\(\\)"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-338
+    effort_minutes: 30
+    remediation: Use crypto.randomBytes() or crypto.getRandomValues()
+    code_example: "crypto.randomBytes(32) for Node.js or crypto.getRandomValues() for browsers"
+
+  # JWT Security
+  - id: js-jwt-no-verify
+    name: JWT Token Without Verification
+    description: Decoding JWT without verification is insecure
+    severity: critical
+    pattern: "jwt\\.decode\\([^)]*\\)(?!.*verify)"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-347
+    effort_minutes: 45
+    remediation: Use jwt.verify() instead of jwt.decode()
+    code_example: "jwt.verify(token, secret) instead of jwt.decode(token)"
+
+  - id: js-jwt-weak-secret
+    name: Weak JWT Secret
+    description: JWT secret should be strong and not hardcoded
+    severity: high
+    pattern: "jwt\\.sign\\([^)]*[\"'][^\"']{1,15}[\"']"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-798
+    effort_minutes: 30
+    remediation: Use strong secret from environment variables
+    code_example: "jwt.sign(payload, process.env.JWT_SECRET)"
+
+  # NoSQL Injection
+  - id: js-nosql-injection
+    name: NoSQL Injection in MongoDB
+    description: User input in MongoDB queries without validation
+    severity: high
+    pattern: "(find|findOne|update|remove|deleteOne|deleteMany)\\([^)]*req\\.(query|params|body)"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-943
+    effort_minutes: 90
+    remediation: Validate and sanitize user input
+    code_example: "Validate input types and use parameterized queries"
+
+  # Regular Expression DoS
+  - id: js-regex-dos
+    name: Regular Expression Denial of Service
+    description: Complex regex patterns can cause catastrophic backtracking
+    severity: medium
+    pattern: "new\\s+RegExp\\([^)]*\\([^)]*\\*[^)]*\\+"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A06:2021 - Vulnerable and Outdated Components
+    cwe_id: CWE-1333
+    effort_minutes: 60
+    remediation: Simplify regex patterns and set timeout limits
+    code_example: "Use simpler patterns or validate input length"
+
+  # CORS Misconfiguration
+  - id: js-cors-wildcard
+    name: CORS Wildcard with Credentials
+    description: Using Access-Control-Allow-Origin wildcard with credentials
+    severity: high
+    pattern: "Access-Control-Allow-Origin[\"']?\\s*:\\s*[\"']\\*[\"'].*Access-Control-Allow-Credentials"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-942
+    effort_minutes: 45
+    remediation: Specify exact origins instead of wildcard when using credentials
+    code_example: "Set specific origin instead of '*' when credentials are allowed"
+
+  # Insecure Cookie Settings
+  - id: js-cookie-no-httponly
+    name: Cookie Without HttpOnly Flag
+    description: Cookies without HttpOnly flag are vulnerable to XSS
+    severity: medium
+    pattern: "res\\.cookie\\([^)]*\\)(?!.*httpOnly)"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-1004
+    effort_minutes: 15
+    remediation: Set httpOnly flag on sensitive cookies
+    code_example: "res.cookie('name', value, {httpOnly: true})"
+
+  - id: js-cookie-no-secure
+    name: Cookie Without Secure Flag
+    description: Cookies without Secure flag can be transmitted over HTTP
+    severity: medium
+    pattern: "res\\.cookie\\([^)]*\\)(?!.*secure)"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-614
+    effort_minutes: 15
+    remediation: Set secure flag on cookies in production
+    code_example: "res.cookie('name', value, {secure: true})"
+
+  # Open Redirect
+  - id: js-open-redirect
+    name: Open Redirect Vulnerability
+    description: Redirecting to user-controlled URLs
+    severity: medium
+    pattern: "res\\.redirect\\([^)]*req\\.(query|params|body)"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A01:2021 - Broken Access Control
+    cwe_id: CWE-601
+    effort_minutes: 60
+    remediation: Validate redirect URLs against whitelist
+    code_example: "Validate URL is in allowed list before redirecting"
+
+  # XML External Entity (XXE)
+  - id: js-xxe-libxmljs
+    name: XML External Entity (XXE) Attack
+    description: Parsing XML without disabling external entities
+    severity: high
+    pattern: "libxmljs\\.parseXml\\((?!.*noent\\s*:\\s*false)"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-611
+    effort_minutes: 60
+    remediation: Disable external entities in XML parser
+    code_example: "parseXml(xml, {noent: false, dtdload: false})"
+
+  # Hardcoded Secrets (Additional)
+  - id: js-hardcoded-password
+    name: Hardcoded Password
+    description: Password hardcoded in source code
+    severity: critical
+    pattern: "(password|passwd|pwd)\\s*[:=]\\s*[\"'][^\"']{8,}[\"']"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A07:2021 - Identification and Authentication Failures
+    cwe_id: CWE-798
+    effort_minutes: 30
+    remediation: Use environment variables for passwords
+    code_example: "password: process.env.DB_PASSWORD"
+
+  - id: js-hardcoded-api-key
+    name: Hardcoded API Key
+    description: API key hardcoded in source code
+    severity: critical
+    pattern: "(api[_-]?key|apikey|api[_-]?secret)\\s*[:=]\\s*[\"'][A-Za-z0-9]{20,}[\"']"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-798
+    effort_minutes: 30
+    remediation: Use environment variables for API keys
+    code_example: "apiKey: process.env.API_KEY"
+
+  # Deserialization
+  - id: js-unsafe-deserialization
+    name: Unsafe Deserialization
+    description: Deserializing untrusted data can lead to code execution
+    severity: high
+    pattern: "node-serialize\\.unserialize\\(|serialize\\.unserialize\\("
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A08:2021 - Software and Data Integrity Failures
+    cwe_id: CWE-502
+    effort_minutes: 90
+    remediation: Avoid deserializing untrusted data or use safe alternatives
+    code_example: "Use JSON.parse() instead of node-serialize"
+
+  # LDAP Injection
+  - id: js-ldap-injection
+    name: LDAP Injection
+    description: User input in LDAP queries without sanitization
+    severity: high
+    pattern: "ldap\\.search\\([^)]*req\\.(query|params|body)"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-90
+    effort_minutes: 90
+    remediation: Sanitize and validate LDAP query parameters
+    code_example: "Escape special LDAP characters in user input"
+

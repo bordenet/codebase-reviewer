@@ -1,0 +1,423 @@
+# Advanced Security Rules
+# Cross-language advanced security patterns
+
+rules:
+  # CSRF (Cross-Site Request Forgery)
+  - id: csrf-missing-token-form
+    name: Form Without CSRF Token
+    description: HTML form without CSRF protection
+    severity: high
+    pattern: "<form[^>]*method\\s*=\\s*[\"']post[\"'][^>]*>(?!.*csrf)"
+    languages:
+      - html
+      - php
+      - jsp
+      - erb
+    owasp_category: A01:2021 - Broken Access Control
+    cwe_id: CWE-352
+    effort_minutes: 45
+    remediation: Add CSRF token to all state-changing forms
+    code_example: "Include CSRF token in form: <input type='hidden' name='csrf_token' value='...'>"
+
+  - id: csrf-missing-header-check
+    name: Missing CSRF Header Validation
+    description: API endpoint without CSRF header validation
+    severity: high
+    pattern: "@(Post|Put|Delete|Patch)Mapping(?!.*@CsrfToken)"
+    languages:
+      - java
+    owasp_category: A01:2021 - Broken Access Control
+    cwe_id: CWE-352
+    effort_minutes: 60
+    remediation: Validate CSRF tokens on state-changing operations
+    code_example: "Add CSRF token validation to POST/PUT/DELETE endpoints"
+
+  # Security Headers
+  - id: security-header-missing-csp
+    name: Missing Content Security Policy
+    description: Response without Content-Security-Policy header
+    severity: medium
+    pattern: "res\\.(setHeader|header)\\((?!.*Content-Security-Policy)"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-693
+    effort_minutes: 60
+    remediation: Add Content-Security-Policy header
+    code_example: "res.setHeader('Content-Security-Policy', \"default-src 'self'\")"
+
+  - id: security-header-missing-hsts
+    name: Missing HTTP Strict Transport Security
+    description: Response without HSTS header
+    severity: medium
+    pattern: "res\\.(setHeader|header)\\((?!.*Strict-Transport-Security)"
+    languages:
+      - javascript
+      - typescript
+      - python
+      - java
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-523
+    effort_minutes: 30
+    remediation: Add HSTS header for HTTPS sites
+    code_example: "res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')"
+
+  - id: security-header-missing-xframe
+    name: Missing X-Frame-Options Header
+    description: Response without X-Frame-Options header (clickjacking protection)
+    severity: medium
+    pattern: "res\\.(setHeader|header)\\((?!.*X-Frame-Options)"
+    languages:
+      - javascript
+      - typescript
+      - python
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-1021
+    effort_minutes: 15
+    remediation: Add X-Frame-Options header
+    code_example: "res.setHeader('X-Frame-Options', 'DENY')"
+
+  - id: security-header-missing-xcontent
+    name: Missing X-Content-Type-Options Header
+    description: Response without X-Content-Type-Options header
+    severity: low
+    pattern: "res\\.(setHeader|header)\\((?!.*X-Content-Type-Options)"
+    languages:
+      - javascript
+      - typescript
+      - python
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-693
+    effort_minutes: 15
+    remediation: Add X-Content-Type-Options header
+    code_example: "res.setHeader('X-Content-Type-Options', 'nosniff')"
+
+  # Authentication & Session Management
+  - id: auth-weak-password-policy
+    name: Weak Password Policy
+    description: Password validation with weak requirements
+    severity: high
+    pattern: "password\\.length\\s*[<>=]+\\s*[1-7](?!\\d)"
+    languages:
+      - javascript
+      - typescript
+      - python
+      - java
+      - go
+    owasp_category: A07:2021 - Identification and Authentication Failures
+    cwe_id: CWE-521
+    effort_minutes: 45
+    remediation: Require minimum 8 characters with complexity requirements
+    code_example: "Require at least 8 characters, uppercase, lowercase, number, special char"
+
+  - id: auth-session-fixation
+    name: Session Fixation Vulnerability
+    description: Not regenerating session ID after login
+    severity: high
+    pattern: "login\\([^)]*\\)(?!.*session\\.regenerate|session_regenerate_id)"
+    languages:
+      - javascript
+      - typescript
+      - php
+    owasp_category: A07:2021 - Identification and Authentication Failures
+    cwe_id: CWE-384
+    effort_minutes: 30
+    remediation: Regenerate session ID after successful login
+    code_example: "session.regenerate() after login"
+
+  - id: auth-missing-rate-limiting
+    name: Missing Rate Limiting on Authentication
+    description: Login endpoint without rate limiting
+    severity: high
+    pattern: "@(Post|Request)Mapping\\([^)]*[\"']/login[\"']\\)(?!.*@RateLimit)"
+    languages:
+      - java
+    owasp_category: A07:2021 - Identification and Authentication Failures
+    cwe_id: CWE-307
+    effort_minutes: 90
+    remediation: Implement rate limiting on authentication endpoints
+    code_example: "Add rate limiting middleware to prevent brute force attacks"
+
+  # Information Disclosure
+  - id: info-disclosure-stack-trace
+    name: Stack Trace Exposure
+    description: Exposing stack traces to users
+    severity: medium
+    pattern: "printStackTrace\\(\\)|console\\.error\\(.*error\\.stack|traceback\\.print_exc\\(\\)"
+    languages:
+      - java
+      - javascript
+      - typescript
+      - python
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-209
+    effort_minutes: 30
+    remediation: Log errors server-side, show generic message to users
+    code_example: "Log error details, return generic error message to client"
+
+  - id: info-disclosure-debug-info
+    name: Debug Information Exposure
+    description: Exposing debug information in production
+    severity: medium
+    pattern: "console\\.log\\(|print\\(|System\\.out\\.println\\(|fmt\\.Println\\("
+    languages:
+      - javascript
+      - typescript
+      - python
+      - java
+      - go
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-489
+    effort_minutes: 30
+    remediation: Remove debug statements or use proper logging
+    code_example: "Use logger instead of console.log/print"
+
+  - id: info-disclosure-error-details
+    name: Detailed Error Messages
+    description: Exposing detailed error messages to users
+    severity: medium
+    pattern: "res\\.(send|json)\\([^)]*error\\.(message|stack)"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-209
+    effort_minutes: 30
+    remediation: Return generic error messages to users
+    code_example: "res.status(500).json({error: 'Internal server error'})"
+
+  # File Upload Vulnerabilities
+  - id: file-upload-no-validation
+    name: File Upload Without Validation
+    description: File upload without type or size validation
+    severity: high
+    pattern: "multer\\(\\)|express-fileupload\\(\\)|formidable\\(\\)"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A04:2021 - Insecure Design
+    cwe_id: CWE-434
+    effort_minutes: 90
+    remediation: Validate file type, size, and content
+    code_example: "Validate MIME type, file extension, and scan for malware"
+
+  - id: file-upload-executable
+    name: Executable File Upload Allowed
+    description: Allowing upload of executable files
+    severity: critical
+    pattern: "fileFilter.*\\.(exe|dll|so|sh|bat|cmd|jar)"
+    languages:
+      - javascript
+      - typescript
+      - python
+      - java
+    owasp_category: A04:2021 - Insecure Design
+    cwe_id: CWE-434
+    effort_minutes: 60
+    remediation: Block executable file extensions
+    code_example: "Whitelist allowed file types, block executables"
+
+  # Directory Listing
+  - id: directory-listing-enabled
+    name: Directory Listing Enabled
+    description: Web server configured to show directory listings
+    severity: medium
+    pattern: "autoIndex\\s*:\\s*true|Options\\s+Indexes"
+    languages:
+      - javascript
+      - typescript
+      - apache
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-548
+    effort_minutes: 15
+    remediation: Disable directory listing
+    code_example: "Set autoIndex: false or remove Indexes from Options"
+
+  # Mass Assignment
+  - id: mass-assignment-vulnerability
+    name: Mass Assignment Vulnerability
+    description: Accepting all request parameters without filtering
+    severity: high
+    pattern: "User\\.create\\(req\\.body\\)|Model\\.update\\(req\\.body\\)|save\\(req\\.body\\)"
+    languages:
+      - javascript
+      - typescript
+      - python
+    owasp_category: A04:2021 - Insecure Design
+    cwe_id: CWE-915
+    effort_minutes: 60
+    remediation: Whitelist allowed fields for mass assignment
+    code_example: "Only accept specific fields: {name: req.body.name, email: req.body.email}"
+
+  # Insecure Direct Object Reference (IDOR)
+  - id: idor-missing-authorization
+    name: Missing Authorization Check
+    description: Accessing resources without authorization check
+    severity: high
+    pattern: "findById\\(req\\.params\\.id\\)(?!.*checkOwnership|checkPermission|authorize)"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A01:2021 - Broken Access Control
+    cwe_id: CWE-639
+    effort_minutes: 90
+    remediation: Verify user has permission to access the resource
+    code_example: "Check if user owns or has permission to access the resource"
+
+  # Timing Attacks
+  - id: timing-attack-string-comparison
+    name: Timing Attack on String Comparison
+    description: Using non-constant-time string comparison for secrets
+    severity: medium
+    pattern: "(password|token|secret)\\s*===?\\s*|\\s*===?\\s*(password|token|secret)"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-208
+    effort_minutes: 45
+    remediation: Use constant-time comparison for secrets
+    code_example: "Use crypto.timingSafeEqual() for comparing secrets"
+
+  # Server-Side Includes (SSI) Injection
+  - id: ssi-injection
+    name: Server-Side Includes Injection
+    description: User input in SSI directives
+    severity: high
+    pattern: "<!--#(include|exec|echo).*req\\.(query|params|body)"
+    languages:
+      - html
+      - php
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-97
+    effort_minutes: 90
+    remediation: Sanitize user input before using in SSI directives
+    code_example: "Avoid using user input in SSI directives"
+
+  # HTTP Parameter Pollution
+  - id: http-parameter-pollution
+    name: HTTP Parameter Pollution
+    description: Not handling duplicate parameters properly
+    severity: medium
+    pattern: "req\\.(query|params)\\[\\w+\\](?!.*Array\\.isArray)"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A04:2021 - Insecure Design
+    cwe_id: CWE-235
+    effort_minutes: 45
+    remediation: Handle array parameters explicitly
+    code_example: "Check if parameter is array and handle accordingly"
+
+  # Clickjacking
+  - id: clickjacking-iframe-embed
+    name: Clickjacking via iframe
+    description: Embedding sensitive pages in iframes without protection
+    severity: medium
+    pattern: "<iframe[^>]*src\\s*=\\s*[\"'][^\"']*login[^\"']*[\"']"
+    languages:
+      - html
+      - javascript
+      - typescript
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-1021
+    effort_minutes: 30
+    remediation: Use X-Frame-Options or CSP frame-ancestors
+    code_example: "Set X-Frame-Options: DENY header"
+
+  # Unvalidated Redirects
+  - id: unvalidated-redirect-meta
+    name: Unvalidated Redirect via Meta Tag
+    description: Meta refresh redirect with user input
+    severity: medium
+    pattern: "<meta[^>]*http-equiv\\s*=\\s*[\"']refresh[\"'][^>]*url\\s*=\\s*[^>]*req\\."
+    languages:
+      - html
+      - php
+    owasp_category: A01:2021 - Broken Access Control
+    cwe_id: CWE-601
+    effort_minutes: 45
+    remediation: Validate redirect URLs against whitelist
+    code_example: "Validate URL is in allowed list before redirecting"
+
+  # Insecure Randomness in Security Context
+  - id: insecure-random-token
+    name: Insecure Random for Security Token
+    description: Using weak random for security tokens
+    severity: high
+    pattern: "(token|sessionId|nonce)\\s*=\\s*Math\\.random\\(|random\\.randint\\(|new\\s+Random\\("
+    languages:
+      - javascript
+      - typescript
+      - python
+      - java
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-338
+    effort_minutes: 45
+    remediation: Use cryptographically secure random
+    code_example: "Use crypto.randomBytes() or secrets module"
+
+  # Insufficient Logging
+  - id: insufficient-logging-auth-failure
+    name: Missing Logging for Authentication Failures
+    description: Authentication failures not logged
+    severity: medium
+    pattern: "login\\([^)]*\\).*catch\\([^)]*\\)\\s*\\{(?!.*log)"
+    languages:
+      - javascript
+      - typescript
+      - python
+      - java
+    owasp_category: A09:2021 - Security Logging and Monitoring Failures
+    cwe_id: CWE-778
+    effort_minutes: 30
+    remediation: Log all authentication failures with details
+    code_example: "logger.warn('Login failed', {username, ip, timestamp})"
+
+  # Business Logic Vulnerabilities
+  - id: business-logic-negative-quantity
+    name: Negative Quantity Not Validated
+    description: Allowing negative quantities in transactions
+    severity: high
+    pattern: "(quantity|amount|price)\\s*=\\s*req\\.(query|params|body)(?!.*>\\s*0)"
+    languages:
+      - javascript
+      - typescript
+      - python
+      - java
+    owasp_category: A04:2021 - Insecure Design
+    cwe_id: CWE-840
+    effort_minutes: 45
+    remediation: Validate quantities are positive
+    code_example: "if (quantity <= 0) throw new Error('Invalid quantity')"
+
+  # API Security
+  - id: api-missing-authentication
+    name: API Endpoint Without Authentication
+    description: API endpoint without authentication middleware
+    severity: high
+    pattern: "app\\.(get|post|put|delete|patch)\\([\"']/api/(?!.*authenticate|auth|requireAuth)"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A07:2021 - Identification and Authentication Failures
+    cwe_id: CWE-306
+    effort_minutes: 60
+    remediation: Add authentication middleware to API endpoints
+    code_example: "app.get('/api/data', authenticate, handler)"
+
+  - id: api-missing-input-validation
+    name: API Missing Input Validation
+    description: API endpoint without input validation
+    severity: high
+    pattern: "app\\.(post|put|patch)\\([^)]*\\)(?!.*validate|joi|yup|zod)"
+    languages:
+      - javascript
+      - typescript
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-20
+    effort_minutes: 60
+    remediation: Add input validation middleware
+    code_example: "Use validation library like Joi, Yup, or Zod"
+

@@ -1,0 +1,227 @@
+# PHP and Ruby Security Rules
+# Security patterns for PHP and Ruby codebases
+
+rules:
+  # PHP Security
+  - id: php-eval-usage
+    name: Dangerous eval() Usage in PHP
+    description: eval() executes arbitrary PHP code
+    severity: critical
+    pattern: "\\beval\\s*\\("
+    languages:
+      - php
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-94
+    effort_minutes: 90
+    remediation: Avoid eval(). Use safer alternatives
+    code_example: "Refactor to avoid eval() entirely"
+
+  - id: php-unserialize-unsafe
+    name: Unsafe PHP Unserialize
+    description: unserialize() with user input can execute arbitrary code
+    severity: critical
+    pattern: "unserialize\\s*\\(\\s*\\$_(GET|POST|REQUEST|COOKIE)"
+    languages:
+      - php
+    owasp_category: A08:2021 - Software and Data Integrity Failures
+    cwe_id: CWE-502
+    effort_minutes: 120
+    remediation: Use JSON instead or validate serialized data
+    code_example: "json_decode() instead of unserialize()"
+
+  - id: php-sql-injection
+    name: SQL Injection in PHP
+    description: SQL query with string concatenation
+    severity: critical
+    pattern: "mysql_(query|execute)\\([^)]*\\$_(GET|POST|REQUEST)|mysqli_query\\([^)]*\\$_(GET|POST|REQUEST)"
+    languages:
+      - php
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-89
+    effort_minutes: 60
+    remediation: Use prepared statements with PDO or mysqli
+    code_example: "$stmt = $pdo->prepare('SELECT * FROM users WHERE id = ?')"
+
+  - id: php-command-injection
+    name: Command Injection in PHP
+    description: Executing system commands with user input
+    severity: critical
+    pattern: "(exec|shell_exec|system|passthru|popen|proc_open)\\s*\\([^)]*\\$_(GET|POST|REQUEST)"
+    languages:
+      - php
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-78
+    effort_minutes: 90
+    remediation: Validate and sanitize input, use escapeshellarg()
+    code_example: "escapeshellarg() and escapeshellcmd() for user input"
+
+  - id: php-file-inclusion
+    name: Local/Remote File Inclusion
+    description: Including files with user input
+    severity: critical
+    pattern: "(include|require|include_once|require_once)\\s*\\([^)]*\\$_(GET|POST|REQUEST)"
+    languages:
+      - php
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-98
+    effort_minutes: 90
+    remediation: Whitelist allowed files, validate input
+    code_example: "Validate filename against whitelist before including"
+
+  - id: php-xxe-simplexml
+    name: XXE in SimpleXML
+    description: Parsing XML without disabling external entities
+    severity: high
+    pattern: "simplexml_load_(string|file)\\((?!.*LIBXML_NOENT)"
+    languages:
+      - php
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-611
+    effort_minutes: 60
+    remediation: Disable external entities
+    code_example: "libxml_disable_entity_loader(true) before parsing"
+
+  - id: php-weak-hash
+    name: Weak Password Hashing in PHP
+    description: Using MD5 or SHA1 for password hashing
+    severity: high
+    pattern: "(md5|sha1)\\s*\\([^)]*password"
+    languages:
+      - php
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-327
+    effort_minutes: 45
+    remediation: Use password_hash() with bcrypt
+    code_example: "password_hash($password, PASSWORD_BCRYPT)"
+
+  - id: php-register-globals
+    name: Register Globals Enabled
+    description: register_globals is a dangerous PHP setting
+    severity: critical
+    pattern: "register_globals\\s*=\\s*On"
+    languages:
+      - php
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-473
+    effort_minutes: 30
+    remediation: Disable register_globals
+    code_example: "register_globals = Off in php.ini"
+
+  - id: php-extract-unsafe
+    name: Unsafe extract() Usage
+    description: extract() with user input can overwrite variables
+    severity: high
+    pattern: "extract\\s*\\(\\s*\\$_(GET|POST|REQUEST|COOKIE)"
+    languages:
+      - php
+    owasp_category: A04:2021 - Insecure Design
+    cwe_id: CWE-915
+    effort_minutes: 60
+    remediation: Avoid extract() with user input
+    code_example: "Access array elements directly instead of extract()"
+
+  # Ruby Security
+  - id: ruby-eval-usage
+    name: Dangerous eval() Usage in Ruby
+    description: eval() executes arbitrary Ruby code
+    severity: critical
+    pattern: "\\beval\\s*\\("
+    languages:
+      - ruby
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-94
+    effort_minutes: 90
+    remediation: Avoid eval(). Use safer alternatives
+    code_example: "Use JSON.parse() or other safe methods"
+
+  - id: ruby-marshal-load-unsafe
+    name: Unsafe Marshal.load in Ruby
+    description: Marshal.load with untrusted data can execute code
+    severity: critical
+    pattern: "Marshal\\.load\\([^)]*params\\[|Marshal\\.load\\([^)]*request\\."
+    languages:
+      - ruby
+    owasp_category: A08:2021 - Software and Data Integrity Failures
+    cwe_id: CWE-502
+    effort_minutes: 120
+    remediation: Use JSON instead of Marshal for untrusted data
+    code_example: "JSON.parse() instead of Marshal.load()"
+
+  - id: ruby-yaml-load-unsafe
+    name: Unsafe YAML.load in Ruby
+    description: YAML.load can execute arbitrary code
+    severity: critical
+    pattern: "YAML\\.load\\([^)]*params\\[|YAML\\.load\\([^)]*request\\."
+    languages:
+      - ruby
+    owasp_category: A08:2021 - Software and Data Integrity Failures
+    cwe_id: CWE-502
+    effort_minutes: 90
+    remediation: Use YAML.safe_load instead
+    code_example: "YAML.safe_load(data)"
+
+  - id: ruby-sql-injection
+    name: SQL Injection in Ruby
+    description: SQL query with string interpolation
+    severity: critical
+    pattern: "(execute|find_by_sql|where)\\([^)]*#\\{|ActiveRecord.*where\\([^)]*#\\{"
+    languages:
+      - ruby
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-89
+    effort_minutes: 60
+    remediation: Use parameterized queries
+    code_example: "User.where('id = ?', user_id)"
+
+  - id: ruby-command-injection
+    name: Command Injection in Ruby
+    description: Executing system commands with user input
+    severity: critical
+    pattern: "(system|exec|`|%x)\\([^)]*params\\[|system\\([^)]*request\\."
+    languages:
+      - ruby
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-78
+    effort_minutes: 90
+    remediation: Use array form of system() or validate input
+    code_example: "system('command', arg1, arg2) instead of system(\"command #{arg}\")"
+
+  - id: ruby-mass-assignment
+    name: Mass Assignment in Rails
+    description: Mass assignment without strong parameters
+    severity: high
+    pattern: "(create|update|new)\\(params\\[(?!.*permit)"
+    languages:
+      - ruby
+    owasp_category: A04:2021 - Insecure Design
+    cwe_id: CWE-915
+    effort_minutes: 60
+    remediation: Use strong parameters
+    code_example: "User.create(user_params) with params.require(:user).permit(:name, :email)"
+
+  - id: ruby-open-redirect
+    name: Open Redirect in Rails
+    description: Redirecting to user-controlled URLs
+    severity: medium
+    pattern: "redirect_to\\s+params\\["
+    languages:
+      - ruby
+    owasp_category: A01:2021 - Broken Access Control
+    cwe_id: CWE-601
+    effort_minutes: 60
+    remediation: Validate redirect URLs against whitelist
+    code_example: "Validate URL is in allowed list before redirecting"
+
+  - id: ruby-weak-random
+    name: Weak Random in Ruby
+    description: Using rand() for security-sensitive operations
+    severity: medium
+    pattern: "(token|session_id|nonce)\\s*=\\s*rand\\("
+    languages:
+      - ruby
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-338
+    effort_minutes: 45
+    remediation: Use SecureRandom
+    code_example: "SecureRandom.hex(32) instead of rand()"
+

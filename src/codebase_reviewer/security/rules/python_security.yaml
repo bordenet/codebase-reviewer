@@ -1,0 +1,344 @@
+# Python-Specific Security Rules
+# Advanced security patterns for Python codebases
+
+rules:
+  # Deserialization Vulnerabilities
+  - id: python-pickle-unsafe
+    name: Unsafe Pickle Deserialization
+    description: Using pickle.load() or pickle.loads() can execute arbitrary code
+    severity: critical
+    pattern: "pickle\\.(load|loads)\\("
+    languages:
+      - python
+    owasp_category: A08:2021 - Software and Data Integrity Failures
+    cwe_id: CWE-502
+    effort_minutes: 120
+    remediation: Use JSON or other safe serialization formats. If pickle is required, validate and sanitize input
+    code_example: "Use json.loads() instead of pickle.loads()"
+
+  - id: python-yaml-unsafe-load
+    name: Unsafe YAML Deserialization
+    description: yaml.load() without SafeLoader can execute arbitrary Python code
+    severity: critical
+    pattern: "yaml\\.load\\([^,)]*\\)"
+    languages:
+      - python
+    owasp_category: A08:2021 - Software and Data Integrity Failures
+    cwe_id: CWE-502
+    effort_minutes: 30
+    remediation: Use yaml.safe_load() instead of yaml.load()
+    code_example: "yaml.safe_load(data) instead of yaml.load(data)"
+
+  - id: python-marshal-unsafe
+    name: Unsafe Marshal Deserialization
+    description: marshal.loads() can execute arbitrary code
+    severity: high
+    pattern: "marshal\\.loads?\\("
+    languages:
+      - python
+    owasp_category: A08:2021 - Software and Data Integrity Failures
+    cwe_id: CWE-502
+    effort_minutes: 60
+    remediation: Avoid marshal for untrusted data. Use JSON or other safe formats
+    code_example: "Use json.loads() for untrusted data"
+
+  # Code Execution
+  - id: python-exec-dynamic
+    name: Dynamic Code Execution with exec()
+    description: exec() executes arbitrary Python code and is dangerous with user input
+    severity: critical
+    pattern: "\\bexec\\s*\\("
+    languages:
+      - python
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-94
+    effort_minutes: 90
+    remediation: Avoid exec(). Use safer alternatives like ast.literal_eval() for data
+    code_example: "Use ast.literal_eval() for safe evaluation of literals"
+
+  - id: python-eval-dynamic
+    name: Dynamic Code Execution with eval()
+    description: eval() executes arbitrary Python expressions
+    severity: critical
+    pattern: "\\beval\\s*\\("
+    languages:
+      - python
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-94
+    effort_minutes: 90
+    remediation: Use ast.literal_eval() for safe evaluation
+    code_example: "ast.literal_eval(user_input) instead of eval(user_input)"
+
+  - id: python-compile-dynamic
+    name: Dynamic Code Compilation
+    description: compile() can be used to execute arbitrary code
+    severity: high
+    pattern: "\\bcompile\\s*\\("
+    languages:
+      - python
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-94
+    effort_minutes: 60
+    remediation: Avoid compile() with untrusted input
+    code_example: "Validate and sanitize input before using compile()"
+
+  # Command Injection
+  - id: python-subprocess-shell-true
+    name: Command Injection via shell=True
+    description: subprocess with shell=True is vulnerable to command injection
+    severity: critical
+    pattern: "subprocess\\.(call|run|Popen|check_output|check_call)\\([^)]*shell\\s*=\\s*True"
+    languages:
+      - python
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-78
+    effort_minutes: 45
+    remediation: Use shell=False and pass command as list
+    code_example: "subprocess.run(['ls', '-la'], shell=False)"
+
+  - id: python-os-system
+    name: Command Injection via os.system()
+    description: os.system() is vulnerable to command injection
+    severity: critical
+    pattern: "os\\.system\\("
+    languages:
+      - python
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-78
+    effort_minutes: 45
+    remediation: Use subprocess.run() with shell=False
+    code_example: "subprocess.run(['command', 'arg'], shell=False)"
+
+  - id: python-os-popen
+    name: Command Injection via os.popen()
+    description: os.popen() is vulnerable to command injection
+    severity: high
+    pattern: "os\\.popen\\("
+    languages:
+      - python
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-78
+    effort_minutes: 45
+    remediation: Use subprocess.run() with shell=False
+    code_example: "subprocess.run(['command'], shell=False, capture_output=True)"
+
+  # Path Traversal
+  - id: python-open-user-input
+    name: Path Traversal in File Operations
+    description: Opening files with user input without validation
+    severity: high
+    pattern: "open\\s*\\([^)]*input\\(|open\\s*\\([^)]*request\\.|open\\s*\\([^)]*argv"
+    languages:
+      - python
+    owasp_category: A01:2021 - Broken Access Control
+    cwe_id: CWE-22
+    effort_minutes: 60
+    remediation: Validate and sanitize file paths. Use os.path.abspath() and check against allowed directories
+    code_example: "Validate path is within allowed directory before opening"
+
+  # Cryptography
+  - id: python-weak-hash-md5
+    name: Weak Cryptographic Hash - MD5
+    description: MD5 is cryptographically broken and should not be used
+    severity: medium
+    pattern: "hashlib\\.md5\\("
+    languages:
+      - python
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-327
+    effort_minutes: 30
+    remediation: Use SHA-256 or stronger hash functions
+    code_example: "hashlib.sha256() instead of hashlib.md5()"
+
+  - id: python-weak-hash-sha1
+    name: Weak Cryptographic Hash - SHA1
+    description: SHA1 is cryptographically weak and should not be used for security
+    severity: medium
+    pattern: "hashlib\\.sha1\\("
+    languages:
+      - python
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-327
+    effort_minutes: 30
+    remediation: Use SHA-256 or stronger hash functions
+    code_example: "hashlib.sha256() instead of hashlib.sha1()"
+
+  # SSRF (Server-Side Request Forgery)
+  - id: python-ssrf-requests
+    name: Potential SSRF via requests library
+    description: Making HTTP requests with user-controlled URLs can lead to SSRF
+    severity: high
+    pattern: "requests\\.(get|post|put|delete|patch|head|options)\\([^)]*input\\(|requests\\.(get|post|put|delete|patch|head|options)\\([^)]*request\\."
+    languages:
+      - python
+    owasp_category: A10:2021 - Server-Side Request Forgery
+    cwe_id: CWE-918
+    effort_minutes: 90
+    remediation: Validate and whitelist allowed URLs/domains before making requests
+    code_example: "Validate URL against whitelist before requests.get(url)"
+
+  - id: python-ssrf-urllib
+    name: Potential SSRF via urllib
+    description: Making HTTP requests with user-controlled URLs can lead to SSRF
+    severity: high
+    pattern: "urllib\\.request\\.urlopen\\([^)]*input\\(|urllib\\.request\\.urlopen\\([^)]*request\\."
+    languages:
+      - python
+    owasp_category: A10:2021 - Server-Side Request Forgery
+    cwe_id: CWE-918
+    effort_minutes: 90
+    remediation: Validate and whitelist allowed URLs/domains
+    code_example: "Validate URL against whitelist before urlopen(url)"
+
+  # Template Injection
+  - id: python-template-injection-jinja2
+    name: Server-Side Template Injection - Jinja2
+    description: Using user input in Jinja2 templates without sandboxing
+    severity: critical
+    pattern: "Template\\([^)]*input\\(|Template\\([^)]*request\\.|from_string\\([^)]*input\\(|from_string\\([^)]*request\\."
+    languages:
+      - python
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-94
+    effort_minutes: 120
+    remediation: Use sandboxed environment and never pass user input directly to Template()
+    code_example: "Use SandboxedEnvironment and validate template content"
+
+  # XML External Entity (XXE)
+  - id: python-xxe-etree
+    name: XML External Entity (XXE) Attack
+    description: Parsing XML without disabling external entities
+    severity: high
+    pattern: "ET\\.parse\\(|ET\\.fromstring\\(|ET\\.XML\\("
+    languages:
+      - python
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-611
+    effort_minutes: 60
+    remediation: Use defusedxml library or disable external entities
+    code_example: "Use defusedxml.ElementTree instead of xml.etree.ElementTree"
+
+  # Insecure Random
+  - id: python-weak-random
+    name: Weak Random Number Generation
+    description: Using random module for security-sensitive operations
+    severity: medium
+    pattern: "\\brandom\\.(random|randint|choice|shuffle|sample)\\("
+    languages:
+      - python
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-338
+    effort_minutes: 30
+    remediation: Use secrets module for cryptographic randomness
+    code_example: "secrets.randbelow() instead of random.randint()"
+
+  # SQL Injection (Python-specific)
+  - id: python-sql-format-string
+    name: SQL Injection via Python Format String
+    description: Using Python format strings in SQL queries
+    severity: critical
+    pattern: "(execute|executemany)\\([^)]*\\.format\\(|execute\\([^)]*f[\"']"
+    languages:
+      - python
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-89
+    effort_minutes: 60
+    remediation: Use parameterized queries with placeholders
+    code_example: "cursor.execute('SELECT * FROM users WHERE id = ?', (user_id,))"
+
+  # Flask/Django Security
+  - id: python-flask-debug-production
+    name: Flask Debug Mode in Production
+    description: Running Flask with debug=True in production exposes sensitive information
+    severity: high
+    pattern: "app\\.run\\([^)]*debug\\s*=\\s*True"
+    languages:
+      - python
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-489
+    effort_minutes: 15
+    remediation: Set debug=False in production
+    code_example: "app.run(debug=False) or use environment variable"
+
+  - id: python-django-debug-true
+    name: Django DEBUG=True in Production
+    description: Running Django with DEBUG=True exposes sensitive information
+    severity: high
+    pattern: "DEBUG\\s*=\\s*True"
+    languages:
+      - python
+    owasp_category: A05:2021 - Security Misconfiguration
+    cwe_id: CWE-489
+    effort_minutes: 15
+    remediation: Set DEBUG=False in production settings
+    code_example: "DEBUG = False in production settings"
+
+  - id: python-django-secret-key-hardcoded
+    name: Hardcoded Django SECRET_KEY
+    description: Django SECRET_KEY should not be hardcoded
+    severity: critical
+    pattern: "SECRET_KEY\\s*=\\s*[\"'][^\"']{20,}[\"']"
+    languages:
+      - python
+    owasp_category: A02:2021 - Cryptographic Failures
+    cwe_id: CWE-798
+    effort_minutes: 30
+    remediation: Load SECRET_KEY from environment variables
+    code_example: "SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')"
+
+  # LDAP Injection
+  - id: python-ldap-injection
+    name: LDAP Injection
+    description: User input in LDAP queries without sanitization
+    severity: high
+    pattern: "ldap\\.search\\([^)]*input\\(|ldap\\.search\\([^)]*request\\."
+    languages:
+      - python
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-90
+    effort_minutes: 90
+    remediation: Sanitize and validate LDAP query parameters
+    code_example: "Escape special LDAP characters in user input"
+
+  # NoSQL Injection
+  - id: python-nosql-injection-mongo
+    name: NoSQL Injection in MongoDB
+    description: User input in MongoDB queries without validation
+    severity: high
+    pattern: "collection\\.(find|find_one|update|delete)\\([^)]*input\\(|collection\\.(find|find_one|update|delete)\\([^)]*request\\."
+    languages:
+      - python
+    owasp_category: A03:2021 - Injection
+    cwe_id: CWE-943
+    effort_minutes: 90
+    remediation: Validate and sanitize user input before using in queries
+    code_example: "Use parameterized queries and validate input types"
+
+  # Regex DoS
+  - id: python-regex-dos
+    name: Regular Expression Denial of Service (ReDoS)
+    description: Complex regex patterns can cause catastrophic backtracking
+    severity: medium
+    pattern: "re\\.(compile|match|search|findall)\\([\"'][^\"']*\\([^)]*\\*[^)]*\\+[^\"']*[\"']"
+    languages:
+      - python
+    owasp_category: A06:2021 - Vulnerable and Outdated Components
+    cwe_id: CWE-1333
+    effort_minutes: 60
+    remediation: Simplify regex patterns and set timeout limits
+    code_example: "Use simpler patterns or set re.TIMEOUT flag"
+
+  # Insecure Deserialization (Additional)
+  - id: python-shelve-unsafe
+    name: Unsafe Shelve Usage
+    description: shelve module can execute arbitrary code during deserialization
+    severity: high
+    pattern: "shelve\\.open\\("
+    languages:
+      - python
+    owasp_category: A08:2021 - Software and Data Integrity Failures
+    cwe_id: CWE-502
+    effort_minutes: 60
+    remediation: Use safer storage formats like JSON or SQLite
+    code_example: "Use json or sqlite3 instead of shelve"
+
