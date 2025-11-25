@@ -103,7 +103,9 @@ class ProductivityTracker:
         """
         self.repo_path = Path(repo_path)
 
-    def generate_report(self, days: int = 30, author: Optional[str] = None) -> ProductivityReport:
+    def generate_report(
+        self, days: int = 30, author: Optional[str] = None
+    ) -> ProductivityReport:
         """Generate productivity report.
 
         Args:
@@ -128,7 +130,9 @@ class ProductivityTracker:
             recommendations=recommendations,
         )
 
-    def _collect_metrics(self, start: datetime, end: datetime, author: Optional[str]) -> ProductivityMetrics:
+    def _collect_metrics(
+        self, start: datetime, end: datetime, author: Optional[str]
+    ) -> ProductivityMetrics:
         """Collect productivity metrics from git history.
 
         Args:
@@ -153,8 +157,12 @@ class ProductivityTracker:
             if author:
                 cmd.extend(["--author", author])
 
-            result = subprocess.run(cmd, cwd=self.repo_path, capture_output=True, text=True)
-            metrics.commits_count = len(result.stdout.strip().split("\n")) if result.stdout.strip() else 0
+            result = subprocess.run(
+                cmd, cwd=self.repo_path, capture_output=True, text=True
+            )
+            metrics.commits_count = (
+                len(result.stdout.strip().split("\n")) if result.stdout.strip() else 0
+            )
 
             # Get files changed
             cmd = [
@@ -168,7 +176,9 @@ class ProductivityTracker:
             if author:
                 cmd.extend(["--author", author])
 
-            result = subprocess.run(cmd, cwd=self.repo_path, capture_output=True, text=True)
+            result = subprocess.run(
+                cmd, cwd=self.repo_path, capture_output=True, text=True
+            )
             files = set(line for line in result.stdout.strip().split("\n") if line)
             metrics.files_changed = len(files)
 
@@ -184,7 +194,9 @@ class ProductivityTracker:
             if author:
                 cmd.extend(["--author", author])
 
-            result = subprocess.run(cmd, cwd=self.repo_path, capture_output=True, text=True)
+            result = subprocess.run(
+                cmd, cwd=self.repo_path, capture_output=True, text=True
+            )
             total_lines = 0
             for line in result.stdout.strip().split("\n"):
                 if line and "\t" in line:
@@ -195,7 +207,9 @@ class ProductivityTracker:
 
             # Calculate code churn (simplified)
             if metrics.lines_of_code > 0:
-                metrics.code_churn = min(100, (metrics.files_changed / max(1, metrics.commits_count)) * 10)
+                metrics.code_churn = min(
+                    100, (metrics.files_changed / max(1, metrics.commits_count)) * 10
+                )
 
         except Exception:
             pass  # Return empty metrics on error
@@ -243,10 +257,14 @@ class ProductivityTracker:
             recommendations.append("Increase test coverage to improve code quality")
 
         if metrics.code_churn > 50:
-            recommendations.append("Reduce code churn by planning changes more carefully")
+            recommendations.append(
+                "Reduce code churn by planning changes more carefully"
+            )
 
         if metrics.pr_reviews_given < 5:
-            recommendations.append("Participate more in code reviews to improve collaboration")
+            recommendations.append(
+                "Participate more in code reviews to improve collaboration"
+            )
 
         if metrics.documentation_coverage < 50:
             recommendations.append("Add more documentation to improve maintainability")

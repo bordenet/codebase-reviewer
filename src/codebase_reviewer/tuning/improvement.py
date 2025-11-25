@@ -56,7 +56,9 @@ class ImprovementRecommendation:
         for criterion, impact in self.expected_impact.items():
             lines.append(f"- **{criterion.title()}**: {impact}")
 
-        lines.extend(["", f"**Affected Prompts**: {', '.join(self.affected_prompts)}", ""])
+        lines.extend(
+            ["", f"**Affected Prompts**: {', '.join(self.affected_prompts)}", ""]
+        )
 
         return "\n".join(lines)
 
@@ -140,7 +142,9 @@ class ImprovementEngine:
             priority = "LOW"
 
         # Generate recommendation based on criterion
-        issue, root_cause, current, improved, impact = self._get_criterion_guidance(criterion, avg_score)
+        issue, root_cause, current, improved, impact = self._get_criterion_guidance(
+            criterion, avg_score
+        )
 
         return ImprovementRecommendation(
             recommendation_id=f"{prompt_id}_{criterion}",
@@ -158,7 +162,9 @@ class ImprovementEngine:
             },
         )
 
-    def _get_criterion_guidance(self, criterion: str, avg_score: float) -> tuple[str, str, str, str, str]:
+    def _get_criterion_guidance(
+        self, criterion: str, avg_score: float
+    ) -> tuple[str, str, str, str, str]:
         """Get improvement guidance for a specific criterion."""
         guidance = {
             "clarity": (

@@ -173,7 +173,9 @@ class ComplianceReporter:
             ComplianceFramework.PCI_DSS: self.PCI_DSS_CONTROLS,
         }
 
-    def generate_report(self, framework: ComplianceFramework, analysis_results: Dict) -> ComplianceReport:
+    def generate_report(
+        self, framework: ComplianceFramework, analysis_results: Dict
+    ) -> ComplianceReport:
         """Generate compliance report.
 
         Args:
@@ -205,7 +207,9 @@ class ComplianceReporter:
             violations=violations,
         )
 
-    def _check_control(self, control: ComplianceControl, security_issues: List) -> List[ComplianceViolation]:
+    def _check_control(
+        self, control: ComplianceControl, security_issues: List
+    ) -> List[ComplianceViolation]:
         """Check if control is violated.
 
         Args:
@@ -234,9 +238,13 @@ class ComplianceReporter:
 
         for issue in security_issues:
             issue_title = issue.title.lower() if hasattr(issue, "title") else ""
-            issue_desc = issue.description.lower() if hasattr(issue, "description") else ""
+            issue_desc = (
+                issue.description.lower() if hasattr(issue, "description") else ""
+            )
 
-            if any(pattern in issue_title or pattern in issue_desc for pattern in patterns):
+            if any(
+                pattern in issue_title or pattern in issue_desc for pattern in patterns
+            ):
                 violations.append(
                     ComplianceViolation(
                         control=control,
@@ -244,9 +252,13 @@ class ComplianceReporter:
                         if hasattr(issue, "source") and ":" in issue.source
                         else "unknown",
                         line_number=int(issue.source.split(":")[1])
-                        if hasattr(issue, "source") and ":" in issue.source and len(issue.source.split(":")) > 1
+                        if hasattr(issue, "source")
+                        and ":" in issue.source
+                        and len(issue.source.split(":")) > 1
                         else 0,
-                        description=issue.description if hasattr(issue, "description") else "",
+                        description=issue.description
+                        if hasattr(issue, "description")
+                        else "",
                         remediation=f"Address {control.name} requirement",
                         evidence=issue.title if hasattr(issue, "title") else "",
                     )

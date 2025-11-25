@@ -96,7 +96,9 @@ class TrendAnalyzer:
             try:
                 with open(self.history_file, "r") as f:
                     data = json.load(f)
-                    self.snapshots = [MetricSnapshot.from_dict(s) for s in data.get("snapshots", [])]
+                    self.snapshots = [
+                        MetricSnapshot.from_dict(s) for s in data.get("snapshots", [])
+                    ]
             except Exception:
                 self.snapshots = []
 
@@ -104,7 +106,9 @@ class TrendAnalyzer:
         """Save historical metrics to file."""
         try:
             with open(self.history_file, "w") as f:
-                json.dump({"snapshots": [s.to_dict() for s in self.snapshots]}, f, indent=2)
+                json.dump(
+                    {"snapshots": [s.to_dict() for s in self.snapshots]}, f, indent=2
+                )
         except Exception:
             pass
 
@@ -170,7 +174,9 @@ class TrendAnalyzer:
 
         return trends
 
-    def _calculate_trend(self, name: str, current: float, previous: float, lower_is_better: bool = True) -> Trend:
+    def _calculate_trend(
+        self, name: str, current: float, previous: float, lower_is_better: bool = True
+    ) -> Trend:
         """Calculate trend for a metric."""
         change = current - previous
         change_percent = (change / previous * 100) if previous > 0 else 0

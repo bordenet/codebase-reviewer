@@ -39,7 +39,11 @@ class MermaidGenerator:
                 # Use dependency name and source_file for relationships
                 source_idx = self._find_component_index(dep.source_file, components)
                 target_idx = self._find_component_index(dep.name, components)
-                if source_idx is not None and target_idx is not None and source_idx != target_idx:
+                if (
+                    source_idx is not None
+                    and target_idx is not None
+                    and source_idx != target_idx
+                ):
                     lines.append(f"    C{source_idx} --> C{target_idx}")
 
         lines.append("```")

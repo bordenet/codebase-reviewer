@@ -96,8 +96,12 @@ class TuningRunner:
         print()
         print("📁 Next steps:")
         print(f"   1. Review test cases: {test_cases_path}")
-        print(f"   2. Run simulations and save results to: {session_dir}/simulation_results.json")
-        print(f"   3. Evaluate outputs and save to: {session_dir}/evaluation_results.json")
+        print(
+            f"   2. Run simulations and save results to: {session_dir}/simulation_results.json"
+        )
+        print(
+            f"   3. Evaluate outputs and save to: {session_dir}/evaluation_results.json"
+        )
         print(f"   4. Run: review-codebase tune evaluate {session_dir}")
         print()
 
