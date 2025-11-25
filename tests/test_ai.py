@@ -1,7 +1,8 @@
 """Tests for AI module."""
 
 import pytest
-from codebase_reviewer.ai.fix_generator import FixGenerator, CodeFix
+
+from codebase_reviewer.ai.fix_generator import CodeFix, FixGenerator
 from codebase_reviewer.ai.query_interface import QueryInterface
 
 

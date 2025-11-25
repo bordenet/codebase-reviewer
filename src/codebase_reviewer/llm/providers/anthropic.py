@@ -2,9 +2,10 @@
 
 import os
 from typing import Optional
+
 import anthropic
 
-from ..client import LLMClient, LLMResponse, LLMError, LLMProvider
+from ..client import LLMClient, LLMError, LLMProvider, LLMResponse
 
 
 class AnthropicProvider(LLMClient):
@@ -26,10 +27,7 @@ class AnthropicProvider(LLMClient):
         """
         api_key = api_key or os.getenv("ANTHROPIC_API_KEY")
         if not api_key:
-            raise LLMError(
-                "Anthropic API key required. "
-                "Set ANTHROPIC_API_KEY env var or pass api_key parameter."
-            )
+            raise LLMError("Anthropic API key required. " "Set ANTHROPIC_API_KEY env var or pass api_key parameter.")
 
         super().__init__(api_key, model)
         self.client = anthropic.Anthropic(api_key=api_key)

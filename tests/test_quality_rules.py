@@ -1,15 +1,11 @@
 """Tests for quality rule engine and loader."""
 
-import pytest
-from pathlib import Path
 import tempfile
+from pathlib import Path
 
-from codebase_reviewer.quality.quality_engine import (
-    QualityEngine,
-    QualityRule,
-    QualitySeverity,
-    QualityFinding,
-)
+import pytest
+
+from codebase_reviewer.quality.quality_engine import QualityEngine, QualityFinding, QualityRule, QualitySeverity
 from codebase_reviewer.quality.quality_loader import QualityRulesLoader
 
 

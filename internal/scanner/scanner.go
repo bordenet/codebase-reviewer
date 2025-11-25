@@ -37,7 +37,7 @@ func FindGitRepos(rootPath string, log *logger.Logger) ([]Repository, error) {
 		if info.IsDir() && info.Name() == ".git" {
 			repoPath := filepath.Dir(path)
 			relPath, _ := filepath.Rel(rootPath, repoPath)
-			
+
 			repo := Repository{
 				Path:         repoPath,
 				Name:         filepath.Base(repoPath),
@@ -103,7 +103,7 @@ func AnalyzeRepository(repo Repository, log *logger.Logger) (*RepositoryAnalysis
 			ext := filepath.Ext(path)
 			if ext != "" {
 				analysis.FileTypes[ext]++
-				
+
 				// Map extension to language
 				if lang := extensionToLanguage(ext); lang != "" {
 					analysis.Languages[lang]++
@@ -176,4 +176,3 @@ func (a *RepositoryAnalysis) PrimaryLanguage() string {
 
 	return maxLang
 }
-

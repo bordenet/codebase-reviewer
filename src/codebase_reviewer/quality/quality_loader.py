@@ -1,9 +1,10 @@
 """Loader for quality rules from YAML files."""
 
-import yaml
+import logging
 from pathlib import Path
 from typing import List
-import logging
+
+import yaml
 
 from codebase_reviewer.quality.quality_engine import QualityRule, QualitySeverity
 
@@ -41,9 +42,7 @@ class QualityRulesLoader:
                     )
                     rules.append(rule)
                 except Exception as e:
-                    logger.error(
-                        f"Failed to load rule {rule_data.get('id', 'unknown')}: {e}"
-                    )
+                    logger.error(f"Failed to load rule {rule_data.get('id', 'unknown')}: {e}")
                     continue
 
             logger.info(f"Loaded {len(rules)} quality rules from {file_path}")

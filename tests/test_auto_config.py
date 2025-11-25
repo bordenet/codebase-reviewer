@@ -1,7 +1,9 @@
 """Tests for auto-configuration."""
 
-import pytest
 from pathlib import Path
+
+import pytest
+
 from codebase_reviewer.config.auto_config import AutoConfig
 
 

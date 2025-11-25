@@ -78,7 +78,7 @@ func Generate(targetPath string, repos []scanner.Repository, outputDir string, v
 
 func buildTemplateVars(targetPath string, repos []scanner.Repository, analyses []*scanner.RepositoryAnalysis, outputDir string, verbose, scorch bool) map[string]string {
 	codebaseName := filepath.Base(targetPath)
-	
+
 	// Build nested repos detail
 	var reposDetail strings.Builder
 	for i, analysis := range analyses {
@@ -221,4 +221,3 @@ func RenderMarkdown(yamlData map[string]interface{}) (string, error) {
 
 	return buf.String(), nil
 }
-

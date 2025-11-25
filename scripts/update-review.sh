@@ -71,14 +71,14 @@ PREV_PROMPTS=$(ls -t prompts_*.md 2>/dev/null | grep -v "prompts_$TIMESTAMP.md" 
 
 if [ -n "$PREV_PROMPTS" ]; then
     echo -e "${YELLOW}📊 Comparing with previous analysis...${NC}"
-    
+
     # Generate diff
     diff -u "$PREV_PROMPTS" "prompts_$TIMESTAMP.md" > "diff_$TIMESTAMP.txt" || true
-    
+
     # Count changes
     ADDED=$(grep -c "^+" "diff_$TIMESTAMP.txt" 2>/dev/null || echo "0")
     REMOVED=$(grep -c "^-" "diff_$TIMESTAMP.txt" 2>/dev/null || echo "0")
-    
+
     echo -e "  ${GREEN}+${ADDED}${NC} additions, ${RED}-${REMOVED}${NC} deletions"
     echo -e "  Diff saved to: diff_$TIMESTAMP.txt"
     echo ""
@@ -109,4 +109,3 @@ echo ""
 echo -e "${YELLOW}🔄 To update again:${NC}"
 echo -e "  ${BLUE}$0 $CODEBASE_PATH $OUTPUT_DIR${NC}"
 echo ""
-

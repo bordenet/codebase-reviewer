@@ -420,4 +420,3 @@ rules:
     effort_minutes: 60
     remediation: Add input validation middleware
     code_example: "Use validation library like Joi, Yup, or Zod"
-

@@ -122,4 +122,3 @@ all-lint: lint python-lint ## Run both Go and Python linters
 all-clean: clean python-clean ## Clean both Go and Python artifacts
 
 setup: deps python-setup ## Setup both Go and Python environments
-

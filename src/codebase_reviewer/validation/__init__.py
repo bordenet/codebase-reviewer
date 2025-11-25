@@ -1,8 +1,8 @@
 """Validation framework for comparing LLM outputs vs tool outputs."""
 
-from .comparator import DocumentationComparator, ComparisonResult
+from .comparator import ComparisonResult, DocumentationComparator
 from .metrics import FidelityMetrics, calculate_fidelity_score
-from .validator import Validator, ValidationReport
+from .validator import ValidationReport, Validator
 
 __all__ = [
     "DocumentationComparator",

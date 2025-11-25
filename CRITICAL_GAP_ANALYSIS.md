@@ -106,11 +106,11 @@ class LLMIntegrator:
     def send_prompt_to_llm(self, prompt: str) -> str:
         """Send Phase 1 prompt to LLM, get Phase 2 tool code back."""
         pass
-    
+
     def generate_phase2_tools(self, codebase_path: str) -> Path:
         """Full pipeline: analyze → prompt → LLM → tools → compile."""
         pass
-    
+
     def validate_generated_tools(self, tools_dir: Path) -> bool:
         """Ensure generated tools compile and run."""
         pass
@@ -166,11 +166,11 @@ class ArtifactComparator:
     ) -> ComparisonReport:
         """Compare LLM-generated docs vs Phase 2 tool-generated docs."""
         pass
-    
+
     def measure_quality_delta(self, report: ComparisonReport) -> float:
         """Quantify quality difference (0-1 scale)."""
         pass
-    
+
     def validate_tool_fidelity(self, threshold: float = 0.95) -> bool:
         """Ensure tools reproduce ≥95% of LLM quality."""
         pass
@@ -280,4 +280,3 @@ cat /tmp/callbox_prompts.md
 
 **The mission is NOT "generate good prompts"**
 **The mission IS "generate offline tools that replace the LLM"**
-

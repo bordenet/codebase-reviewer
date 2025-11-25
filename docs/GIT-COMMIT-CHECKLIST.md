@@ -172,12 +172,12 @@ git diff --cached
 
 ## 📊 Summary
 
-**Safe to Commit**: 15+ files (generic tool code)  
-**Protected**: All CARI-specific analysis and outputs  
-**Security**: Multi-layered protection active  
+**Safe to Commit**: 15+ files (generic tool code)
+**Protected**: All CARI-specific analysis and outputs
+**Security**: Multi-layered protection active
 **Status**: ✅ Ready for public GitHub
 
 ---
 
-**Last Updated**: 2025-11-23  
+**Last Updated**: 2025-11-23
 **Status**: Ready to commit

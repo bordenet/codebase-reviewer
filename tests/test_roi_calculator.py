@@ -1,10 +1,8 @@
 """Tests for ROI calculator."""
 
 import pytest
-from codebase_reviewer.metrics.roi_calculator import (
-    ROIMetrics,
-    ROICalculator,
-)
+
+from codebase_reviewer.metrics.roi_calculator import ROICalculator, ROIMetrics
 
 
 class TestROICalculator:

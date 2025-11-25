@@ -96,7 +96,7 @@ func GenerateRegenerationPrompt(
 	obsolescenceReason string,
 	learnings *Learnings,
 ) (*RegenerationPrompt, error) {
-	
+
 	prompt := &RegenerationPrompt{
 		Version: "2.0",
 		Purpose: "Regenerate Phase 1 analysis with enhanced understanding from previous tool generation",
@@ -191,7 +191,7 @@ This is GENERATION %d of the analysis.
 
 The previous Phase 2 tools have detected obsolescence due to: %s
 
-Your task is to create an IMPROVED Phase 1 analysis that incorporates all learnings from the previous generation.`, 
+Your task is to create an IMPROVED Phase 1 analysis that incorporates all learnings from the previous generation.`,
 		codebaseName, generation, reason)
 
 	return PromptSection{
@@ -225,7 +225,6 @@ func extractImprovements(l *Learnings, category string) []string {
 
 func formatPromptAsMarkdown(prompt *RegenerationPrompt) string {
 	// Format the prompt as human-readable Markdown
-	return fmt.Sprintf("# Phase 1 Regeneration Prompt\n\nGeneration: %d\nReason: %s\n\n...", 
+	return fmt.Sprintf("# Phase 1 Regeneration Prompt\n\nGeneration: %d\nReason: %s\n\n...",
 		prompt.Metadata.Generation, prompt.Metadata.ObsolescenceReason)
 }
-

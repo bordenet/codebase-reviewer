@@ -60,4 +60,3 @@ echo "1. Review the meta-prompt: cat /tmp/test-meta-prompt.md"
 echo "2. Copy it to your AI assistant"
 echo "3. Ask AI to generate Phase 2 tools"
 echo ""
-

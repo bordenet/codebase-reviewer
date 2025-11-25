@@ -1,8 +1,8 @@
 # Product Requirements Document: Self-Evolving Codebase Documentation System
 
-**Version**: 2.0  
-**Date**: 2025-11-24  
-**Status**: In Development  
+**Version**: 2.0
+**Date**: 2025-11-24
+**Status**: In Development
 **Owner**: Matt Bordenet
 
 ---
@@ -460,4 +460,3 @@ review-codebase watch /Users/Matt/GitHub/CallBox \
 - Phase 1 template: `prompts/templates/phase1-prompt-template.yaml`
 - Learnings design: `pkg/learnings/learnings.go`
 - Existing analyzer: `cmd/generate-docs/main.go`
-

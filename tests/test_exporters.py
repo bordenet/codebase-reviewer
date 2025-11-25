@@ -3,20 +3,13 @@
 import json
 import tempfile
 from pathlib import Path
+
 import pytest
 
-from codebase_reviewer.exporters.json_exporter import JSONExporter
 from codebase_reviewer.exporters.html_exporter import HTMLExporter
+from codebase_reviewer.exporters.json_exporter import JSONExporter
 from codebase_reviewer.exporters.sarif_exporter import SARIFExporter
-from codebase_reviewer.models import (
-    CodeAnalysis,
-    CodeStructure,
-    Language,
-    Framework,
-    DependencyInfo,
-    Issue,
-    Severity,
-)
+from codebase_reviewer.models import CodeAnalysis, CodeStructure, DependencyInfo, Framework, Issue, Language, Severity
 
 
 @pytest.fixture
