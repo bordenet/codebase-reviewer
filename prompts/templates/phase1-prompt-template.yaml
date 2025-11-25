@@ -1,320 +1,316 @@
-# Phase 1 LLM Prompt Template
-# This template is used to generate the actual LLM prompt for codebase analysis
-# Variables will be substituted during Phase 1 execution
+# Phase 1 LLM Prompt Template - Version 2.0
+# This enhanced template defines explicit roles, output schemas, task phases,
+# and clarifies model vs external automation responsibilities.
+# It explicitly manages scope, expectations, and guidance for high-quality analysis.
 
 metadata:
-  version: "1.0.0"
+  version: "2.0"
   template_type: "phase1_codebase_analysis"
-  security_level: "CRITICAL - Contains proprietary codebase references after substitution"
+  security_level: "CRITICAL - Proprietary codebase references in variables"
 
 prompt:
   role: "expert_software_architect_and_code_analyst"
 
   context: |
-    You are an expert software architect and code analyst. You have been asked to perform
-    a comprehensive analysis of a proprietary codebase to generate reference materials and
-    automated documentation tools.
+    You are an expert software architect and code analyst tasked with a comprehensive analysis of a proprietary codebase located at {{TARGET_PATH}}.
+    Your goal is to produce industry-standard security, quality, and architecture insights, and design offline-capable Go tools to maintain these insights over time.
 
-    **CRITICAL SECURITY REQUIREMENTS:**
-    - All outputs MUST be written to /tmp/ or .gitignore'd locations
-    - NO proprietary code or analysis results may be committed to git
-    - Phase 2 tools you generate are proprietary and must be protected
-    - Multi-layered safeguards are required
+    IMPORTANT USAGE NOTES:
+    - You cannot execute Go binaries or run shell commands.
+    - When tasks say "run" or "validate," describe required outputs and expected checks; external automation will perform the actual executions.
+    - All outputs must avoid including proprietary code snippets, file contents, or sensitive information that could be committed to git.
+    - All generated files must be written exclusively to /tmp/ or .gitignore'd directories.
+    - Strictly adhere to OWASP Top 10 and Semgrep/SonarQube style findings, mapping to CWE/OWASP categories where relevant.
+    - Handle multi-language, multi-repository scenarios by analyzing each repo unit and language stack distinctly.
+    - If data is unavailable (e.g., exact test coverage), state clearly "Not Enough Information" rather than guessing.
 
   scan_parameters:
     target_path: "{{TARGET_PATH}}"
-    scan_mode: "{{SCAN_MODE}}"  # deep_scan, review, scorch
+    scan_mode: "{{SCAN_MODE}}"  # Allowed values: review, deep_scan, scorch
     verbose: "{{VERBOSE}}"
-    nested_repos: "{{NESTED_REPOS}}"  # JSON array of discovered git repos
+    nested_repos: "{{NESTED_REPOS}}"  # JSON array of discovered git repositories
 
   tasks:
+
     - task_id: "T1"
-      name: "Industry-Standard Codebase Analysis"
+      name: "Comprehensive Codebase Analysis and Mapping"
       description: |
-        Perform a comprehensive analysis of the codebase at {{TARGET_PATH}} that meets or exceeds
-        **Semgrep** and **SonarQube** industry standards.
+        Perform a thorough codebase security, quality, and architecture analysis that follows or exceeds Semgrep and SonarQube industry standards.
+        Provide findings mapped to OWASP Top 10 and CWE IDs with severity and confidence levels.
 
-        **SECURITY ANALYSIS (OWASP Top 10):**
-        1. SQL Injection vulnerabilities (all variants)
-        2. XSS vulnerabilities (reflected, stored, DOM-based)
-        3. Authentication/authorization flaws
-        4. Insecure cryptography (weak algorithms, hardcoded keys)
-        5. Command injection, path traversal, SSRF
-        6. Hardcoded secrets (API keys, passwords, tokens, credentials)
-        7. Insecure deserialization
-        8. CSRF vulnerabilities
-        9. Security misconfigurations
-        10. Known vulnerable dependencies (CVEs)
+        SECURITY ANALYSIS (mapped to OWASP Top 10 + CWE):
+        - SQL Injection (all variants)
+        - XSS (reflected, stored, DOM-based)
+        - Authentication & Authorization Flaws
+        - Insecure Cryptography (weak algorithms, keys)
+        - Command Injection, Path Traversal, SSRF
+        - Hardcoded secrets and credentials
+        - Insecure Deserialization
+        - CSRF vulnerabilities
+        - Security Misconfigurations
+        - Known vulnerable dependencies (with CVE references)
 
-        **CODE QUALITY ANALYSIS:**
-        1. Cyclomatic complexity (per function/method)
-        2. Cognitive complexity
-        3. Nesting depth
-        4. Function/method length
-        5. Code duplication
-        6. Dead code detection
-        7. Unused imports/variables
-        8. Magic numbers
-        9. Code smells (long methods, large classes, too many parameters)
-        10. Technical debt estimation
+        CODE QUALITY ANALYSIS:
+        - Cyclomatic and Cognitive Complexity (qualitative if no numeric data)
+        - Nesting Depth
+        - Function/Method Length
+        - Code Duplication
+        - Dead Code and Unused Imports/Variables
+        - Magic Numbers and Code Smells
+        - Technical Debt Estimation (hours/days or qualitative)
 
-        **ARCHITECTURE ANALYSIS:**
-        1. Directory structure and file organization
-        2. Programming languages and frameworks
-        3. Dependencies (internal and external)
-        4. Integration points between repos
-        5. Architectural patterns
-        6. Data flows between services
-        7. API catalog (internal and external)
+        ARCHITECTURE ANALYSIS:
+        - Directory Structure and File Organization
+        - Programming Languages and Frameworks
+        - Internal and External Dependencies
+        - Integration Points Between Nested Repos
+        - Architectural Patterns and Anti-patterns
+        - Data Flows and Communication Between Services
+        - Complete API Catalog (Internal and External)
 
-        **QUALITY INDICATORS:**
-        1. TODO/FIXME/BUGBUG/HACK comments
-        2. Test coverage (if available)
-        3. Documentation completeness
-        4. Naming conventions
-        5. Error handling patterns
+        QUALITY INDICATORS:
+        - TODO/FIXME/HACK Comments
+        - Test Coverage (report "Not Enough Information" if unknown)
+        - Documentation Completeness
+        - Naming Conventions
+        - Error Handling Patterns
 
-        Nested repositories found:
-        {{NESTED_REPOS_DETAIL}}
+        When multiple nested repositories exist, analyze each as an individual unit and summarize aggregated findings.
 
       output_format: "comprehensive_security_and_quality_analysis"
 
+      output_schema: |
+        {
+          "summary": {
+            "overall_security_risk": "Critical|High|Medium|Low",
+            "quality_gate_status": "Pass|Fail",
+            "key_findings": [
+              {
+                "id": "string",
+                "category": "security|quality|architecture",
+                "owasp_category": "string or null",
+                "cwe_id": "string or null",
+                "severity": "Critical|High|Medium|Low|Info",
+                "confidence": "High|Medium|Low",
+                "description": "string",
+                "file_path": "string or null",
+                "line_number": "int or null",
+                "remediation_summary": "string"
+              }
+            ]
+          },
+          "architecture": {},
+          "metrics": {},
+          "test_coverage": "Not Enough Information|number",
+          "nested_repos_details": {}
+        }
+
     - task_id: "T2"
-      name: "Industry-Standard Reference Material Strategy"
+      name: "Reference Material Strategy and Prioritization"
       description: |
-        Based on your comprehensive analysis, design reference materials that meet or exceed
-        **Semgrep** and **SonarQube** reporting standards.
+        Based on Task 1's analysis, produce a prioritized plan describing the reference materials most valuable for this codebase.
+        Materials must conform or exceed Semgrep and SonarQube reporting standards, targeted to various stakeholders including new developers, architects, and security auditors.
 
-        Target audiences:
-        - New team members ramping up
-        - Experienced developers needing quick reference
-        - Architects reviewing system design
-        - Security auditors and compliance teams
-        - Integration partners
-        - DevOps/SRE teams
+        Include:
+        - Executive Summary with risk scores & trends
+        - Security Analysis Report with issue breakdowns & remediation
+        - Code Quality Report with complexity & debt estimations
+        - Architecture Documentation with diagrams & catalogs
+        - Visualization and charts recommendations
+        - Actionable Recommendations categorized by priority and effort
+        - API Documentation plan
+        - Technology Stack Inventory
 
-        **REQUIRED MATERIALS (Industry Standard):**
-
-        1. **Executive Summary**
-           - Overall security risk score (Critical/High/Medium/Low)
-           - Quality gate status (Pass/Fail)
-           - Key findings with ✅/⚠️/❌ indicators
-           - Top 10 issues by severity
-           - Trend analysis (if historical data available)
-
-        2. **Security Analysis Report**
-           - OWASP Top 10 vulnerability breakdown
-           - Severity distribution (Critical/High/Medium/Low/Info)
-           - Remediation priorities with effort estimates
-           - Code examples showing vulnerabilities
-           - Remediation guidance with secure code examples
-           - CVE analysis for dependencies
-
-        3. **Code Quality Report**
-           - Complexity metrics (cyclomatic, cognitive)
-           - Code smell breakdown by category
-           - Technical debt estimation (hours/days)
-           - Maintainability index
-           - Duplication analysis
-           - Test coverage metrics
-
-        4. **Architecture Documentation**
-           - Mermaid architecture diagrams
-           - Data flow diagrams
-           - Sequence diagrams for key workflows
-           - Service catalog with responsibilities
-           - Integration point maps
-           - Dependency graphs
-
-        5. **Visualization & Charts**
-           - Language distribution pie chart
-           - Issue trend charts
-           - Complexity heatmaps
-           - Security hotspot visualization
-           - Quality metrics over time
-
-        6. **Actionable Recommendations**
-           - High priority (fix immediately)
-           - Medium priority (fix this sprint)
-           - Low priority (technical debt backlog)
-           - Each with effort estimate and impact assessment
-
-        7. **API Documentation**
-           - Internal API catalog
-           - External API dependencies
-           - Authentication/authorization patterns
-           - Rate limiting and quotas
-
-        8. **Technology Stack Inventory**
-           - Languages and versions
-           - Frameworks and libraries
-           - Build tools and CI/CD
-           - Infrastructure dependencies
-
-        For THIS specific codebase, determine which materials are most valuable.
+        Specify which materials should be emphasized given this particular codebase's size, complexity, and domain.
 
       output_format: "industry_standard_reference_material_plan"
 
+      output_schema: |
+        {
+          "materials_plan": [
+            {
+              "material_name": "string",
+              "importance": "High|Medium|Low",
+              "target_audience": ["string"],
+              "recommended_sections": ["string"],
+              "effort_estimate": "string",
+              "notes": "string or null"
+            }
+          ]
+        }
+
     - task_id: "T3"
-      name: "Phase 2 Tool Design"
+      name: "Phase 2 Tool Architecture and Specification"
       description: |
-        Design Go-based tools that can regenerate the reference materials WITHOUT
-        requiring LLM assistance. These tools must:
+        Design Go-based offline-capable tools to regenerate reference materials without further LLM calls. Tool design must be modular, performant, and maintainable. Tools must:
 
-        **Requirements:**
-        1. Run completely offline
-        2. Parse source code to extract information
-        3. Generate markdown, mermaid diagrams, tables
-        4. Detect when they become obsolete (codebase changes too much)
-        5. Support -v (verbose) and -h (help) flags
-        6. Use parallel processing for performance
-        7. Conform to Go best practices and linting standards
-        8. Write ALL outputs to /tmp/codebase-reviewer/{{CODEBASE_NAME}}/
-        9. Include comprehensive error handling
-        10. Provide progress indicators
+        - Run fully offline
+        - Parse source to extract data per Task 1's schema
+        - Produce Markdown, diagrams (Mermaid), and JSON outputs identical in structure to Task 1 and 2 outputs
+        - Detect self-obsolescence reliably via checksums, timestamps, git diffs, or structural heuristics
+        - Support '-v' (verbose) and '-h' (help) CLI flags
+        - Use parallel processing where safe and applicable
+        - Follow Go best practices: modularity, tests, documentation, naming, error handling
 
-        **Tool Architecture:**
-        - Modular design (one tool per report type, or unified tool with subcommands)
-        - Shared utilities for common operations
-        - Configuration via YAML
-        - Extensible for future report types
-
-        **Self-Obsolescence Detection:**
-        Tools must detect when:
-        - Expected files/directories no longer exist
-        - Code structure has changed dramatically
-        - Dependencies have shifted significantly
-        - New languages/frameworks introduced
-
-        When obsolete, tools should:
-        - Exit with clear error message
-        - Instruct user to re-run Phase 1 with --scorch
-        - Log what changed
+        Output a machine-readable specification describing each tool's CLI, inputs, outputs, modules, and obsolescence logic.
 
       output_format: "go_tool_specifications"
 
+      output_schema: |
+        {
+          "tools": [
+            {
+              "name": "string",
+              "description": "string",
+              "cli_flags": [
+                {"flag": "-h, --help", "description": "Display help and exit"},
+                {"flag": "-v, --verbose", "description": "Enable verbose output"}
+              ],
+              "inputs": ["string"],
+              "outputs": ["string"],
+              "internal_modules": ["string"],
+              "self_obsolescence_checks": {
+                "file_existence": ["string"],
+                "git_diff_threshold": "int",
+                "structural_changes": "description"
+              }
+            }
+          ]
+        }
+
     - task_id: "T4"
-      name: "Implement Phase 2 Tools"
+      name: "Initial Phase 2 Tool Code Generation (Skeleton)"
       description: |
-        Generate complete, production-ready Go code for Phase 2 tools.
+        Generate well-structured, maintainable Go code for the tools designed in Task 3.
+        Focus on:
+        - Skeletons of each tool (main.go, CLI parsing, module stubs)
+        - Core utility packages shared across tools
+        - Proper package layout per Go idioms (cmd/, internal/, pkg/, configs/)
+        - Comprehensive comments and documentation on exported APIs
+        - Code quality to pass golangci-lint strictly with all linters enabled
+        - Test scaffolding (unit tests for core modules)
+        - Graceful error handling and context support
+        - Parallelization framework and progress reporting stubs
 
-        **Code Quality Standards:**
-        - Pass `golangci-lint` with strict settings
-        - Include comprehensive tests
-        - Document all exported functions
-        - Use meaningful variable names
-        - Handle errors explicitly
-        - Use context for cancellation
-        - Implement graceful shutdown
-        - Add benchmarks for performance-critical code
+        Note: Due to token limits and complexity, code completion per tool may happen incrementally in subsequent phases.
 
-        **File Organization:**
-        ```
-        /tmp/codebase-reviewer/{{CODEBASE_NAME}}/phase2-tools/
-          ├── cmd/
-          │   ├── generate-docs/
-          │   │   └── main.go
-          │   └── validate-tools/
-          │       └── main.go
-          ├── internal/
-          │   ├── scanner/
-          │   ├── analyzer/
-          │   ├── generator/
-          │   └── validator/
-          ├── pkg/
-          │   └── models/
-          ├── configs/
-          │   └── tool-config.yaml
-          ├── go.mod
-          ├── go.sum
-          ├── Makefile
-          └── README.md
-        ```
-
-        **Parallelization:**
-        - Use worker pools for file scanning
-        - Concurrent analysis where safe
-        - Rate limiting for external API calls (if any)
-        - Progress reporting from parallel workers
-
-      output_format: "complete_go_codebase"
+      output_format: "go_code_skeletons"
 
     - task_id: "T5"
-      name: "Generate Initial Reference Materials"
+      name: "Reference Material Generation Spec and Validation Plan"
       description: |
-        Run the Phase 2 tools you just created to generate the initial set of
-        reference materials. Validate that the outputs match or exceed the depth
-        and breadth of your LLM-based analysis.
+        Provide detailed specifications of how Phase 2 tools, when executed externally, will generate the reference materials outlined in Task 1 and 2.
+        Define concrete CLI commands, expected output files with format and structure, and validation criteria.
+        Define tests and checks to confirm outputs are complete, well-formed, and consistent with Task 1 results.
+        Specify steps to run all tools in a CI/CD pipeline and validate the generated reports without LLM involvement.
 
-        **Validation Criteria:**
-        - All identified services documented
-        - All integration points mapped
-        - All APIs cataloged
-        - Diagrams accurately represent architecture
-        - No critical information missing
-        - Outputs are well-formatted and readable
+      output_format: "reference_material_generation_spec"
 
-        If validation fails, iterate on Phase 2 tools until outputs are satisfactory.
-
-      output_location: "/tmp/codebase-reviewer/{{CODEBASE_NAME}}/reference-materials/"
+      output_schema: |
+        {
+          "tool_commands": [
+            {
+              "tool_name": "string",
+              "command": "string",
+              "required_flags": ["string"],
+              "outputs": [
+                {"path": "string", "format": "md|json|svg|mermaid"}
+              ],
+              "validation_checks": [
+                {"type": "schema_validation", "schema_ref": "string"},
+                {"type": "consistency_check", "details": "string"}
+              ]
+            }
+          ]
+        }
 
     - task_id: "T6"
-      name: "Security Validation"
+      name: "Security Compliance and Output Location Verification"
       description: |
-        Verify that NO proprietary information has been written to locations that
-        could be committed to git.
+        Describe a set of automated security checks to ensure:
 
-        Check:
-        1. All outputs in /tmp/ or .gitignore'd paths
-        2. No hardcoded secrets or credentials
-        3. No absolute paths that reveal proprietary structure
-        4. .gitignore covers all output patterns
-        5. Pre-commit hooks are in place
+        - No proprietary code or sensitive data is committed to git.
+        - All output files are exclusively in /tmp/ or .gitignore'd paths.
+        - Secrets, credentials, and absolute paths are never logged or output in plain text.
+        - Pre-commit hooks exist to enforce these rules.
+        - .gitignore and repository configuration adequately cover all output patterns.
 
-        Generate a security checklist report.
+        Define a JSON/Markdown checklist report documenting the security validation status.
 
       output_format: "security_validation_report"
 
+      output_schema: |
+        {
+          "security_checks": [
+            {
+              "check_name": "string",
+              "status": "Pass|Fail|Warning",
+              "details": "string or null"
+            }
+          ]
+        }
+
   output_requirements:
+    # File system paths for outputs; no outputs except in these directories
     primary_output: "/tmp/codebase-reviewer/{{CODEBASE_NAME}}/phase1-analysis.md"
     phase2_tools: "/tmp/codebase-reviewer/{{CODEBASE_NAME}}/phase2-tools/"
     reference_materials: "/tmp/codebase-reviewer/{{CODEBASE_NAME}}/reference-materials/"
 
+  guidance_spec:
+    code_quality:
+      - "Follow Go best practices and idioms consistently."
+      - "Pass golangci-lint with all enabled linters."
+      - "Maintain >80% code coverage for all modules."
+      - "Write idiomatic, well-documented Go."
+      - "Use explicit and meaningful names; avoid single-letter except loop indices."
+      - "Favor functions < 50 lines for readability."
+      - "Avoid global mutable state; prefer dependency injection."
+
+    performance:
+      - "Use goroutines effectively for I/O-bound tasks."
+      - "Implement worker pools for CPU-bound operations."
+      - "Buffer I/O to reduce overhead."
+      - "Use sync.Pool or similar for frequent allocations."
+      - "Profile and benchmark hot paths regularly."
+      - "Minimize allocations and garbage generation in performance-critical code."
+
+    error_handling:
+      - "Return contextual errors; avoid panics except in main/init."
+      - "Wrap errors using fmt.Errorf with useful diagnostics."
+      - "Log errors with structured logging."
+      - "Differentiate retriable vs fatal errors; provide recovery guidance."
+
+    security:
+      - "Validate all inputs rigorously."
+      - "Sanitize file paths and external inputs."
+      - "Never log secrets or sensitive data."
+      - "Use constant-time comparisons for secret equality checks."
+      - "Rate limit any external API calls if applicable."
+
   success_criteria:
-    - "Phase 2 tools compile and run successfully"
-    - "Reference materials are comprehensive and accurate"
-    - "Tools can detect their own obsolescence"
-    - "No proprietary data in git-tracked locations"
-    - "All outputs pass validation checks"
+    - "Phase 2 tools are fully specified, compile cleanly, and function offline."
+    - "Reference materials meet or exceed in-depth analysis in Task 1."
+    - "Tools reliably detect changes and obsolescence in codebase."
+    - "No proprietary or sensitive data ever output in git-tracked files."
+    - "All analyses and reports comply with OWASP Top 10 and Semgrep/SonarQube style formats."
+    - "Output files conform strictly to declared schemas."
 
-guidance_spec:
-  code_quality:
-    - "Follow Go best practices and idioms"
-    - "Pass golangci-lint with all linters enabled"
-    - "Maintain >80% test coverage"
-    - "Document all exported symbols"
-    - "Use meaningful names (no single-letter vars except loops)"
-    - "Keep functions under 50 lines where possible"
-    - "Avoid global mutable state"
+  scan_mode_definitions:
+    review:
+      description: "Faster, shallow analysis focusing on critical risk areas and high-level architectural mapping."
+      limits: "Limited recursion into nested repos; lowers false positives."
+    deep_scan:
+      description: "Comprehensive, exhaustive static analysis with full codebase parsing including nested repositories."
+      limits: "Higher runtime and resource usage; full coverage expected."
+    scorch:
+      description: "Most aggressive mode; disregards warnings except critical errors; optimized for clean-slate audits."
+      limits: "May generate more false positives; used for initial 'scorch' cleans."
 
-  performance:
-    - "Use goroutines for I/O-bound operations"
-    - "Implement worker pools for CPU-bound tasks"
-    - "Buffer I/O operations appropriately"
-    - "Use sync.Pool for frequently allocated objects"
-    - "Profile and benchmark critical paths"
-    - "Minimize allocations in hot paths"
+  security_notes: |
+    Always adhere to data protection and usage policies. Never output proprietary source code or sensitive data in reports or tool code.
+    Logs, outputs, and error messages must be scrubbed of secrets and paths that could reveal internal infrastructure.
 
-  error_handling:
-    - "Return errors, don't panic (except in main/init)"
-    - "Wrap errors with context using fmt.Errorf"
-    - "Log errors with structured logging"
-    - "Provide actionable error messages"
-    - "Distinguish between retriable and fatal errors"
-
-  security:
-    - "Validate all inputs"
-    - "Sanitize file paths"
-    - "Never log sensitive data"
-    - "Use constant-time comparisons for secrets"
-    - "Implement rate limiting where appropriate"
+  execution_notes: |
+    When a task describes "run" or "generate" code or reports, generate specifications, CLI commands, or expected output formats instead.
+    Actual execution will be performed by external automation pipelines or users with the generated Go tools.
+    This separation ensures compliance with security and governance policies.

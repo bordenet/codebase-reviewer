@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Phase 1 Task 5 Output Schema",
+  "description": "Reference material generation specification",
+  "type": "object",
+  "required": ["tool_commands"],
+  "properties": {
+    "tool_commands": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["tool_name", "command"],
+        "properties": {
+          "tool_name": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "required_flags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "outputs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["path", "format"],
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "format": {
+                  "type": "string",
+                  "enum": ["md", "json", "svg", "mermaid"]
+                }
+              }
+            }
+          },
+          "validation_checks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["type"],
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "schema_ref": {
+                  "type": "string"
+                },
+                "details": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+

@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Learning Entry Schema",
+  "description": "Learning capture from tool execution",
+  "type": "object",
+  "required": ["id", "description", "impact"],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "impact": {
+      "type": "string",
+      "enum": ["positive", "neutral", "negative"]
+    },
+    "actions_taken": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "validation": {
+      "type": "string"
+    },
+    "pending_issues": {
+      "type": "string"
+    }
+  }
+}
+
