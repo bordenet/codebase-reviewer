@@ -4,11 +4,7 @@ import time
 from datetime import datetime
 from typing import Callable, Optional
 
-from codebase_reviewer.analyzers import (
-    CodeAnalyzer,
-    DocumentationAnalyzer,
-    ValidationEngine,
-)
+from codebase_reviewer.analyzers import CodeAnalyzer, DocumentationAnalyzer, ValidationEngine
 from codebase_reviewer.models import RepositoryAnalysis
 from codebase_reviewer.prompt_generator import PromptGenerator
 

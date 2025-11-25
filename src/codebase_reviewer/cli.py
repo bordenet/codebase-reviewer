@@ -13,16 +13,11 @@ from codebase_reviewer.analytics.hotspot_detector import HotspotDetector
 from codebase_reviewer.analytics.risk_scorer import RiskScorer
 from codebase_reviewer.analytics.trend_analyzer import MetricSnapshot, TrendAnalyzer
 from codebase_reviewer.analyzers.code import CodeAnalyzer
-from codebase_reviewer.compliance.compliance_reporter import (
-    ComplianceFramework,
-    ComplianceReporter,
-)
+from codebase_reviewer.compliance.compliance_reporter import ComplianceFramework, ComplianceReporter
 from codebase_reviewer.enterprise.dashboard_generator import DashboardGenerator
 from codebase_reviewer.enterprise.multi_repo_analyzer import MultiRepoAnalyzer
 from codebase_reviewer.exporters.html_exporter import HTMLExporter
-from codebase_reviewer.exporters.interactive_html_exporter import (
-    InteractiveHTMLExporter,
-)
+from codebase_reviewer.exporters.interactive_html_exporter import InteractiveHTMLExporter
 from codebase_reviewer.exporters.json_exporter import JSONExporter
 from codebase_reviewer.exporters.sarif_exporter import SARIFExporter
 from codebase_reviewer.interactive.workflow import InteractiveWorkflow
@@ -896,9 +891,7 @@ def analyze(repo_path, output, format, with_analytics, track_trends):
             click.echo(f"✅ SARIF report saved to: {output}")
 
         elif format == "markdown":
-            from codebase_reviewer.generators.documentation import (
-                DocumentationGenerator,
-            )
+            from codebase_reviewer.generators.documentation import DocumentationGenerator
 
             generator = DocumentationGenerator()
             markdown = generator.generate(analysis, repo_path)
