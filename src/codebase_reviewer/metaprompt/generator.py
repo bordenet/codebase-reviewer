@@ -25,7 +25,7 @@ class MetaPromptGenerator:
         if template_path is None:
             # Use built-in template
             template_path = (
-                Path(__file__).parent.parent.parent.parent / "prompts" / "templates" / "meta-prompt-template.md"
+                Path(__file__).parent.parent.parent.parent / "prompts" / "templates" / "meta-prompt-template.yaml"
             )
 
         self.template_path = template_path

@@ -4,23 +4,23 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sync"
 
 	"github.com/bordenet/codebase-reviewer/pkg/logger"
 )
 
-// Repository represents a discovered git repository
+// Repository represents a discovered git repository.
 type Repository struct {
-	Path        string
-	Name        string
-	RelativePath string
+	Path          string
+	Name          string
+	RelativePath  string
 	HasSubmodules bool
 }
 
-// FindGitRepos recursively finds all git repositories under the given path
+// FindGitRepos recursively finds all git repositories under the given path.
+// It skips hidden directories except .git and returns a slice of Repository.
+// An empty slice is returned if no repositories are found.
 func FindGitRepos(rootPath string, log *logger.Logger) ([]Repository, error) {
 	var repos []Repository
-	var mu sync.Mutex
 
 	err := filepath.Walk(rootPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -39,16 +39,13 @@ func FindGitRepos(rootPath string, log *logger.Logger) ([]Repository, error) {
 			relPath, _ := filepath.Rel(rootPath, repoPath)
 
 			repo := Repository{
-				Path:         repoPath,
-				Name:         filepath.Base(repoPath),
-				RelativePath: relPath,
+				Path:          repoPath,
+				Name:          filepath.Base(repoPath),
+				RelativePath:  relPath,
 				HasSubmodules: hasSubmodules(repoPath),
 			}
 
-			mu.Lock()
 			repos = append(repos, repo)
-			mu.Unlock()
-
 			log.Debug("Found repository: %s", repo.Name)
 
 			// Don't descend into .git directory
@@ -124,42 +121,53 @@ func AnalyzeRepository(repo Repository, log *logger.Logger) (*RepositoryAnalysis
 
 // RepositoryAnalysis contains analysis results for a repository
 type RepositoryAnalysis struct {
-	Repository  Repository
-	Languages   map[string]int
-	FileTypes   map[string]int
-	TotalFiles  int
+	Repository Repository
+	Languages  map[string]int
+	FileTypes  map[string]int
+	TotalFiles int
 }
 
-// extensionToLanguage maps file extensions to programming languages
-func extensionToLanguage(ext string) string {
-	langMap := map[string]string{
-		".go":    "Go",
-		".js":    "JavaScript",
-		".ts":    "TypeScript",
-		".py":    "Python",
-		".java":  "Java",
-		".c":     "C",
-		".cpp":   "C++",
-		".cs":    "C#",
-		".rb":    "Ruby",
-		".php":   "PHP",
-		".swift": "Swift",
-		".kt":    "Kotlin",
-		".rs":    "Rust",
-		".scala": "Scala",
-		".sh":    "Shell",
-		".sql":   "SQL",
-		".yaml":  "YAML",
-		".yml":   "YAML",
-		".json":  "JSON",
-		".xml":   "XML",
-		".html":  "HTML",
-		".css":   "CSS",
-		".scss":  "SCSS",
-		".md":    "Markdown",
-	}
+// extToLang maps file extensions to programming languages.
+// Package-level to avoid recreation on each call.
+var extToLang = map[string]string{
+	".go":    "Go",
+	".js":    "JavaScript",
+	".ts":    "TypeScript",
+	".tsx":   "TypeScript",
+	".jsx":   "JavaScript",
+	".py":    "Python",
+	".java":  "Java",
+	".c":     "C",
+	".cpp":   "C++",
+	".cc":    "C++",
+	".h":     "C",
+	".hpp":   "C++",
+	".cs":    "C#",
+	".rb":    "Ruby",
+	".php":   "PHP",
+	".swift": "Swift",
+	".kt":    "Kotlin",
+	".rs":    "Rust",
+	".scala": "Scala",
+	".sh":    "Shell",
+	".bash":  "Shell",
+	".zsh":   "Shell",
+	".sql":   "SQL",
+	".yaml":  "YAML",
+	".yml":   "YAML",
+	".json":  "JSON",
+	".xml":   "XML",
+	".html":  "HTML",
+	".css":   "CSS",
+	".scss":  "SCSS",
+	".sass":  "SCSS",
+	".less":  "LESS",
+	".md":    "Markdown",
+}
 
-	return langMap[ext]
+// extensionToLanguage maps file extensions to programming languages.
+func extensionToLanguage(ext string) string {
+	return extToLang[ext]
 }
 
 // PrimaryLanguage returns the most common language in the analysis

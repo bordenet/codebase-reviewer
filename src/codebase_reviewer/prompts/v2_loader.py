@@ -142,7 +142,7 @@ class PromptTemplateV2Loader:
             FileNotFoundError: If template file doesn't exist
             ValueError: If template is invalid
         """
-        template_path = self.templates_dir / "meta-prompt-template.md"
+        template_path = self.templates_dir / "meta-prompt-template.yaml"
 
         if not template_path.exists():
             raise FileNotFoundError(f"Phase 2 meta-prompt not found: {template_path}")
