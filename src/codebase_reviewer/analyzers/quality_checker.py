@@ -86,7 +86,7 @@ class QualityChecker:
         return issues
 
     def _check_for_security_issues(self, repo_path: str) -> List[Issue]:
-        """Basic security issue detection.
+        """Detect basic security issues in the repository.
 
         Args:
             repo_path: Path to repository root

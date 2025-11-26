@@ -130,7 +130,7 @@ def register_tuning_commands(cli):
         generation,
         interactive,
     ):
-        """Generate self-evolving Phase 2 tools for a codebase.
+        r"""Generate self-evolving Phase 2 tools for a codebase.
 
         This is the MAIN MISSION command that works with YOUR AI ASSISTANT:
 
@@ -154,15 +154,15 @@ def register_tuning_commands(cli):
             review-codebase evolve /path/to/codebase --auto-run
 
             # With existing AI response
-            review-codebase evolve /path/to/codebase \\
-                --ai-response /tmp/ai-response.md \\
+            review-codebase evolve /path/to/codebase \
+                --ai-response /tmp/ai-response.md \
                 --auto-run
 
             # API mode (requires API key)
-            review-codebase evolve /path/to/codebase \\
-                --no-interactive \\
-                --llm-provider anthropic \\
-                --api-key $ANTHROPIC_API_KEY \\
+            review-codebase evolve /path/to/codebase \
+                --no-interactive \
+                --llm-provider anthropic \
+                --api-key $ANTHROPIC_API_KEY \
                 --auto-run
         """
         try:

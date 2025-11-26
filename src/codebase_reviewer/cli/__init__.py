@@ -22,7 +22,7 @@ register_enterprise_commands(cli)
 
 
 def main():
-    """Main entry point."""
+    """Run the CLI application."""
     cli()
 
 

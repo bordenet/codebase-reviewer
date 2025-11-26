@@ -13,6 +13,7 @@ class AnalysisOrchestrator:
     """Coordinates multi-phase analysis workflow."""
 
     def __init__(self):
+        """Initialize the analysis orchestrator with all analyzers."""
         self.doc_analyzer = DocumentationAnalyzer()
         self.code_analyzer = CodeAnalyzer()
         self.validation_engine = ValidationEngine()
