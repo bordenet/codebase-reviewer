@@ -1,13 +1,20 @@
 """Generate meta-prompts for Phase 2 tool creation."""
 
-import json
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
+
+from codebase_reviewer.config.loader import ConfigLoader, Phase2ThresholdsConfig, PromptsConfig
+from codebase_reviewer.obsolescence.detector import ObsolescenceResult, ObsolescenceTrigger
 
 
 class MetaPromptGenerator:
-    """Generates meta-prompts from Phase 1 analysis and user dialogue."""
+    """Generates meta-prompts from Phase 1 analysis and user dialogue.
+
+    This generator uses externalized configuration from:
+    - config/phase2_thresholds.yml: Threshold values and recommendations
+    - config/prompts.yml: Prompt templates and settings
+    """
 
     def __init__(self, template_path: Optional[Path] = None):
         """Initialize generator.
@@ -24,6 +31,25 @@ class MetaPromptGenerator:
         self.template_path = template_path
         self.template = template_path.read_text()
 
+        # Load configuration
+        self._config_loader = ConfigLoader()
+        self._thresholds_config: Optional[Phase2ThresholdsConfig] = None
+        self._prompts_config: Optional[PromptsConfig] = None
+
+    @property
+    def thresholds_config(self) -> Phase2ThresholdsConfig:
+        """Get thresholds configuration (lazy loaded)."""
+        if self._thresholds_config is None:
+            self._thresholds_config = self._config_loader.load_thresholds()
+        return self._thresholds_config
+
+    @property
+    def prompts_config(self) -> PromptsConfig:
+        """Get prompts configuration (lazy loaded)."""
+        if self._prompts_config is None:
+            self._prompts_config = self._config_loader.load_prompts()
+        return self._prompts_config
+
     def generate(
         self,
         phase1_prompt_path: Path,
@@ -31,6 +57,7 @@ class MetaPromptGenerator:
         generation: int = 1,
         user_requirements: Optional[Dict[str, Any]] = None,
         learnings: Optional[str] = None,
+        obsolescence_result: Optional[ObsolescenceResult] = None,
     ) -> str:
         """Generate meta-prompt from Phase 1 analysis.
 
@@ -40,6 +67,7 @@ class MetaPromptGenerator:
             generation: Generation number (1, 2, 3, ...)
             user_requirements: User requirements from dialogue
             learnings: Learnings from previous generations
+            obsolescence_result: Result from obsolescence detection (for regeneration)
 
         Returns:
             Complete meta-prompt ready for AI assistant
@@ -50,8 +78,11 @@ class MetaPromptGenerator:
         # Extract codebase analysis from Phase 1 prompt
         analysis = self._extract_analysis(phase1_content)
 
-        # Get user requirements (or use defaults)
+        # Get user requirements (or use defaults from config)
         reqs = user_requirements or self._default_requirements()
+
+        # Get threshold values from config
+        thresholds = self.thresholds_config
 
         # Build context
         context = {
@@ -67,21 +98,31 @@ class MetaPromptGenerator:
             "documentation_needs": reqs.get("documentation_needs", "Comprehensive documentation"),
             "quality_standards": reqs.get("quality_standards", "95% coverage, <5% errors"),
             "update_frequency": reqs.get("update_frequency", "As needed"),
-            # Thresholds
-            "files_changed_threshold": reqs.get("files_changed_threshold", 20),
-            "coverage_threshold": reqs.get("coverage_threshold", 90),
-            "staleness_threshold": reqs.get("staleness_threshold", 30),
-            "error_threshold": reqs.get("error_threshold", 5),
+            # Thresholds from config (not hardcoded)
+            "files_changed_threshold": thresholds.files_changed_percent,
+            "coverage_threshold": thresholds.coverage_min_percent,
+            "staleness_threshold": thresholds.staleness_max_days,
+            "error_threshold": thresholds.error_rate_max_percent,
+            "false_positive_multiplier": thresholds.false_positive_spike_multiplier,
+            "cooldown_days": thresholds.fallback.cooldown_days,
             # Learnings
             "learnings": learnings or "**Generation 1**: No previous learnings",
             "improvements": self._generate_improvements(generation, learnings),
-            # Success criteria
-            "fidelity_target": reqs.get("fidelity_target", 95),
-            "coverage_target": reqs.get("coverage_target", 90),
-            "performance_target": reqs.get("performance_target", "60"),
+            # Success criteria from config
+            "fidelity_target": reqs.get("fidelity_target", self.prompts_config.defaults.get("fidelity_target", 95)),
+            "coverage_target": reqs.get("coverage_target", self.prompts_config.defaults.get("coverage_target", 90)),
+            "performance_target": reqs.get(
+                "performance_target", self.prompts_config.defaults.get("performance_target_seconds", 60)
+            ),
             # Full meta-prompt (for embedding)
             "full_meta_prompt": "{{SELF_REFERENCE}}",  # Will be replaced
+            # Threshold config YAML for embedding
+            "threshold_config_yaml": self._config_loader.get_threshold_as_yaml(),
         }
+
+        # Add obsolescence context if this is a regeneration
+        if obsolescence_result and obsolescence_result.is_obsolete:
+            context.update(self._build_obsolescence_context(obsolescence_result))
 
         # Generate meta-prompt
         meta_prompt = self._render_template(context)
@@ -90,6 +131,71 @@ class MetaPromptGenerator:
         meta_prompt = meta_prompt.replace("{{SELF_REFERENCE}}", meta_prompt)
 
         return meta_prompt
+
+    def _build_obsolescence_context(self, result: ObsolescenceResult) -> Dict[str, Any]:
+        """Build context from obsolescence detection result.
+
+        Args:
+            result: ObsolescenceResult from detector
+
+        Returns:
+            Context dictionary for template rendering
+        """
+        # Format trigger reasons
+        trigger_reasons = "\n".join(f"- {r}" for r in result.reasons)
+
+        # Format recommendations from triggers
+        recommendations = []
+        for trigger in result.triggers:
+            if trigger.recommendation:
+                recommendations.append(
+                    f"### {trigger.trigger_type.replace('_', ' ').title()}\n{trigger.recommendation}"
+                )
+
+        # Build improvement list based on triggers
+        improvement_list = self._build_improvement_list(result.triggers)
+
+        return {
+            "is_regeneration": True,
+            "trigger_reasons": trigger_reasons,
+            "trigger_types": ", ".join(result.get_trigger_types()),
+            "recommendations": "\n\n".join(recommendations) if recommendations else "No specific recommendations.",
+            "improvement_list": improvement_list,
+            "obsolescence_threshold_config": result.threshold_config_yaml,
+        }
+
+    def _build_improvement_list(self, triggers: List[ObsolescenceTrigger]) -> str:
+        """Build improvement list from triggers.
+
+        Args:
+            triggers: List of obsolescence triggers
+
+        Returns:
+            Formatted improvement list
+        """
+        improvements = []
+
+        for trigger in triggers:
+            if trigger.trigger_type == "files_changed":
+                improvements.append("- Update file discovery and traversal patterns")
+                improvements.append("- Revise directory structure assumptions")
+            elif trigger.trigger_type == "new_languages":
+                improvements.append(f"- Add support for new languages: {trigger.current_value}")
+                improvements.append("- Implement language-specific analysis patterns")
+            elif trigger.trigger_type == "coverage_drop":
+                improvements.append("- Expand file pattern matching")
+                improvements.append("- Review exclude patterns for over-filtering")
+            elif trigger.trigger_type == "staleness":
+                improvements.append("- Consider implementing incremental analysis")
+                improvements.append("- Add CI/CD integration for automatic updates")
+            elif trigger.trigger_type == "error_spike":
+                improvements.append("- Improve error handling and edge case detection")
+                improvements.append("- Add more robust input validation")
+            elif trigger.trigger_type == "false_positive_spike":
+                improvements.append("- Refine detection patterns to reduce false positives")
+                improvements.append("- Implement context-aware filtering")
+
+        return "\n".join(improvements) if improvements else "- General improvements based on usage patterns"
 
     def _extract_analysis(self, phase1_content: str) -> Dict[str, str]:
         """Extract codebase analysis from Phase 1 prompt.
@@ -118,35 +224,48 @@ class MetaPromptGenerator:
         return analysis
 
     def _default_requirements(self) -> Dict[str, Any]:
-        """Get default user requirements.
+        """Get default user requirements from config.
 
         Returns:
-            Default requirements dictionary
+            Default requirements dictionary from config/prompts.yml
         """
+        defaults = self.prompts_config.defaults
+        thresholds = self.thresholds_config
+
         return {
-            "documentation_needs": "Comprehensive documentation including architecture, APIs, and setup guides",
-            "quality_standards": "95% coverage, <5% error rate, clear and actionable",
-            "update_frequency": "As needed when codebase changes significantly",
-            "files_changed_threshold": 20,
-            "coverage_threshold": 90,
-            "staleness_threshold": 30,
-            "error_threshold": 5,
-            "fidelity_target": 95,
-            "coverage_target": 90,
-            "performance_target": "60",
+            "documentation_needs": defaults.get(
+                "documentation_needs", "Comprehensive documentation including architecture, APIs, and setup guides"
+            ),
+            "quality_standards": defaults.get(
+                "quality_standards", "95% coverage, <5% error rate, clear and actionable"
+            ),
+            "update_frequency": defaults.get("update_frequency", "As needed when codebase changes significantly"),
+            # Thresholds from config
+            "files_changed_threshold": thresholds.files_changed_percent,
+            "coverage_threshold": thresholds.coverage_min_percent,
+            "staleness_threshold": thresholds.staleness_max_days,
+            "error_threshold": thresholds.error_rate_max_percent,
+            # Targets from config
+            "fidelity_target": defaults.get("fidelity_target", 95),
+            "coverage_target": defaults.get("coverage_target", 90),
+            "performance_target": defaults.get("performance_target_seconds", 60),
         }
 
     def _generate_improvements(self, generation: int, learnings: Optional[str]) -> str:
-        """Generate improvement recommendations.
+        """Generate improvement recommendations from config.
 
         Args:
             generation: Generation number
             learnings: Learnings from previous generations
 
         Returns:
-            Improvement recommendations
+            Improvement recommendations from config/prompts.yml
         """
         if generation == 1:
+            # Use template from config if available
+            template = self.prompts_config.generation_1_focus
+            if template:
+                return template
             return """
 **Generation 1 Focus**:
 - Establish baseline functionality
@@ -155,9 +274,16 @@ class MetaPromptGenerator:
 - Ensure meta-prompt embedding works correctly
 """
         else:
+            # Use template from config if available
+            template = self.prompts_config.generation_n_focus
+            if template:
+                # Simple template substitution
+                return template.replace("{{generation}}", str(generation)).replace(
+                    "{{prev_generation}}", str(generation - 1)
+                )
             return f"""
 **Generation {generation} Focus**:
-- Incorporate learnings from Gen {generation-1}
+- Incorporate learnings from Gen {generation - 1}
 - Improve coverage and accuracy
 - Optimize performance
 - Enhance error handling

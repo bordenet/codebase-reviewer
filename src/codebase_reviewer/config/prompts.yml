@@ -1,0 +1,158 @@
+# LLM Prompt Configuration
+# =========================
+# Central configuration for all LLM prompts used in the codebase reviewer.
+# This file externalizes prompt templates from code, enabling:
+# - Easy tuning without code changes
+# - Version control of prompt evolution
+# - A/B testing of prompt variations
+
+version: "1.0"
+description: "LLM prompt templates and configuration"
+
+# =============================================================================
+# Global Prompt Settings
+# =============================================================================
+settings:
+  # Default model parameters
+  default_temperature: 0.3          # Lower for more deterministic output
+  default_max_tokens: 16000         # Large responses for code generation
+
+  # Response validation
+  require_complete_response: true
+  truncation_warning: true
+
+  # Cost controls
+  warn_on_high_cost: true
+  high_cost_threshold_usd: 1.00
+
+# =============================================================================
+# Role Definitions
+# =============================================================================
+# Roles define the AI's persona for different tasks
+roles:
+  codebase_analyst:
+    name: "expert_software_architect_and_code_analyst"
+    description: |
+      You are an expert software architect and code analyst tasked with
+      comprehensive analysis of codebases. Your goal is to produce
+      industry-standard security, quality, and architecture insights.
+
+  tool_generator:
+    name: "expert_go_developer_and_tool_designer"
+    description: |
+      You are an expert Go developer specializing in creating maintainable,
+      well-tested command-line tools. Focus on clean architecture, proper
+      error handling, and comprehensive documentation.
+
+  regeneration_advisor:
+    name: "continuous_improvement_specialist"
+    description: |
+      You are a specialist in continuous improvement and evolutionary design.
+      Your role is to analyze what went wrong, propose improvements, and
+      generate tools that won't repeat the same mistakes.
+
+# =============================================================================
+# Metaprompt Templates
+# =============================================================================
+# Templates for generating prompts that create Phase 2 tools
+metaprompt:
+  # Header template for all generated prompts
+  header: |
+    # {{task_type}} Request - {{date}}
+
+    ## Your Role
+    {{role}}
+
+    ## Context
+    {{context}}
+
+  # Phase 1 analysis prompt additions
+  phase1_analysis:
+    context: |
+      You are analyzing a proprietary codebase located at {{target_path}}.
+      Your goal is to produce industry-standard security, quality, and
+      architecture insights, and design offline-capable Go tools to
+      maintain these insights over time.
+
+      IMPORTANT USAGE NOTES:
+      - You cannot execute Go binaries or run shell commands.
+      - When tasks say "run" or "validate," describe required outputs and
+        expected checks; external automation will perform the actual executions.
+      - All outputs must avoid including proprietary code snippets, file contents,
+        or sensitive information that could be committed to git.
+      - All generated files must be written exclusively to /tmp/ or .gitignore'd directories.
+      - Strictly adhere to OWASP Top 10 and Semgrep/SonarQube style findings,
+        mapping to CWE/OWASP categories where relevant.
+      - Handle multi-language, multi-repository scenarios by analyzing each
+        repo unit and language stack distinctly.
+      - If data is unavailable (e.g., exact test coverage), state clearly
+        "Not Enough Information" rather than guessing.
+
+  # Regeneration prompt additions (when rebuild is triggered)
+  regeneration:
+    preamble: |
+      ## IMPORTANT: This is a REGENERATION request
+
+      The previous Phase 2 tools have been detected as OBSOLETE and need to be
+      regenerated with improvements.
+
+      ### Why Regeneration Was Triggered
+      {{trigger_reasons}}
+
+      ### Current Threshold Configuration
+      {{threshold_config}}
+
+      ### Recommendations Based on Triggers
+      {{recommendations}}
+
+      ### Learnings from Previous Generation
+      {{learnings}}
+
+    improvement_focus: |
+      ## Focus Areas for This Generation
+
+      Based on the obsolescence triggers, this generation should focus on:
+
+      {{improvement_list}}
+
+      Ensure the generated tools:
+      1. Address the specific issues that triggered regeneration
+      2. Include better detection for the problematic patterns
+      3. Implement the recommendations above
+      4. Update thresholds if current ones are too sensitive/insensitive
+
+# =============================================================================
+# Improvement Templates
+# =============================================================================
+# Templates for generating improvement recommendations
+improvements:
+  generation_1:
+    focus: |
+      **Generation 1 Focus**:
+      - Establish baseline functionality
+      - Implement core analysis and documentation generation
+      - Set up metrics tracking and obsolescence detection
+      - Ensure meta-prompt embedding works correctly
+
+  generation_n:
+    focus: |
+      **Generation {{generation}} Focus**:
+      - Incorporate learnings from Gen {{prev_generation}}
+      - Improve coverage and accuracy
+      - Optimize performance
+      - Enhance error handling
+      - Add new patterns detected in codebase
+
+      See learnings section for specific improvements.
+
+# =============================================================================
+# Default Requirements
+# =============================================================================
+# Default values for user requirements if not specified
+defaults:
+  documentation_needs: "Comprehensive documentation including architecture, APIs, and setup guides"
+  quality_standards: "95% coverage, <5% error rate, clear and actionable"
+  update_frequency: "As needed when codebase changes significantly"
+  fidelity_target: 95
+  coverage_target: 90
+  performance_target_seconds: 60

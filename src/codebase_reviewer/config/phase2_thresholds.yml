@@ -1,0 +1,149 @@
+# Phase 2 Rebuild Thresholds Configuration
+# ==========================================
+# These thresholds determine when Phase 2 tools need to be regenerated.
+# They are heuristics that should be tuned based on your codebase and experience.
+#
+# When a threshold is exceeded, the obsolescence reason is embedded in the
+# regeneration prompt, allowing the next generation of tools to adapt.
+
+version: "1.0"
+description: "Heuristics for Phase 2 tool rebuild detection"
+
+# =============================================================================
+# Core Thresholds
+# =============================================================================
+thresholds:
+  # File change detection - triggers rebuild when codebase structure changes significantly
+  files_changed:
+    percent: 30.0                    # Trigger rebuild if >30% of files changed
+    description: "Percentage of files changed since last run"
+    rationale: "Large structural changes often invalidate previous analysis patterns"
+
+  # Language detection - new languages may require different analysis strategies
+  new_languages:
+    enabled: true                    # Trigger rebuild when new programming languages detected
+    description: "Detect new programming languages in codebase"
+    rationale: "New languages require updated parsing and analysis patterns"
+
+  # Coverage requirements - low coverage indicates tools aren't capturing enough
+  coverage:
+    min_percent: 85.0               # Minimum acceptable coverage
+    description: "Minimum percentage of files that must be analyzed"
+    rationale: "Low coverage means tools are missing important parts of the codebase"
+
+  # Staleness - old analysis may not reflect current codebase
+  staleness:
+    max_days: 30                    # Maximum days since last run
+    description: "Maximum days allowed between tool runs"
+    rationale: "Old analysis becomes increasingly irrelevant as codebase evolves"
+
+  # Error rate - high errors indicate tool quality degradation
+  error_rate:
+    max_percent: 5.0                # Maximum acceptable error rate
+    description: "Maximum percentage of errors in tool output"
+    rationale: "High error rates indicate tools are not handling edge cases"
+
+  # False positive detection - spikes indicate pattern degradation
+  false_positives:
+    spike_multiplier: 1.5           # Trigger if false positives increase by 50%
+    description: "Multiplier for detecting false positive spikes"
+    rationale: "False positive spikes indicate outdated detection patterns"
+
+# =============================================================================
+# Fallback Strategies
+# =============================================================================
+fallback:
+  # Cooldown period to prevent regeneration thrashing
+  cooldown:
+    days: 7                         # Minimum days between regeneration attempts
+    description: "Minimum days to wait between regeneration attempts"
+    rationale: "Prevents excessive regeneration when codebase is in flux"
+
+  # Suppress regeneration if previous attempt failed
+  suppress_on_failure: true
+
+  # Alert human if regeneration fails multiple times
+  alert_on_chained_failures: true
+  chained_failure_count: 3          # Number of consecutive failures before alerting
+
+# =============================================================================
+# Advanced Heuristics
+# =============================================================================
+heuristics:
+  # Checksum-based detection for critical directories
+  checksum_critical_dirs:
+    enabled: true
+    directories:
+      - "src/"
+      - "lib/"
+      - "internal/"
+      - "pkg/"
+    description: "Track checksums of critical source directories"
+
+  # Semantic API change detection
+  semantic_api_changes:
+    enabled: true
+    patterns:
+      - "*.proto"                   # Protocol buffer changes
+      - "**/api/**"                 # API directory changes
+      - "**/interfaces/**"          # Interface changes
+      - "*.graphql"                 # GraphQL schema changes
+    description: "Detect changes to API definitions and interfaces"
+
+  # Git-based change detection
+  git_analysis:
+    enabled: true
+    commit_lookback: 100            # Number of commits to analyze
+    hotspot_threshold: 5            # Files changed >5 times are hotspots
+    description: "Analyze git history for change patterns"
+
+# =============================================================================
+# Prompt Integration
+# =============================================================================
+# These settings control how thresholds are embedded in regeneration prompts
+prompt_integration:
+  # Include threshold values in prompt for AI awareness
+  embed_thresholds: true
+
+  # Include specific reasons that triggered rebuild
+  embed_trigger_reasons: true
+
+  # Include historical metrics for trend analysis
+  embed_metrics_history: true
+  history_lookback_runs: 5          # Number of previous runs to include
+
+  # Include recommendations based on trigger
+  include_recommendations: true
+
+  # Recommendation templates per trigger type
+  recommendations:
+    files_changed: |
+      Large codebase restructuring detected. Focus on:
+      - Update file discovery patterns
+      - Revise directory traversal logic
+      - Check for renamed/moved modules
+    new_languages: |
+      New programming language detected: {{languages}}. Ensure:
+      - Add language-specific parsing
+      - Include appropriate security patterns
+      - Update code quality metrics
+    coverage_drop: |
+      Coverage has dropped below threshold. Investigate:
+      - New file patterns not being detected
+      - Exclude patterns too aggressive
+      - Missing language support
+    staleness: |
+      Analysis has become stale. Consider:
+      - More frequent scheduled runs
+      - CI/CD integration for automatic updates
+      - Incremental analysis support
+    error_spike: |
+      Error rate has spiked. Debug by:
+      - Reviewing recent tool failures
+      - Checking for edge cases
+      - Validating input assumptions
+    false_positive_spike: |
+      False positive rate increased. Improve by:
+      - Refining detection patterns
+      - Adding context-aware filtering
+      - Implementing user feedback loop
