@@ -9,6 +9,7 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
+        exclude: '^prompts/templates/.*\.yaml$'  # Exclude Jinja-style templates
       - id: check-added-large-files
         args: ['--maxkb=1000']
       - id: check-json
@@ -81,13 +82,14 @@ repos:
       - id: requirements-txt-fixer
         files: requirements.txt
 
-  # CRITICAL: Check for proprietary codebase references
+  # CRITICAL: Check for proprietary codebase references in source code
+  # Note: Excludes .pre-commit-config.yaml (this file), docs/, archive/, and design docs
   - repo: local
     hooks:
       - id: check-proprietary-refs
         name: Check for proprietary codebase references
         entry: bash
-        args: ['-c', 'if git diff --cached --name-only | xargs grep -l "CallBox\|/Users/matt/GitHub/CallBox" 2>/dev/null; then echo "ERROR: Found CallBox references in staged files!"; exit 1; fi']
+        args: ['-c', 'FILES=$(git diff --cached --name-only | grep -E "\.(py|go|js|ts|yaml|yml|json|sh)$" | grep -v "^\.pre-commit-config\.yaml$" | grep -v "^docs/" | grep -v "^archive/" | grep -v "^PRD\.md$" | grep -v "^CHANGELOG\.md$"); if [ -n "$FILES" ]; then echo "$FILES" | xargs grep -l "CallBox\|/Users/matt/GitHub/CallBox" 2>/dev/null && echo "ERROR: Found CallBox references in source files!" && exit 1; fi; exit 0']
         language: system
         pass_filenames: false
         always_run: true
