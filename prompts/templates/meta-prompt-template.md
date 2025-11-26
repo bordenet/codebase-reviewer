@@ -222,3 +222,17 @@ prompt:
 
   learnings_from_previous_generations: "{{learnings}}"
   improvements_for_this_generation: "{{improvements}}"
+
+  # Regeneration Context (populated when obsolescence is detected)
+  # This section is dynamically populated when tools detect they need regeneration
+  regeneration_context:
+    is_regeneration: "{{is_regeneration}}"
+    trigger_types: "{{trigger_types}}"
+    trigger_reasons: |
+      {{trigger_reasons}}
+    recommendations: |
+      {{recommendations}}
+    improvement_list: |
+      {{improvement_list}}
+    threshold_config: |
+      {{obsolescence_threshold_config}}

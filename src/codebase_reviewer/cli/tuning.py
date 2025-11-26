@@ -2,13 +2,16 @@
 
 import sys
 from pathlib import Path
+from typing import Optional
 
 import click
 
+from codebase_reviewer.config.loader import ConfigLoader
 from codebase_reviewer.interactive.workflow import InteractiveWorkflow
 from codebase_reviewer.llm.client import LLMProvider, LLMResponse, create_client
 from codebase_reviewer.llm.code_extractor import CodeExtractor
 from codebase_reviewer.metaprompt.generator import MetaPromptGenerator
+from codebase_reviewer.obsolescence.detector import ObsolescenceDetector, ObsolescenceResult
 from codebase_reviewer.phase2.generator import Phase2Generator, Phase2Tools
 from codebase_reviewer.phase2.runner import Phase2Runner
 from codebase_reviewer.phase2.validator import Phase2Validator
@@ -210,10 +213,63 @@ def register_tuning_commands(cli):
 
                 click.echo(f"✅ Phase 1 prompt generated: {phase1_file}")
 
+            # Step 1.5: Check for obsolescence (for regeneration context)
+            obsolescence_result: Optional[ObsolescenceResult] = None
+            if generation > 1:
+                click.echo(f"\n🔍 Checking for obsolescence triggers...")
+                try:
+                    detector = ObsolescenceDetector(codebase_path)
+                    # Load current metrics if available
+                    from codebase_reviewer.models_v2 import (
+                        ChangeMetrics,
+                        CoverageMetrics,
+                        Metrics,
+                        PatternMetrics,
+                        PerformanceMetrics,
+                        QualityMetrics,
+                        StalenessMetrics,
+                        TestMetrics,
+                        UserFeedbackMetrics,
+                    )
+
+                    # Create basic metrics for detection
+                    current_metrics = Metrics(
+                        coverage=CoverageMetrics(
+                            files_total=0, files_analyzed=0, files_documented=0, coverage_percent=0
+                        ),
+                        changes=ChangeMetrics(
+                            files_changed=0, files_changed_percent=0, files_added=0, files_deleted=0, new_languages=[]
+                        ),
+                        quality=QualityMetrics(
+                            error_count=0, error_rate_percent=0, warning_count=0, false_positive_estimate=0
+                        ),
+                        performance=PerformanceMetrics(avg_runtime_seconds=0, memory_usage_mb=0),
+                        staleness=StalenessMetrics(last_run_date="", days_since_last_run=0),
+                        patterns=PatternMetrics(detected=[], newly_detected=[]),
+                        tests=TestMetrics(regression_pass_count=0, regression_fail_count=0),
+                        user_feedback=UserFeedbackMetrics(human_override_flags=0, notes=""),
+                    )
+                    obsolescence_result = detector.detect_obsolescence(current_metrics)
+
+                    if obsolescence_result.is_obsolete:
+                        click.echo(f"⚠️  Obsolescence detected:")
+                        for reason in obsolescence_result.reasons:
+                            click.echo(f"   - {reason}")
+                        click.echo(f"\n   Threshold config embedded in regeneration prompt.")
+                    else:
+                        click.echo(f"✅ No obsolescence triggers detected.")
+                except Exception as e:
+                    click.echo(f"⚠️  Could not check obsolescence: {e}")
+
             # Step 2: Generate meta-prompt
             click.echo(f"\n📝 Generating meta-prompt for AI assistant...")
             meta_gen = MetaPromptGenerator()
-            meta_prompt = meta_gen.generate(phase1_file, codebase_name, generation=generation)
+            meta_prompt = meta_gen.generate(
+                phase1_file,
+                codebase_name,
+                generation=generation,
+                obsolescence_result=obsolescence_result,
+            )
 
             # Save meta-prompt
             meta_prompt_file = Path(f"/tmp/codebase-reviewer/{codebase_name}/meta-prompt-gen{generation}.md")
