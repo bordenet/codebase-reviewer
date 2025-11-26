@@ -60,7 +60,7 @@ This repository has **IP protection pre-commit hooks** that prevent leaking prop
 
 **If a commit is blocked:**
 1. ✅ Read the error message carefully
-2. ✅ Remove sensitive references (e.g., "CallBox", "Cari", proprietary paths)
+2. ✅ Remove sensitive references (e.g., proprietary company names, internal paths)
 3. ✅ Use generic examples instead
 4. ✅ Re-stage and commit normally
 5. ❌ NEVER suggest `--no-verify`
@@ -255,10 +255,60 @@ This repository uses pre-commit hooks to enforce quality standards. All commits 
 
 1. **Black formatting** - Auto-formats code
 2. **PyLint** - Linting checks (9.5+/10 required)
-3. **Pytest** - All tests must pass
+3. **Pytest** - All tests must pass (50%+ coverage required)
 4. **MyPy** - Type checking
 
 The hooks run automatically on `git commit`. If they fail, the commit is blocked.
+
+---
+
+## 🚨 **CRITICAL: CLI Integration Testing - QUALITY GATE**
+
+### **The Incident That Must Never Repeat**
+
+On 2025-11-26, we had a critical quality gate failure:
+- All 177 unit tests passed ✅
+- The CLI was completely broken due to import errors ❌
+- CI passed, code was pushed to main
+- The tool was unusable - broken imports in `cli/enterprise.py`
+- Senior stakeholders saw a broken repository
+
+**Root Cause**: Unit tests tested individual modules but never tested whether the CLI could actually start.
+
+### **MANDATORY: CLI Integration Tests**
+
+The file `tests/test_cli_integration.py` exists to prevent this. It tests:
+
+1. **All CLI module imports work** - Tests that all `cli/*.py` files can be imported
+2. **CLI starts successfully** - Tests that `review-codebase --help` works
+3. **All commands are accessible** - Tests that each command's `--help` works
+4. **Subprocess verification** - Tests the CLI via subprocess (like a real user)
+
+### **NEVER Do This:**
+
+❌ Refactor CLI imports without running `tests/test_cli_integration.py`
+❌ Add new CLI commands without adding integration tests
+❌ Assume unit tests passing means the CLI works
+❌ Push to main without verifying `review-codebase --help` works
+
+### **ALWAYS Do This:**
+
+✅ Run `review-codebase --help` locally before pushing
+✅ Run `pytest tests/test_cli_integration.py -v` after any CLI changes
+✅ Add integration tests for new CLI commands
+✅ Test each CLI command's `--help` after refactoring
+
+### **The Golden Rule:**
+
+**If you refactor imports or module structure, the CLI integration tests MUST pass.**
+
+```bash
+# After any CLI or import changes:
+pytest tests/test_cli_integration.py -v
+review-codebase --help
+```
+
+This is not optional. This is a hard requirement.
 
 ---
 

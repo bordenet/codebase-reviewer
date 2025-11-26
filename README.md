@@ -42,7 +42,7 @@ review-codebase roi /path/to/your/code
 - **Compliance**: SOC2, HIPAA, PCI-DSS compliance automation
 - **Technical Debt**: Track and prioritize code quality issues
 
-**Status**: ✅ **Production Ready** - A+ Grade (10 sprints complete)
+**Status**: ✅ **Production Ready** - A+ Grade (10 sprints complete, 191 tests passing)
 
 **Documentation**: See [`docs/STATIC_ANALYSIS.md`](docs/STATIC_ANALYSIS.md)
 
@@ -68,13 +68,15 @@ Phase 2 (Infinite, Free, Offline)
 
 ### Features
 - ✅ **v2.0 Prompt Architecture**: Structured schemas, OWASP/CWE mapping
-- ✅ **Phase II Regeneration Flow**: Self-evolving tools that improve over time
+- ✅ **Phase 1 Prompt Generation**: analyze-v2 command fully implemented
 - ✅ **Obsolescence Detection**: Multi-variate heuristics (files changed, new languages, coverage, staleness)
 - ✅ **Metrics Tracking**: 8 dimensions (coverage, quality, performance, staleness)
-- ✅ **Learning Capture**: Tools improve with each generation
-- ✅ **Human-in-the-Loop**: Approval gates, rollback support
+- ✅ **Learning Capture Framework**: Structured learning entries for continuous improvement
 - ✅ **Three Scan Modes**: review (quick), deep_scan (thorough), scorch (exhaustive)
-- ✅ **Tested & Validated**: Complete regeneration flow tested end-to-end
+- ✅ **Comprehensive Testing**: 191 tests passing (obsolescence, metrics, CLI integration, core functionality)
+- ✅ **IP Protection**: Forced /tmp/ output, pre-commit hooks, security validation
+- 🚧 **Phase 2 Tool Generation**: Architecture complete, CLI integration in progress
+- 🚧 **Human-in-the-Loop**: Approval gates and rollback support designed, not yet implemented
 
 ### Quick Start
 
@@ -88,8 +90,8 @@ cat /tmp/codebase-reviewer/YourCode/phase1_prompt_*.md
 # Send prompt to LLM (Claude, GPT-4, etc.)
 # Copy/paste the prompt to your LLM
 
-# Save LLM response and generate Phase 2 tools (coming soon)
-review-codebase generate-tools-v2 /tmp/codebase-reviewer/YourCode
+# Save LLM response and generate Phase 2 tools (in development)
+# python -m codebase_reviewer.cli generate-tools-v2 /tmp/codebase-reviewer/YourCode
 ```
 
 ### Use Cases
@@ -98,7 +100,7 @@ review-codebase generate-tools-v2 /tmp/codebase-reviewer/YourCode
 - **Continuous Documentation**: Auto-update docs as code changes
 - **Self-Improving Tools**: Tools get better over time
 
-**Status**: 🚧 **v2.0 Architecture Complete** - Tool generation in progress
+**Status**: ✅ **v2.1 Functional** - Phase 1 complete (191 tests passing), Phase 2 tool generation in development
 
 **Documentation**: See [`docs/V2_ARCHITECTURE.md`](docs/V2_ARCHITECTURE.md)
 

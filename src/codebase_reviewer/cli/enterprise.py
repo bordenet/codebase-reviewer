@@ -6,13 +6,13 @@ from pathlib import Path
 
 import click
 
-from codebase_reviewer.analyzers.quality_checker import QualityChecker
 from codebase_reviewer.ai.query_interface import QueryInterface
-from codebase_reviewer.analytics.multi_repo import MultiRepoAnalyzer
-from codebase_reviewer.compliance.reporter import ComplianceReporter, ComplianceFramework
-from codebase_reviewer.generators.dashboard import DashboardGenerator
-from codebase_reviewer.metrics.productivity import ProductivityTracker
-from codebase_reviewer.metrics.roi import ROICalculator, ROIMetrics
+from codebase_reviewer.analyzers.quality_checker import QualityChecker
+from codebase_reviewer.compliance.compliance_reporter import ComplianceFramework, ComplianceReporter
+from codebase_reviewer.enterprise.dashboard_generator import DashboardGenerator
+from codebase_reviewer.enterprise.multi_repo_analyzer import MultiRepoAnalyzer
+from codebase_reviewer.metrics.productivity_metrics import ProductivityTracker
+from codebase_reviewer.metrics.roi_calculator import ROICalculator, ROIMetrics
 
 
 def register_enterprise_commands(cli):
@@ -148,7 +148,9 @@ def register_enterprise_commands(cli):
 
             # Generate dashboard
             dashboard_gen = DashboardGenerator()
-            dashboard_gen.generate_multi_repo_dashboard([a.to_dict() for a in analyses], aggregate.to_dict(), Path(output))
+            dashboard_gen.generate_multi_repo_dashboard(
+                [a.to_dict() for a in analyses], aggregate.to_dict(), Path(output)
+            )
 
             click.echo(f"\n✅ Dashboard saved to: {output}")
 
@@ -285,7 +287,9 @@ def register_enterprise_commands(cli):
             # Display results
             click.echo(f"\n📈 Productivity Report")
             click.echo("=" * 60)
-            click.echo(f"Period: {report.period_start.strftime('%Y-%m-%d')} to {report.period_end.strftime('%Y-%m-%d')}")
+            click.echo(
+                f"Period: {report.period_start.strftime('%Y-%m-%d')} to {report.period_end.strftime('%Y-%m-%d')}"
+            )
             click.echo(f"Productivity Score: {report.productivity_score:.1f}/100")
             click.echo("=" * 60)
 
@@ -379,4 +383,3 @@ def register_enterprise_commands(cli):
         except Exception as e:
             click.echo(click.style(f"\n✗ Error: {str(e)}", fg="red"), err=True)
             sys.exit(1)
-

@@ -134,7 +134,11 @@ class AdvancedContextBuilders:
         setup_drift = []
         if validation and validation.setup_drift:
             setup_drift = [
-                {"claimed": d.claimed_component, "actual": d.actual_state, "severity": d.severity.value}
+                {
+                    "claim": d.claim.description if d.claim else "Unknown",
+                    "status": d.validation_status.value,
+                    "severity": d.severity.value,
+                }
                 for d in validation.setup_drift[:10]
             ]
 
@@ -333,4 +337,3 @@ class AdvancedContextBuilders:
                 "error": f"Git analysis failed: {str(e)}",
                 "repository_path": analysis.repository_path,
             }
-

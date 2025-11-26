@@ -48,8 +48,7 @@ class ContextBuilders:
 
         return {
             "architecture_docs": [
-                {"path": d.path, "content": d.content[:2000], "completeness": d.completeness_score}
-                for d in arch_docs
+                {"path": d.path, "content": d.content[:2000], "size_bytes": d.size_bytes} for d in arch_docs
             ],
             "claimed_architecture": (
                 {
@@ -68,10 +67,18 @@ class ContextBuilders:
         if not docs or not docs.setup_instructions:
             return None
 
+        setup = docs.setup_instructions
+        # SetupGuide is a dataclass with list attributes
+        setup_summary = {
+            "prerequisites": setup.prerequisites[:10] if setup.prerequisites else [],
+            "build_steps": setup.build_steps[:10] if setup.build_steps else [],
+            "environment_vars": setup.environment_vars[:10] if setup.environment_vars else [],
+        }
+
         return {
-            "setup_instructions": docs.setup_instructions[:3000],
+            "setup_instructions": setup_summary,
             "setup_completeness": docs.completeness_score,
-            "has_prerequisites": bool(docs.setup_instructions and "prerequisite" in docs.setup_instructions.lower()),
+            "has_prerequisites": bool(setup.prerequisites),
         }
 
     # ========== Phase 1: Architecture Analysis ==========
@@ -110,10 +117,16 @@ class ContextBuilders:
             validation_results = {
                 "drift_severity": validation.drift_severity.value,
                 "architecture_drift": [
-                    {"claimed": d.claimed_component, "actual": d.actual_state, "severity": d.severity.value}
+                    {
+                        "claim": d.claim.description if d.claim else "Unknown",
+                        "status": d.validation_status.value,
+                        "severity": d.severity.value,
+                    }
                     for d in validation.architecture_drift[:10]
                 ],
-                "missing_components": [d.claimed_component for d in validation.architecture_drift if not d.actual_state],
+                "missing_components": [
+                    d.claim.description for d in validation.architecture_drift if d.validation_status.value == "invalid"
+                ],
             }
 
         return {
@@ -130,10 +143,15 @@ class ContextBuilders:
         if not code or not code.dependencies:
             return None
 
+        # DependencyInfo is a dataclass, extract relevant fields
+        deps_summary = [
+            {"name": dep.name, "version": dep.version, "type": dep.dependency_type} for dep in code.dependencies[:50]
+        ]
+
         return {
-            "dependencies": code.dependencies[:50],
+            "dependencies": deps_summary,
             "dependency_count": len(code.dependencies),
-            "has_lock_file": any("lock" in dep.lower() for dep in code.dependencies),
+            "has_lock_file": any("lock" in dep.source_file.lower() for dep in code.dependencies if dep.source_file),
         }
 
     # ========== Phase 2: Implementation Deep-Dive ==========
@@ -305,4 +323,3 @@ class ContextBuilders:
     def build_mentorship_context(analysis: RepositoryAnalysis) -> Optional[Dict[str, Any]]:
         """Build context for team mentorship and best practices guide."""
         return ContextBuilders.build_quality_context(analysis)
-

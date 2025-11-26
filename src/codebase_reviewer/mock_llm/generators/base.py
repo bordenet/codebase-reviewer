@@ -201,4 +201,3 @@ class BaseGenerator:
         if build_steps:
             score += 20
         return score
-
