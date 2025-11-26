@@ -247,7 +247,7 @@ def register_tuning_commands(cli):
                         staleness=StalenessMetrics(last_run_date="", days_since_last_run=0),
                         patterns=PatternMetrics(detected=[], newly_detected=[]),
                         tests=TestMetrics(regression_pass_count=0, regression_fail_count=0),
-                        user_feedback=UserFeedbackMetrics(human_override_flags=0, notes=""),
+                        user_feedback=UserFeedbackMetrics(human_override_flags=[], notes=""),
                     )
                     obsolescence_result = detector.detect_obsolescence(current_metrics)
 
@@ -376,6 +376,10 @@ def register_tuning_commands(cli):
 
             # Step 5: Validate tools
             click.echo(f"\n✅ Validating Phase 2 tools...")
+            if phase2_tools.binary_path is None:
+                click.echo("❌ No binary path available - compilation may have failed")
+                sys.exit(1)
+
             validator = Phase2Validator()
             report = validator.validate_tools(phase2_tools.tools_dir, phase2_tools.binary_path)
             validator.print_report(report)

@@ -136,16 +136,16 @@ def register_core_commands(cli):
             analysis = orchestrator.run_full_analysis(repo_path, progress_callback=progress_callback, workflow=workflow)
 
             # Save analysis results if requested
-            if output:
+            if output and analysis.code:
                 from codebase_reviewer.exporters.json_exporter import JSONExporter
 
-                exporter = JSONExporter(analysis)
-                exporter.export_to_file(output)
+                exporter = JSONExporter()
+                exporter.export(analysis.code, output)
                 if not quiet:
                     click.echo(f"\nAnalysis results saved to: {output}")
 
             # Save prompts if requested
-            if prompts_output:
+            if prompts_output and analysis.prompts:
                 if format in ["markdown", "both"]:
                     with open(prompts_output, "w", encoding="utf-8") as f:
                         f.write(analysis.prompts.to_markdown())
@@ -209,8 +209,10 @@ def register_core_commands(cli):
                 prompt_gen = PromptGenerator()
                 prompt = prompt_gen.generator.generate(phase, analysis)
                 content = prompt if isinstance(prompt, str) else str(prompt)
-            else:
+            elif analysis.prompts:
                 content = analysis.prompts.to_markdown()
+            else:
+                content = "# No prompts generated\n"
 
             if output:
                 with open(output, "w", encoding="utf-8") as f:
@@ -257,12 +259,17 @@ def register_core_commands(cli):
     def simulate(repo_path, workflow):
         """Run interactive workflow simulation."""
         try:
+            from codebase_reviewer.simulation import LLMSimulator
+
             repo_path = str(Path(repo_path).resolve())
-            click.echo(f"\nStarting interactive workflow for: {repo_path}\n")
+            click.echo(f"\nStarting simulation for: {repo_path}\n")
 
-            workflow_runner = InteractiveWorkflow(repo_path, workflow=workflow)
-            workflow_runner.run()
+            simulator = LLMSimulator()
+            result = simulator.run_simulation(repo_path, workflow=workflow)
 
+            click.echo(f"\n✅ Simulation completed!")
+            click.echo(f"   Prompts tested: {result.prompts_tested}")
+            click.echo(f"   Duration: {result.duration_seconds:.2f}s")
             click.echo(click.style("\nWorkflow completed!", fg="green", bold=True))
 
         except KeyboardInterrupt:

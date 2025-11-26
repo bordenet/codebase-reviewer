@@ -192,6 +192,7 @@ class CodeAnalysis:
     dependencies: List[DependencyInfo] = field(default_factory=list)
     complexity_metrics: Dict[str, Any] = field(default_factory=dict)
     quality_issues: List[Issue] = field(default_factory=list)
+    analytics: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -246,6 +247,43 @@ class PromptCollection:
     def all_prompts(self) -> List[Prompt]:
         """Get all prompts in order."""
         return self.phase0 + self.phase1 + self.phase2 + self.phase3 + self.phase4
+
+    def to_markdown(self) -> str:
+        """Convert all prompts to markdown format."""
+        lines = ["# Generated Prompts\n"]
+        for i, phase_name in enumerate(["Phase 0", "Phase 1", "Phase 2", "Phase 3", "Phase 4"]):
+            phase_prompts = getattr(self, f"phase{i}")
+            if phase_prompts:
+                lines.append(f"\n## {phase_name}\n")
+                for prompt in phase_prompts:
+                    lines.append(f"### {prompt.title}\n")
+                    lines.append(f"**Objective:** {prompt.objective}\n")
+                    if prompt.tasks:
+                        lines.append("**Tasks:**\n")
+                        for task in prompt.tasks:
+                            lines.append(f"- {task}\n")
+        return "\n".join(lines)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert all prompts to dictionary format."""
+
+        def prompt_to_dict(p: Prompt) -> Dict[str, Any]:
+            return {
+                "prompt_id": p.prompt_id,
+                "phase": p.phase,
+                "title": p.title,
+                "objective": p.objective,
+                "tasks": p.tasks,
+                "deliverable": p.deliverable,
+            }
+
+        return {
+            "phase0": [prompt_to_dict(p) for p in self.phase0],
+            "phase1": [prompt_to_dict(p) for p in self.phase1],
+            "phase2": [prompt_to_dict(p) for p in self.phase2],
+            "phase3": [prompt_to_dict(p) for p in self.phase3],
+            "phase4": [prompt_to_dict(p) for p in self.phase4],
+        }
 
 
 @dataclass

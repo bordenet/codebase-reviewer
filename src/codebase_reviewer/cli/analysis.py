@@ -4,6 +4,7 @@ import os
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List
 
 import click
 
@@ -68,23 +69,24 @@ def register_analysis_commands(cli):
             analysis = analyzer.analyze(repo_path)
 
             # Run analytics if requested
-            analytics_data = {}
+            analytics_data: Dict[str, Any] = {}
             if with_analytics or track_trends:
                 click.echo("📊 Running analytics...")
 
                 # Prepare data for analytics
-                file_issues = {}
-                file_metrics = {}
-                all_issues = []
+                file_issues: Dict[str, List[Dict[str, Any]]] = {}
+                file_metrics: Dict[str, Dict[str, Any]] = {}
+                all_issues: List[Dict[str, Any]] = []
 
                 if analysis.quality_issues:
                     for issue in analysis.quality_issues:
-                        file_path = issue.file_path
+                        # Extract file path from source (format: "file:line" or just "file")
+                        file_path = issue.source.split(":")[0] if ":" in issue.source else issue.source
                         if file_path not in file_issues:
                             file_issues[file_path] = []
                         file_issues[file_path].append(
                             {
-                                "id": issue.rule_id,
+                                "id": issue.title,
                                 "severity": issue.severity.value,
                                 "file_path": file_path,
                                 "effort_minutes": 30,  # Default effort
@@ -92,7 +94,7 @@ def register_analysis_commands(cli):
                         )
                         all_issues.append(
                             {
-                                "id": issue.rule_id,
+                                "id": issue.title,
                                 "severity": issue.severity.value,
                                 "file_path": file_path,
                                 "effort_minutes": 30,
@@ -136,9 +138,9 @@ def register_analysis_commands(cli):
                         medium_issues=medium_count,
                         low_issues=low_count,
                         total_files=len(file_issues),
-                        total_lines=sum(m.get("lines_of_code", 0) for m in file_metrics.values()),
-                        security_issues=len([i for i in all_issues if "SEC" in i.get("id", "")]),
-                        quality_issues=len([i for i in all_issues if "QUAL" in i.get("id", "")]),
+                        total_lines=sum(int(m.get("lines_of_code", 0)) for m in file_metrics.values()),
+                        security_issues=len([i for i in all_issues if "SEC" in str(i.get("id", ""))]),
+                        quality_issues=len([i for i in all_issues if "QUAL" in str(i.get("id", ""))]),
                     )
 
                     trend_analyzer.record_snapshot(snapshot)
@@ -162,18 +164,18 @@ def register_analysis_commands(cli):
 
             # Export based on format
             if format == "json":
-                exporter = JSONExporter()
-                exporter.export(analysis, output)
+                json_exporter = JSONExporter()
+                json_exporter.export(analysis, output)
                 click.echo(f"✅ JSON report saved to: {output}")
 
             elif format == "html":
-                exporter = HTMLExporter()
-                exporter.export(analysis, output, title=f"Code Analysis - {Path(repo_path).name}")
+                html_exporter = HTMLExporter()
+                html_exporter.export(analysis, output, title=f"Code Analysis - {Path(repo_path).name}")
                 click.echo(f"✅ HTML report saved to: {output}")
 
             elif format == "interactive-html":
-                exporter = InteractiveHTMLExporter()
-                exporter.export(
+                interactive_exporter = InteractiveHTMLExporter()
+                interactive_exporter.export(
                     analysis,
                     output,
                     title=f"Interactive Code Analysis - {Path(repo_path).name}",
@@ -182,8 +184,8 @@ def register_analysis_commands(cli):
                 click.echo(f"💡 Open in browser for filtering, search, and drill-down capabilities")
 
             elif format == "sarif":
-                exporter = SARIFExporter()
-                exporter.export(analysis, output, repository_root=repo_path)
+                sarif_exporter = SARIFExporter()
+                sarif_exporter.export(analysis, output, repository_root=repo_path)
                 click.echo(f"✅ SARIF report saved to: {output}")
 
             elif format == "markdown":
@@ -320,7 +322,7 @@ def register_analysis_commands(cli):
                 click.echo("")
 
             # Initialize metrics tracker
-            metrics_tracker = MetricsTracker(repo_name, output_path)
+            metrics_tracker = MetricsTracker(Path(repo_name), Path(output_path) if output_path else None)
 
             # Scan the codebase to collect initial metrics
             if not quiet:
