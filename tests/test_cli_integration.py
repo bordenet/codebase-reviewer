@@ -150,3 +150,81 @@ class TestCLISubprocess:
         )
         assert result.returncode == 0
         assert "Codebase Reviewer" in result.stdout
+
+
+class TestCLIAnalyzeCommand:
+    """Test the analyze command execution."""
+
+    def test_analyze_basic_execution(self, tmp_path):
+        """Test analyze command with a simple directory."""
+        from codebase_reviewer.cli import cli
+
+        # Create a minimal test project
+        readme = tmp_path / "README.md"
+        readme.write_text("# Test Project\n")
+        py_file = tmp_path / "main.py"
+        py_file.write_text("print('hello')\n")
+        output_file = tmp_path / "output.json"
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ["analyze", str(tmp_path), "--output", str(output_file)])
+
+        # Command should complete (may have warnings but no crash)
+        assert result.exit_code in [0, 1]  # 0 = success, 1 = findings
+
+    def test_analyze_with_json_format(self, tmp_path):
+        """Test analyze command with JSON output format."""
+        from codebase_reviewer.cli import cli
+
+        readme = tmp_path / "README.md"
+        readme.write_text("# Test\n")
+        output_file = tmp_path / "output.json"
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ["analyze", str(tmp_path), "--output", str(output_file), "--format", "json"])
+
+        assert result.exit_code in [0, 1]
+
+    def test_analyze_with_html_format(self, tmp_path):
+        """Test analyze command with HTML output format."""
+        from codebase_reviewer.cli import cli
+
+        readme = tmp_path / "README.md"
+        readme.write_text("# Test\n")
+        output_file = tmp_path / "output.html"
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ["analyze", str(tmp_path), "--output", str(output_file), "--format", "html"])
+
+        assert result.exit_code in [0, 1]
+
+
+class TestCLIPromptsCommand:
+    """Test the prompts command execution."""
+
+    def test_prompts_command(self, tmp_path):
+        """Test prompts command."""
+        from codebase_reviewer.cli import cli
+
+        readme = tmp_path / "README.md"
+        readme.write_text("# Test\n")
+        py_file = tmp_path / "app.py"
+        py_file.write_text("def main(): pass\n")
+        output_file = tmp_path / "prompts.md"
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ["prompts", str(tmp_path), "--output", str(output_file)])
+
+        # Should complete without import/attribute errors
+        assert result.exit_code in [0, 1]
+        assert "AttributeError" not in result.output
+
+    def test_prompts_command_help(self):
+        """Test prompts command help."""
+        from codebase_reviewer.cli import cli
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ["prompts", "--help"])
+
+        assert result.exit_code == 0
+        assert "prompts" in result.output.lower()

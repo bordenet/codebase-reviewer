@@ -7,6 +7,7 @@ from pathlib import Path
 from codebase_reviewer.analyzers.code import CodeAnalyzer
 from codebase_reviewer.analyzers.documentation import DocumentationAnalyzer
 from codebase_reviewer.analyzers.validation import ValidationEngine
+from codebase_reviewer.models import CodeAnalysis, DocumentationAnalysis, Prompt, PromptCollection
 from codebase_reviewer.orchestrator import AnalysisOrchestrator
 
 
@@ -48,8 +49,6 @@ def test_validation_engine():
     engine = ValidationEngine()
 
     # This is a basic test - just ensure it doesn't crash
-    from codebase_reviewer.models import CodeAnalysis, DocumentationAnalysis
-
     docs = DocumentationAnalysis()
     code = CodeAnalysis()
 
@@ -57,6 +56,103 @@ def test_validation_engine():
 
     assert result is not None
     assert result.drift_severity is not None
+
+
+def test_code_analysis_analytics_field():
+    """Test CodeAnalysis has analytics field."""
+    code = CodeAnalysis()
+    assert hasattr(code, "analytics")
+    assert code.analytics == {}
+
+    # Test with custom analytics
+    code_with_analytics = CodeAnalysis(analytics={"key": "value", "count": 42})
+    assert code_with_analytics.analytics == {"key": "value", "count": 42}
+
+
+def test_prompt_collection_to_markdown():
+    """Test PromptCollection.to_markdown() method."""
+    # Create prompts with tasks
+    prompt1 = Prompt(
+        prompt_id="p1",
+        phase=1,
+        title="Test Prompt 1",
+        context={},
+        objective="Test objective 1",
+        tasks=["Task A", "Task B"],
+    )
+    prompt2 = Prompt(
+        prompt_id="p2",
+        phase=1,
+        title="Test Prompt 2",
+        context={},
+        objective="Test objective 2",
+        tasks=[],
+    )
+
+    collection = PromptCollection(phase1=[prompt1, prompt2])
+    markdown = collection.to_markdown()
+
+    assert "# Generated Prompts" in markdown
+    assert "## Phase 1" in markdown
+    assert "### Test Prompt 1" in markdown
+    assert "**Objective:** Test objective 1" in markdown
+    assert "**Tasks:**" in markdown
+    assert "- Task A" in markdown
+    assert "- Task B" in markdown
+    assert "### Test Prompt 2" in markdown
+
+
+def test_prompt_collection_to_markdown_empty():
+    """Test PromptCollection.to_markdown() with empty collection."""
+    collection = PromptCollection()
+    markdown = collection.to_markdown()
+
+    assert "# Generated Prompts" in markdown
+    # No phase sections should be present for empty collection
+    assert "## Phase 0" not in markdown
+    assert "## Phase 1" not in markdown
+
+
+def test_prompt_collection_to_dict():
+    """Test PromptCollection.to_dict() method."""
+    prompt = Prompt(
+        prompt_id="p1",
+        phase=0,
+        title="Test Prompt",
+        context={"key": "value"},
+        objective="Test objective",
+        tasks=["Task 1"],
+        deliverable="Test deliverable",
+    )
+
+    collection = PromptCollection(phase0=[prompt])
+    result = collection.to_dict()
+
+    assert "phase0" in result
+    assert "phase1" in result
+    assert "phase2" in result
+    assert "phase3" in result
+    assert "phase4" in result
+
+    assert len(result["phase0"]) == 1
+    assert result["phase0"][0]["prompt_id"] == "p1"
+    assert result["phase0"][0]["phase"] == 0
+    assert result["phase0"][0]["title"] == "Test Prompt"
+    assert result["phase0"][0]["objective"] == "Test objective"
+    assert result["phase0"][0]["tasks"] == ["Task 1"]
+    assert result["phase0"][0]["deliverable"] == "Test deliverable"
+
+
+def test_prompt_collection_to_dict_empty():
+    """Test PromptCollection.to_dict() with empty collection."""
+    collection = PromptCollection()
+    result = collection.to_dict()
+
+    assert result["phase0"] == []
+    assert result["phase1"] == []
+    assert result["phase2"] == []
+    assert result["phase3"] == []
+    assert result["phase4"] == []
 
 
 def test_orchestrator():
