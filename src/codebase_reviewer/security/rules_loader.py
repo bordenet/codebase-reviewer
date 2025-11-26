@@ -1,6 +1,4 @@
-"""
-Rules loader for loading security rules from YAML files.
-"""
+"""Rules loader for loading security rules from YAML files."""
 
 import logging
 from pathlib import Path

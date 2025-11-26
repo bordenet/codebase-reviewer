@@ -10,7 +10,7 @@ class CodeExtractor:
 
     @staticmethod
     def extract_code_blocks(content: str) -> Dict[str, List[Tuple[str, str]]]:
-        """Extract all code blocks from markdown content.
+        r"""Extract all code blocks from markdown content.
 
         Args:
             content: Markdown content with code blocks
@@ -53,7 +53,7 @@ class CodeExtractor:
 
     @staticmethod
     def extract_go_files(content: str) -> Dict[str, str]:
-        """Extract Go source files from LLM response.
+        r"""Extract Go source files from LLM response.
 
         Args:
             content: LLM response containing Go code blocks
