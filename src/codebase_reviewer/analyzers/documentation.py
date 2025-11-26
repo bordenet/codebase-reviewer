@@ -31,6 +31,7 @@ class DocumentationAnalyzer:
     """Analyzes project documentation and extracts verifiable claims."""
 
     def __init__(self):
+        """Initialize the documentation analyzer with an empty claims list."""
         self.claims: List[Claim] = []
 
     def analyze(self, repo_path: str) -> DocumentationAnalysis:

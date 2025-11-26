@@ -115,7 +115,7 @@ class LLMClient(ABC):
 
 
 def create_client(provider: str, api_key: str, model: Optional[str] = None) -> LLMClient:
-    """Factory function to create an LLM client.
+    """Create an LLM client for the specified provider.
 
     Args:
         provider: Provider name ("anthropic" or "openai")
