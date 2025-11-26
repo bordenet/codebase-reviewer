@@ -1,6 +1,7 @@
 """Strategy response generators."""
 
 from typing import Any
+
 from .base import BaseGenerator
 
 
@@ -315,4 +316,3 @@ Comprehensive mentorship and knowledge transfer strategy for `{repository}`.
 
 **Total Effort**: ~23-33 hours for critical/high priority items
 """
-
