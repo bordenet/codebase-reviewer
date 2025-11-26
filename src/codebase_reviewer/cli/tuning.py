@@ -165,6 +165,7 @@ def register_tuning_commands(cli):
         try:
             codebase_path = Path(codebase_path).resolve()
             output_base = Path(output_dir)
+            llm_client = None  # Will be set if using API mode
 
             click.echo("=" * 70)
             click.echo("  🚀 CODEBASE REVIEWER - PHASE 2 TOOL GENERATION")
@@ -263,10 +264,17 @@ def register_tuning_commands(cli):
             ai_response_content = ai_response_path.read_text()
 
             # Create a mock LLM response for the generator
+            # Determine model name - use "from-file" if loading from file
+            model_name = "from-file"
+            if not interactive and llm_client is not None:
+                model_name = llm_client.model
+            elif interactive:
+                model_name = "interactive"
+
             mock_response = LLMResponse(
                 content=ai_response_content,
-                provider=LLMProvider.ANTHROPIC if not interactive else LLMProvider.ANTHROPIC,
-                model="interactive" if interactive else llm_client.model,
+                provider=LLMProvider.ANTHROPIC,
+                model=model_name,
                 tokens_used=0,
                 cost_usd=0.0,
                 metadata={},
