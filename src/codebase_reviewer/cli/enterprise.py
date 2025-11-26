@@ -51,16 +51,16 @@ def register_enterprise_commands(cli):
                 click.echo("📊 Analyzing current directory...")
 
                 checker = QualityChecker()
-                analysis = checker.check_quality(Path.cwd())
+                quality_issues = checker.analyze_quality(str(Path.cwd()))
                 issues = [
                     {
-                        "rule_id": issue.rule_id,
-                        "file_path": issue.file_path,
-                        "line_number": issue.line_number,
+                        "rule_id": issue.title,
+                        "file_path": issue.source.split(":")[0] if ":" in issue.source else issue.source,
+                        "line_number": int(issue.source.split(":")[1]) if ":" in issue.source else 0,
                         "severity": issue.severity.value,
                         "description": issue.description,
                     }
-                    for issue in analysis.quality_issues
+                    for issue in quality_issues
                 ]
 
             # Execute query
