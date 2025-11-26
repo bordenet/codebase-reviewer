@@ -2,21 +2,21 @@
 
 import os
 import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 import click
 
-from codebase_reviewer.analyzers.code import CodeAnalyzer
 from codebase_reviewer.analytics.hotspot_detector import HotspotDetector
 from codebase_reviewer.analytics.risk_scorer import RiskScorer
 from codebase_reviewer.analytics.trend_analyzer import MetricSnapshot, TrendAnalyzer
+from codebase_reviewer.analyzers.code import CodeAnalyzer
 from codebase_reviewer.exporters.html_exporter import HTMLExporter
 from codebase_reviewer.exporters.interactive_html_exporter import InteractiveHTMLExporter
 from codebase_reviewer.exporters.json_exporter import JSONExporter
 from codebase_reviewer.exporters.sarif_exporter import SARIFExporter
-from codebase_reviewer.prompts.generator_v2 import Phase1PromptGeneratorV2, ScanParameters
 from codebase_reviewer.metrics.tracker import MetricsTracker
+from codebase_reviewer.prompts.generator_v2 import Phase1PromptGeneratorV2, ScanParameters
 
 
 def register_analysis_commands(cli):
@@ -152,7 +152,9 @@ def register_analysis_commands(cli):
                             if trend.direction == "improving":
                                 click.echo(f"  ✅ {trend.metric_name}: {trend.direction} ({trend.change_percent:+.1f}%)")
                             elif trend.direction == "degrading":
-                                click.echo(f"  ⚠️  {trend.metric_name}: {trend.direction} ({trend.change_percent:+.1f}%)")
+                                click.echo(
+                                    f"  ⚠️  {trend.metric_name}: {trend.direction} ({trend.change_percent:+.1f}%)"
+                                )
 
             # Add analytics to analysis object if present
             if analytics_data:
@@ -200,7 +202,11 @@ def register_analysis_commands(cli):
                 if analysis.quality_issues
                 else 0
             )
-            high = len([i for i in analysis.quality_issues if i.severity.value == "high"]) if analysis.quality_issues else 0
+            high = (
+                len([i for i in analysis.quality_issues if i.severity.value == "high"])
+                if analysis.quality_issues
+                else 0
+            )
 
             click.echo(f"\n📈 Summary:")
             click.echo(f"  Total issues: {total_issues}")
@@ -350,4 +356,3 @@ def register_analysis_commands(cli):
             if not quiet:
                 traceback.print_exc()
             sys.exit(1)
-

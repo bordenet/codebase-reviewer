@@ -1,6 +1,7 @@
 """Security analysis response generators."""
 
 from typing import Any, List
+
 from .base import BaseGenerator
 
 
@@ -229,4 +230,3 @@ Analyzed error handling for `{repository}`.
 2. Implement graceful degradation
 3. Log errors appropriately
 """
-

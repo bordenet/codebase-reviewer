@@ -2,10 +2,10 @@
 
 import click
 
-from codebase_reviewer.cli.core import register_core_commands
-from codebase_reviewer.cli.tuning import register_tuning_commands
 from codebase_reviewer.cli.analysis import register_analysis_commands
+from codebase_reviewer.cli.core import register_core_commands
 from codebase_reviewer.cli.enterprise import register_enterprise_commands
+from codebase_reviewer.cli.tuning import register_tuning_commands
 
 
 @click.group()
@@ -28,4 +28,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -5,9 +5,9 @@ from pathlib import Path
 
 import click
 
+from codebase_reviewer.interactive.workflow import InteractiveWorkflow
 from codebase_reviewer.orchestrator import AnalysisOrchestrator
 from codebase_reviewer.prompt_generator import PromptGenerator
-from codebase_reviewer.interactive.workflow import InteractiveWorkflow
 
 
 def display_summary(analysis):
@@ -155,7 +155,11 @@ def register_core_commands(cli):
                 if format in ["json", "both"]:
                     import json
 
-                    json_path = prompts_output.replace(".md", ".json") if prompts_output.endswith(".md") else f"{prompts_output}.json"
+                    json_path = (
+                        prompts_output.replace(".md", ".json")
+                        if prompts_output.endswith(".md")
+                        else f"{prompts_output}.json"
+                    )
                     with open(json_path, "w", encoding="utf-8") as f:
                         json.dump(analysis.prompts.to_dict(), f, indent=2)
                     if not quiet:
@@ -267,4 +271,3 @@ def register_core_commands(cli):
         except Exception as e:  # pylint: disable=broad-except
             click.echo(click.style(f"\nError: {str(e)}", fg="red"), err=True)
             sys.exit(1)
-

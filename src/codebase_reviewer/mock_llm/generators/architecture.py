@@ -1,6 +1,7 @@
 """Architecture analysis response generators."""
 
 from typing import Any, List
+
 from .base import BaseGenerator
 
 
@@ -285,4 +286,3 @@ Analyzed module cohesion and coupling for `{repository}`.
 2. Reduce inter-module coupling
 3. Refactor tightly coupled components
 """
-

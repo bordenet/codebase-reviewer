@@ -102,4 +102,3 @@ find src -name "*.py" -type f -exec wc -l {} + | awk '$1 > 400 {print}' | sort -
 - ✅ mock_llm.py refactored (6,767 → 7 files, all <400 lines)
 - ⏳ cli.py needs refactoring (1,445 lines)
 - ⏳ prompts/generator.py needs refactoring (745 lines)
-

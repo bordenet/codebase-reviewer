@@ -1,6 +1,7 @@
 """Code quality response generators."""
 
 from typing import Any, List
+
 from .base import BaseGenerator
 
 
@@ -392,4 +393,3 @@ grep -rn "# TODO:" src/ | grep -v "TODO(PROJ-"
 
 **Total Effort**: ~6-10 hours
 """
-
