@@ -257,33 +257,51 @@ prompt:
     reference_materials: "/tmp/codebase-reviewer/{{CODEBASE_NAME}}/reference-materials/"
 
   guidance_spec:
+    # Reference: docs/GO_STYLE_GUIDE.md in this repository
+    # Based on: Effective Go, Google Go Style Guide, Uber Go Style Guide
     code_quality:
-      - "Follow Go best practices and idioms consistently."
-      - "Pass golangci-lint with all enabled linters."
-      - "Maintain >80% code coverage for all modules."
-      - "Write idiomatic, well-documented Go."
-      - "Use explicit and meaningful names; avoid single-letter except loop indices."
-      - "Favor functions < 50 lines for readability."
-      - "Avoid global mutable state; prefer dependency injection."
+      - "Follow Go best practices per Effective Go and Google Go Style Guide."
+      - "Pass golangci-lint with all enabled linters (errcheck, govet, staticcheck, gosec)."
+      - "Maintain >80% code coverage for all modules using table-driven tests."
+      - "Write idiomatic, well-documented Go with package and function comments."
+      - "Use explicit and meaningful names; avoid single-letter except loop indices and receivers."
+      - "Favor functions < 50 lines for readability; max 100 lines."
+      - "Avoid global mutable state; prefer dependency injection and config structs."
+      - "Use short receiver names (1-2 letters) consistent across type methods."
+      - "Files should be < 400 lines; split by responsibility if larger."
+
+    package_structure:
+      - "Use cmd/ for main applications (one per binary)."
+      - "Use internal/ for private packages not importable externally."
+      - "Use pkg/ for public packages that can be imported."
+      - "Avoid generic package names like utils, common, helpers."
 
     performance:
-      - "Use goroutines effectively for I/O-bound tasks."
-      - "Implement worker pools for CPU-bound operations."
-      - "Buffer I/O to reduce overhead."
-      - "Use sync.Pool or similar for frequent allocations."
-      - "Profile and benchmark hot paths regularly."
+      - "Use goroutines effectively for I/O-bound tasks with proper synchronization."
+      - "Implement worker pools for CPU-bound operations using buffered channels."
+      - "Buffer I/O to reduce overhead; use bufio for file operations."
+      - "Use sync.Pool for frequent allocations in hot paths."
+      - "Profile and benchmark hot paths regularly with go test -bench."
       - "Minimize allocations and garbage generation in performance-critical code."
 
     error_handling:
       - "Return contextual errors; avoid panics except in main/init."
-      - "Wrap errors using fmt.Errorf with useful diagnostics."
-      - "Log errors with structured logging."
+      - "Wrap errors using fmt.Errorf with %w for error chains."
+      - "Define sentinel errors at package level: var ErrNotFound = errors.New(...)."
+      - "Log errors with structured logging including context."
       - "Differentiate retriable vs fatal errors; provide recovery guidance."
 
+    testing:
+      - "Use table-driven tests with t.Run for subtests."
+      - "Name test cases descriptively in the 'name' field."
+      - "Use testdata/ directory for test fixtures."
+      - "Test behavior, not implementation details."
+      - "Include both positive and negative test cases."
+
     security:
-      - "Validate all inputs rigorously."
-      - "Sanitize file paths and external inputs."
-      - "Never log secrets or sensitive data."
+      - "Validate all inputs rigorously before processing."
+      - "Sanitize file paths using filepath.Clean and filepath.Abs."
+      - "Never log secrets, credentials, or sensitive data."
       - "Use constant-time comparisons for secret equality checks."
       - "Rate limit any external API calls if applicable."
 

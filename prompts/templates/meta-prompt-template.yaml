@@ -170,7 +170,20 @@ prompt:
     - README.md
 
   developer_instructions: |
-    Use idiomatic Go, modular design, concurrency where appropriate, comprehensive error handling.
+    Follow the Go Style Guide in docs/GO_STYLE_GUIDE.md, based on:
+    - Effective Go (https://go.dev/doc/effective_go)
+    - Google Go Style Guide (https://google.github.io/styleguide/go/)
+    - Uber Go Style Guide (https://github.com/uber-go/guide/blob/master/style.md)
+
+    Key requirements:
+    - Use idiomatic Go with modular design and dependency injection
+    - Functions < 50 lines, files < 400 lines
+    - Table-driven tests with >80% coverage
+    - Wrap errors with fmt.Errorf and %w
+    - Use config structs instead of global variables
+    - Short receiver names (1-2 letters) consistent across methods
+    - Pass golangci-lint with all linters enabled
+
     Support progress reporting, logging, and config-driven thresholds.
     Ensure embedded meta-prompt is up-to-date and versioned.
     Implement human-review hooks and rollback mechanisms as described.

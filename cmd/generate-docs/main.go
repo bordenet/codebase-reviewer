@@ -6,8 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/bordenet/codebase-reviewer/internal/scanner"
 	"github.com/bordenet/codebase-reviewer/internal/prompt"
+	"github.com/bordenet/codebase-reviewer/internal/scanner"
 	"github.com/bordenet/codebase-reviewer/pkg/logger"
 )
 
@@ -16,121 +16,152 @@ const (
 	appName = "generate-docs"
 )
 
-var (
+// config holds CLI configuration parsed from flags.
+type config struct {
 	verbose bool
 	scorch  bool
 	review  bool
 	help    bool
-)
+}
 
-func init() {
-	flag.BoolVar(&verbose, "v", false, "Enable verbose logging")
-	flag.BoolVar(&verbose, "verbose", false, "Enable verbose logging")
-	flag.BoolVar(&scorch, "scorch", false, "Force full rebuild of reference materials and Phase 2 tools")
-	flag.BoolVar(&review, "review", false, "Review existing Phase 2 tools for viability")
-	flag.BoolVar(&help, "h", false, "Show help message")
-	flag.BoolVar(&help, "help", false, "Show help message")
+// parseFlags parses command-line flags and returns configuration.
+func parseFlags() *config {
+	cfg := &config{}
+	flag.BoolVar(&cfg.verbose, "v", false, "Enable verbose logging")
+	flag.BoolVar(&cfg.verbose, "verbose", false, "Enable verbose logging")
+	flag.BoolVar(&cfg.scorch, "scorch", false, "Force full rebuild of reference materials and Phase 2 tools")
+	flag.BoolVar(&cfg.review, "review", false, "Review existing Phase 2 tools for viability")
+	flag.BoolVar(&cfg.help, "h", false, "Show help message")
+	flag.BoolVar(&cfg.help, "help", false, "Show help message")
+	flag.Parse()
+	return cfg
 }
 
 func main() {
-	flag.Parse()
+	cfg := parseFlags()
 
-	if help {
+	if cfg.help {
 		printHelp()
 		os.Exit(0)
 	}
 
-	// Initialize logger
-	log := logger.New(verbose)
+	log := logger.New(cfg.verbose)
 
-	// Get target path from args
-	args := flag.Args()
-	if len(args) == 0 {
-		log.Error("No target path provided")
+	absPath, err := resolveTargetPath()
+	if err != nil {
+		log.Error("%v", err)
 		printUsage()
 		os.Exit(1)
 	}
 
-	targetPath := args[0]
+	if err := run(cfg, absPath, log); err != nil {
+		log.Error("%v", err)
+		os.Exit(1)
+	}
+}
 
-	// Resolve to absolute path
-	absPath, err := filepath.Abs(targetPath)
+// resolveTargetPath validates and resolves the target path from CLI args.
+func resolveTargetPath() (string, error) {
+	args := flag.Args()
+	if len(args) == 0 {
+		return "", fmt.Errorf("no target path provided")
+	}
+
+	absPath, err := filepath.Abs(args[0])
 	if err != nil {
-		log.Error("Failed to resolve path: %v", err)
-		os.Exit(1)
+		return "", fmt.Errorf("failed to resolve path: %w", err)
 	}
 
-	// Verify path exists
 	if _, err := os.Stat(absPath); os.IsNotExist(err) {
-		log.Error("Path does not exist: %s", absPath)
-		os.Exit(1)
+		return "", fmt.Errorf("path does not exist: %s", absPath)
 	}
 
+	return absPath, nil
+}
+
+// run executes the main application logic.
+func run(cfg *config, absPath string, log *logger.Logger) error {
 	log.Info("Codebase Reviewer - Phase 1")
 	log.Info("Version: %s", version)
 	log.Info("Target: %s", absPath)
-	log.Info("Scorch mode: %v", scorch)
-	log.Info("Review mode: %v", review)
+	log.Info("Scorch mode: %v", cfg.scorch)
+	log.Info("Review mode: %v", cfg.review)
 	log.Info("")
 
-	// Security check: ensure we're not running inside the tool's own repo
 	if err := validateNotSelfScan(absPath); err != nil {
-		log.Error("Security check failed: %v", err)
-		os.Exit(1)
+		return fmt.Errorf("security check failed: %w", err)
 	}
 
-	// Scan for nested git repositories
+	repos, err := discoverRepositories(absPath, log)
+	if err != nil {
+		return err
+	}
+
+	outputDir, err := determineOutputDir(absPath, cfg.scorch, log)
+	if err != nil {
+		return err
+	}
+	log.Info("Output directory: %s", outputDir)
+
+	if !cfg.scorch && !cfg.review && toolsExist(outputDir) {
+		log.Info("Phase 2 tools already exist. Use --scorch to rebuild or --review to validate.")
+		log.Info("To regenerate reference materials, run the Phase 2 tools directly.")
+		return nil
+	}
+
+	if cfg.review {
+		return runReviewMode(outputDir, repos, log)
+	}
+
+	return generatePrompt(cfg, absPath, repos, outputDir, log)
+}
+
+// discoverRepositories scans for git repositories in the target path.
+func discoverRepositories(absPath string, log *logger.Logger) ([]scanner.Repository, error) {
 	log.Info("Scanning for git repositories...")
 	repos, err := scanner.FindGitRepos(absPath, log)
 	if err != nil {
-		log.Error("Failed to scan for repositories: %v", err)
-		os.Exit(1)
+		return nil, fmt.Errorf("failed to scan for repositories: %w", err)
 	}
 
 	if len(repos) == 0 {
 		log.Warn("No git repositories found in %s", absPath)
 		log.Info("Treating entire directory as single codebase")
-		repos = []scanner.Repository{{Path: absPath, Name: filepath.Base(absPath)}}
-	} else {
-		log.Info("Found %d git repositories", len(repos))
-		for _, repo := range repos {
-			log.Info("  - %s", repo.Name)
-		}
+		return []scanner.Repository{{Path: absPath, Name: filepath.Base(absPath)}}, nil
 	}
 
-	// Determine output directory
-	outputDir := determineOutputDir(absPath, scorch, log)
-	log.Info("Output directory: %s", outputDir)
-
-	// Check if Phase 2 tools already exist
-	if !scorch && !review {
-		if toolsExist(outputDir) {
-			log.Info("Phase 2 tools already exist. Use --scorch to rebuild or --review to validate.")
-			log.Info("To regenerate reference materials, run the Phase 2 tools directly.")
-			os.Exit(0)
-		}
+	log.Info("Found %d git repositories", len(repos))
+	for _, repo := range repos {
+		log.Info("  - %s", repo.Name)
 	}
+	return repos, nil
+}
 
-	// Review mode: check if existing tools are still viable
-	if review {
-		log.Info("Reviewing existing Phase 2 tools...")
-		if err := reviewPhase2Tools(outputDir, repos, log); err != nil {
-			log.Error("Review failed: %v", err)
-			log.Info("Run with --scorch to rebuild tools")
-			os.Exit(1)
-		}
-		log.Info("Phase 2 tools are still viable")
-		os.Exit(0)
+// runReviewMode checks if existing Phase 2 tools are still viable.
+func runReviewMode(outputDir string, repos []scanner.Repository, log *logger.Logger) error {
+	log.Info("Reviewing existing Phase 2 tools...")
+	if err := reviewPhase2Tools(outputDir, repos, log); err != nil {
+		log.Info("Run with --scorch to rebuild tools")
+		return fmt.Errorf("review failed: %w", err)
 	}
+	log.Info("Phase 2 tools are still viable")
+	return nil
+}
 
-	// Generate LLM prompt
+// generatePrompt creates the LLM prompt and prints next steps.
+func generatePrompt(cfg *config, absPath string, repos []scanner.Repository, outputDir string, log *logger.Logger) error {
 	log.Info("Generating LLM prompt for codebase analysis...")
-	promptPath, err := prompt.Generate(absPath, repos, outputDir, verbose, scorch, log)
+	promptPath, err := prompt.Generate(absPath, repos, outputDir, cfg.verbose, cfg.scorch, log)
 	if err != nil {
-		log.Error("Failed to generate prompt: %v", err)
-		os.Exit(1)
+		return fmt.Errorf("failed to generate prompt: %w", err)
 	}
 
+	printCompletionMessage(promptPath, outputDir, log)
+	return nil
+}
+
+// printCompletionMessage displays success message and next steps.
+func printCompletionMessage(promptPath, outputDir string, log *logger.Logger) {
 	log.Info("")
 	log.Info("✓ Phase 1 complete!")
 	log.Info("")
@@ -206,12 +237,11 @@ func validateNotSelfScan(targetPath string) error {
 	return nil
 }
 
-func determineOutputDir(targetPath string, scorch bool, log *logger.Logger) string {
-	// Use codebase name as subdirectory
+// determineOutputDir creates and returns the output directory path.
+func determineOutputDir(targetPath string, scorch bool, log *logger.Logger) (string, error) {
 	codebaseName := filepath.Base(targetPath)
 	outputDir := filepath.Join("/tmp", "codebase-reviewer", codebaseName)
 
-	// If scorch mode, remove existing output
 	if scorch {
 		if _, err := os.Stat(outputDir); err == nil {
 			log.Info("Scorch mode: removing existing output directory")
@@ -221,13 +251,11 @@ func determineOutputDir(targetPath string, scorch bool, log *logger.Logger) stri
 		}
 	}
 
-	// Create output directory
 	if err := os.MkdirAll(outputDir, 0755); err != nil {
-		log.Error("Failed to create output directory: %v", err)
-		os.Exit(1)
+		return "", fmt.Errorf("failed to create output directory: %w", err)
 	}
 
-	return outputDir
+	return outputDir, nil
 }
 
 func toolsExist(outputDir string) bool {
