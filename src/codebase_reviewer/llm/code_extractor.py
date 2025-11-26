@@ -35,7 +35,8 @@ class CodeExtractor:
             code_content = match.group(2)
 
             # Extract file path if present
-            file_match = re.match(r"#\s*File:\s*(.+?)\n", code_content)
+            # Support both # File: (Python/shell) and // File: (Go/C/Java)
+            file_match = re.match(r"(?:#|//)\s*File:\s*(.+?)\n", code_content)
             metadata = ""
 
             if file_match:
