@@ -183,10 +183,26 @@ done
         return "\n".join(result)
 
     def _format_languages(self, languages: List) -> str:
-        """Format detected languages."""
+        """Format detected languages.
+
+        Args:
+            languages: List of language strings or dicts with 'name' key
+
+        Returns:
+            Comma-separated list of language names
+        """
         if not languages:
             return "None detected"
-        return ", ".join(languages)
+        # Handle both string and dict formats
+        names = []
+        for lang in languages:
+            if isinstance(lang, dict):
+                names.append(lang.get("name", str(lang)))
+            elif hasattr(lang, "name"):
+                names.append(lang.name)
+            else:
+                names.append(str(lang))
+        return ", ".join(names)
 
     def _format_packages(self, packages: List) -> str:
         """Format package list."""
@@ -194,11 +210,33 @@ done
             return "- No packages found"
         return "\n".join(f"- `{pkg}`" for pkg in packages[:10])
 
-    def _format_validation_results(self, results: List) -> str:
-        """Format validation results."""
+    def _format_validation_results(self, results: Any) -> str:
+        """Format validation results.
+
+        Args:
+            results: List of results or dict with validation data
+
+        Returns:
+            Formatted validation results string
+        """
         if not results:
             return "- No validation issues found"
-        return "\n".join(f"- {result}" for result in results[:10])
+        # Handle dict format with drift info
+        if isinstance(results, dict):
+            formatted = []
+            if results.get("drift_severity"):
+                formatted.append(f"- Drift severity: {results['drift_severity']}")
+            if results.get("architecture_drift"):
+                for drift in results["architecture_drift"][:5]:
+                    formatted.append(f"- {drift}")
+            if results.get("missing_components"):
+                for comp in results["missing_components"][:5]:
+                    formatted.append(f"- Missing: {comp}")
+            return "\n".join(formatted) if formatted else "- No validation issues found"
+        # Handle list format
+        if isinstance(results, list):
+            return "\n".join(f"- {result}" for result in results[:10])
+        return f"- {results}"
 
     def _generate_fallback(self, repository: str) -> str:
         """Generate fallback response when context is invalid."""
