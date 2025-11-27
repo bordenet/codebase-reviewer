@@ -120,6 +120,78 @@ class TestCLIStartup:
 
         assert result.exit_code == 0
 
+    def test_generate_prompt_help(self):
+        """Test generate-prompt command help."""
+        from codebase_reviewer.cli import cli
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ["generate-prompt", "--help"])
+
+        assert result.exit_code == 0
+
+    def test_review_help(self):
+        """Test review command help."""
+        from codebase_reviewer.cli import cli
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ["review", "--help"])
+
+        assert result.exit_code == 0
+
+    def test_simulate_help(self):
+        """Test simulate command help."""
+        from codebase_reviewer.cli import cli
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ["simulate", "--help"])
+
+        assert result.exit_code == 0
+
+    def test_evolve_help(self):
+        """Test evolve command help."""
+        from codebase_reviewer.cli import cli
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ["evolve", "--help"])
+
+        assert result.exit_code == 0
+
+    def test_tune_help(self):
+        """Test tune command help."""
+        from codebase_reviewer.cli import cli
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ["tune", "--help"])
+
+        assert result.exit_code == 0
+
+    def test_ask_help(self):
+        """Test ask command help."""
+        from codebase_reviewer.cli import cli
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ["ask", "--help"])
+
+        assert result.exit_code == 0
+
+    def test_multi_repo_help(self):
+        """Test multi-repo command help."""
+        from codebase_reviewer.cli import cli
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ["multi-repo", "--help"])
+
+        assert result.exit_code == 0
+
+    def test_web_help(self):
+        """Test web command help."""
+        from codebase_reviewer.cli import cli
+
+        runner = CliRunner()
+        result = runner.invoke(cli, ["web", "--help"])
+
+        assert result.exit_code == 0
+
 
 class TestCLISubprocess:
     """Test CLI via subprocess to catch any startup issues."""
