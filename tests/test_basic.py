@@ -177,6 +177,84 @@ def test_orchestrator():
         assert len(analysis.prompts.all_prompts()) > 0
 
 
+def test_architecture_generator_format_languages_with_dicts():
+    """Test _format_languages handles dict format with 'name' key."""
+    from codebase_reviewer.mock_llm.generators.architecture import ArchitectureGenerator
+
+    generator = ArchitectureGenerator()
+
+    # Test with dict format (as returned by prompt context)
+    languages = [{"name": "Python", "percentage": 50.0}, {"name": "JavaScript", "percentage": 30.0}]
+    result = generator._format_languages(languages)
+    assert result == "Python, JavaScript"
+
+
+def test_architecture_generator_format_languages_with_strings():
+    """Test _format_languages handles string format."""
+    from codebase_reviewer.mock_llm.generators.architecture import ArchitectureGenerator
+
+    generator = ArchitectureGenerator()
+
+    # Test with string format
+    languages = ["Python", "JavaScript"]
+    result = generator._format_languages(languages)
+    assert result == "Python, JavaScript"
+
+
+def test_architecture_generator_format_languages_empty():
+    """Test _format_languages handles empty list."""
+    from codebase_reviewer.mock_llm.generators.architecture import ArchitectureGenerator
+
+    generator = ArchitectureGenerator()
+
+    result = generator._format_languages([])
+    assert result == "None detected"
+
+
+def test_architecture_generator_format_validation_results_dict():
+    """Test _format_validation_results handles dict format with drift info."""
+    from codebase_reviewer.mock_llm.generators.architecture import ArchitectureGenerator
+
+    generator = ArchitectureGenerator()
+
+    # Test with dict format (as returned by prompt context)
+    results = {
+        "drift_severity": "low",
+        "architecture_drift": ["Component A missing"],
+        "missing_components": ["Logger"],
+    }
+    result = generator._format_validation_results(results)
+    assert "Drift severity: low" in result
+    assert "Component A missing" in result
+    assert "Missing: Logger" in result
+
+
+def test_architecture_generator_format_validation_results_list():
+    """Test _format_validation_results handles list format."""
+    from codebase_reviewer.mock_llm.generators.architecture import ArchitectureGenerator
+
+    generator = ArchitectureGenerator()
+
+    # Test with list format
+    results = ["Issue 1", "Issue 2"]
+    result = generator._format_validation_results(results)
+    assert "- Issue 1" in result
+    assert "- Issue 2" in result
+
+
+def test_architecture_generator_format_validation_results_empty():
+    """Test _format_validation_results handles empty input."""
+    from codebase_reviewer.mock_llm.generators.architecture import ArchitectureGenerator
+
+    generator = ArchitectureGenerator()
+
+    result = generator._format_validation_results([])
+    assert result == "- No validation issues found"
+
+    result = generator._format_validation_results({})
+    assert result == "- No validation issues found"
+
+
 if __name__ == "__main__":
     print("Running tests...")
     test_documentation_analyzer()
