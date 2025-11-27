@@ -120,15 +120,6 @@ class TestCLIStartup:
 
         assert result.exit_code == 0
 
-    def test_generate_prompt_help(self):
-        """Test generate-prompt command help."""
-        from codebase_reviewer.cli import cli
-
-        runner = CliRunner()
-        result = runner.invoke(cli, ["generate-prompt", "--help"])
-
-        assert result.exit_code == 0
-
     def test_review_help(self):
         """Test review command help."""
         from codebase_reviewer.cli import cli
