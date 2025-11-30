@@ -91,6 +91,7 @@ class ToolVersionManager:
         self,
         tools_dir: Path,
         binary_path: Optional[Path],
+        *,
         llm_model: Optional[str] = None,
         llm_cost: Optional[float] = None,
         validation_passed: bool = False,
@@ -111,6 +112,12 @@ class ToolVersionManager:
         """
         version = self.get_next_version()
         timestamp = datetime.utcnow().isoformat()
+
+        # Archive current active version if it exists
+        current_active = self.get_active_version()
+        if current_active:
+            current_active.status = "archived"
+            self._save_version_metadata(current_active)
 
         # Create version-specific directory
         version_dir = self.versions_dir / f"gen{version}"
