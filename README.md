@@ -75,24 +75,54 @@ Phase 2 (Infinite, Free, Offline)
 - ✅ **Three Scan Modes**: review (quick), deep_scan (thorough), scorch (exhaustive)
 - ✅ **Comprehensive Testing**: 191 tests passing (obsolescence, metrics, CLI integration, core functionality)
 - ✅ **IP Protection**: Forced /tmp/ output, pre-commit hooks, security validation
-- 🚧 **Phase 2 Tool Generation**: Architecture complete, CLI integration in progress
-- 🚧 **Human-in-the-Loop**: Approval gates and rollback support designed, not yet implemented
+- ✅ **Phase 2 Tool Generation**: Complete - `evolve` command generates and compiles LLM-powered Go tools
+- ✅ **Human-in-the-Loop**: Approval gates, rollback support, and version management fully implemented
 
 ### Quick Start
 
 ```bash
-# Generate Phase 1 prompt (v2.0 architecture)
+# Option 1: Interactive mode (default) - You paste the LLM response
+review-codebase evolve /path/to/your/code
+
+# Option 2: API mode - Automatic LLM integration
+review-codebase evolve /path/to/your/code --api --provider anthropic --model claude-sonnet-4
+
+# Option 3: Manual workflow (Phase 1 only)
 review-codebase analyze-v2 /path/to/your/code
-
-# View the generated prompt
 cat /tmp/codebase-reviewer/YourCode/phase1_prompt_*.md
-
-# Send prompt to LLM (Claude, GPT-4, etc.)
-# Copy/paste the prompt to your LLM
-
-# Save LLM response and generate Phase 2 tools (in development)
-# python -m codebase_reviewer.cli generate-tools-v2 /tmp/codebase-reviewer/YourCode
+# Then use evolve command to process LLM response and generate tools
 ```
+
+### Version Management & Rollback
+
+Human-in-the-Loop features for safe tool evolution:
+
+```bash
+# List all tool versions
+review-codebase versions /path/to/your/code
+
+# View version history
+review-codebase history /path/to/your/code
+
+# Rollback to previous version
+review-codebase rollback /path/to/your/code
+
+# Rollback to specific version
+review-codebase rollback /path/to/your/code --to-version 2
+
+# Activate a specific version
+review-codebase activate /path/to/your/code 1
+
+# Request approval for regeneration
+review-codebase approve /path/to/your/code --reason "Obsolescence detected"
+```
+
+**Features:**
+- 🔄 Automatic version tracking for all generated tools
+- 📦 Version history with timestamps and validation status
+- ↩️ One-command rollback to any previous version
+- ✅ Approval gates for controlled regeneration
+- 🛡️ Safe experimentation with version isolation
 
 ### Use Cases
 - **Documentation Generation**: LLM-quality docs without LLM costs
@@ -100,7 +130,7 @@ cat /tmp/codebase-reviewer/YourCode/phase1_prompt_*.md
 - **Continuous Documentation**: Auto-update docs as code changes
 - **Self-Improving Tools**: Tools get better over time
 
-**Status**: ✅ **v2.1 Functional** - Phase 1 complete (191 tests passing), Phase 2 tool generation in development
+**Status**: ✅ **v2.1 Complete** - Full pipeline functional (191 tests passing), Phase 2 tool generation complete
 
 **Documentation**: See [`docs/V2_ARCHITECTURE.md`](docs/V2_ARCHITECTURE.md)
 
