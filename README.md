@@ -11,7 +11,7 @@ This repository contains **two powerful codebase analysis tools** that work toge
 - ✅ **100+ Quality Rules**: Code smells, complexity, maintainability
 - ✅ **Compliance Reporting**: SOC2, HIPAA, PCI-DSS automation
 - ✅ **Interactive HTML Reports**: Real-time filtering, search, drill-down
-- ✅ **CI/CD Integration**: GitHub Actions, GitLab CI, Jenkins
+- ✅ **CI/CD Integration**: GitHub Actions (GitLab CI and Jenkins examples available in docs)
 - ✅ **Multi-Language Support**: Python, JavaScript, TypeScript, Go, Java, Ruby, PHP, C#
 - ✅ **Dependency Analysis**: SCA (Software Composition Analysis)
 - ✅ **AI-Powered Fixes**: Automated remediation suggestions
@@ -145,7 +145,7 @@ review-codebase approve /path/to/your/code --reason "Obsolescence detected"
 | **Compliance reporting** | ✅ Best choice | ❌ Not designed for this |
 | **Documentation generation** | ❌ Not designed for this | ✅ Best choice |
 | **Codebase understanding** | ⚠️ Basic | ✅ Best choice |
-| **CI/CD integration** | ✅ Best choice | ⚠️ Coming soon |
+| **CI/CD integration** | ✅ GitHub Actions ready | ⚠️ Coming soon |
 | **Offline execution** | ✅ Yes | ✅ Yes (after initial LLM) |
 | **LLM required** | ❌ No | ✅ Once (then offline) |
 
