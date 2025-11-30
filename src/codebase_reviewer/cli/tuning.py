@@ -7,6 +7,7 @@ from typing import Optional
 import click
 
 from codebase_reviewer.config.loader import ConfigLoader
+from codebase_reviewer.hitl.version_manager import ToolVersionManager
 from codebase_reviewer.interactive.workflow import InteractiveWorkflow
 from codebase_reviewer.llm.client import LLMProvider, LLMResponse, create_client
 from codebase_reviewer.llm.code_extractor import CodeExtractor
@@ -387,6 +388,19 @@ def register_tuning_commands(cli):
             if not report.is_valid:
                 click.echo("❌ Validation failed - tools may not work correctly")
                 sys.exit(1)
+
+            # Step 5.5: Register version (HITL integration)
+            click.echo(f"\n📦 Registering tool version...")
+            version_manager = ToolVersionManager(codebase_path, output_base)
+            version_metadata = version_manager.register_version(
+                tools_dir=phase2_tools.tools_dir,
+                binary_path=phase2_tools.binary_path,
+                llm_model=f"{llm_provider}/{model}" if llm_provider else "interactive",
+                llm_cost=phase2_tools.llm_response.cost_usd if hasattr(phase2_tools.llm_response, "cost_usd") else None,
+                validation_passed=report.is_valid,
+                notes=f"Generation {generation} - Initial creation",
+            )
+            click.echo(f"   Version {version_metadata.version} registered and set as active")
 
             # Step 6: Optionally run tools
             if auto_run:
