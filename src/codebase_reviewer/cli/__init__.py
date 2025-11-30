@@ -5,6 +5,7 @@ import click
 from codebase_reviewer.cli.analysis import register_analysis_commands
 from codebase_reviewer.cli.core import register_core_commands
 from codebase_reviewer.cli.enterprise import register_enterprise_commands
+from codebase_reviewer.cli.hitl_commands import register_hitl_commands
 from codebase_reviewer.cli.tuning import register_tuning_commands
 
 
@@ -19,6 +20,7 @@ register_core_commands(cli)
 register_tuning_commands(cli)
 register_analysis_commands(cli)
 register_enterprise_commands(cli)
+register_hitl_commands(cli)
 
 
 def main():
