@@ -240,12 +240,16 @@ class ComplianceReporter:
                 violations.append(
                     ComplianceViolation(
                         control=control,
-                        file_path=issue.source.split(":")[0]
-                        if hasattr(issue, "source") and ":" in issue.source
-                        else "unknown",
-                        line_number=int(issue.source.split(":")[1])
-                        if hasattr(issue, "source") and ":" in issue.source and len(issue.source.split(":")) > 1
-                        else 0,
+                        file_path=(
+                            issue.source.split(":")[0]
+                            if hasattr(issue, "source") and ":" in issue.source
+                            else "unknown"
+                        ),
+                        line_number=(
+                            int(issue.source.split(":")[1])
+                            if hasattr(issue, "source") and ":" in issue.source and len(issue.source.split(":")) > 1
+                            else 0
+                        ),
                         description=issue.description if hasattr(issue, "description") else "",
                         remediation=f"Address {control.name} requirement",
                         evidence=issue.title if hasattr(issue, "title") else "",
