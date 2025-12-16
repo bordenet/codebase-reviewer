@@ -152,7 +152,9 @@ def register_analysis_commands(cli):
 
                         for trend in trends:
                             if trend.direction == "improving":
-                                click.echo(f"  ✅ {trend.metric_name}: {trend.direction} ({trend.change_percent:+.1f}%)")
+                                click.echo(
+                                    f"  ✅ {trend.metric_name}: {trend.direction} ({trend.change_percent:+.1f}%)"
+                                )
                             elif trend.direction == "degrading":
                                 click.echo(
                                     f"  ⚠️  {trend.metric_name}: {trend.direction} ({trend.change_percent:+.1f}%)"
