@@ -1,5 +1,5 @@
 anthropic==0.39.0
-black==23.12.1
+black==24.3.0
 chardet==5.2.0
 click==8.1.7
 dataclasses-json==0.6.3
