@@ -1,5 +1,11 @@
 # Codebase Reviewer - Dual-Tool Suite
 
+[![CI](https://github.com/bordenet/codebase-reviewer/actions/workflows/ci.yml/badge.svg)](https://github.com/bordenet/codebase-reviewer/actions/workflows/ci.yml)
+[![Dependabot](https://img.shields.io/badge/Dependabot-enabled-brightgreen?logo=dependabot)](https://github.com/bordenet/codebase-reviewer/security/dependabot)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Go 1.21+](https://img.shields.io/badge/go-1.21+-00ADD8.svg)](https://go.dev/)
+
 This repository contains **two powerful codebase analysis tools** that work together or independently:
 
 ## 🔍 Tool 1: Static Analysis Engine (Python)
