@@ -152,3 +152,224 @@ func TestExtensionToLanguage(t *testing.T) {
 		})
 	}
 }
+
+func TestAnalyzeRepository(t *testing.T) {
+	log := logger.New(false)
+
+	tests := []struct {
+		name          string
+		setup         func(t *testing.T) Repository
+		wantLangs     map[string]int
+		wantFileCount int
+		wantErr       bool
+	}{
+		{
+			name: "empty repository",
+			setup: func(t *testing.T) Repository {
+				dir := t.TempDir()
+				if err := os.Mkdir(filepath.Join(dir, ".git"), 0755); err != nil {
+					t.Fatal(err)
+				}
+				return Repository{Path: dir, Name: "empty-repo", RelativePath: "."}
+			},
+			wantLangs:     map[string]int{},
+			wantFileCount: 0,
+			wantErr:       false,
+		},
+		{
+			name: "repository with Go files",
+			setup: func(t *testing.T) Repository {
+				dir := t.TempDir()
+				if err := os.Mkdir(filepath.Join(dir, ".git"), 0755); err != nil {
+					t.Fatal(err)
+				}
+				// Create Go files
+				if err := os.WriteFile(filepath.Join(dir, "main.go"), []byte("package main"), 0644); err != nil {
+					t.Fatal(err)
+				}
+				if err := os.WriteFile(filepath.Join(dir, "utils.go"), []byte("package main"), 0644); err != nil {
+					t.Fatal(err)
+				}
+				return Repository{Path: dir, Name: "go-repo", RelativePath: "."}
+			},
+			wantLangs:     map[string]int{"Go": 2},
+			wantFileCount: 2,
+			wantErr:       false,
+		},
+		{
+			name: "repository with multiple languages",
+			setup: func(t *testing.T) Repository {
+				dir := t.TempDir()
+				if err := os.Mkdir(filepath.Join(dir, ".git"), 0755); err != nil {
+					t.Fatal(err)
+				}
+				// Create files in different languages
+				if err := os.WriteFile(filepath.Join(dir, "main.go"), []byte("package main"), 0644); err != nil {
+					t.Fatal(err)
+				}
+				if err := os.WriteFile(filepath.Join(dir, "app.py"), []byte("print('hello')"), 0644); err != nil {
+					t.Fatal(err)
+				}
+				if err := os.WriteFile(filepath.Join(dir, "index.js"), []byte("console.log('hi')"), 0644); err != nil {
+					t.Fatal(err)
+				}
+				if err := os.WriteFile(filepath.Join(dir, "app.ts"), []byte("const x = 1"), 0644); err != nil {
+					t.Fatal(err)
+				}
+				return Repository{Path: dir, Name: "multi-lang-repo", RelativePath: "."}
+			},
+			wantLangs:     map[string]int{"Go": 1, "Python": 1, "JavaScript": 1, "TypeScript": 1},
+			wantFileCount: 4,
+			wantErr:       false,
+		},
+		{
+			name: "repository skips node_modules",
+			setup: func(t *testing.T) Repository {
+				dir := t.TempDir()
+				if err := os.Mkdir(filepath.Join(dir, ".git"), 0755); err != nil {
+					t.Fatal(err)
+				}
+				// Create source file
+				if err := os.WriteFile(filepath.Join(dir, "index.js"), []byte("console.log('hi')"), 0644); err != nil {
+					t.Fatal(err)
+				}
+				// Create node_modules (should be skipped)
+				nodeModules := filepath.Join(dir, "node_modules")
+				if err := os.MkdirAll(nodeModules, 0755); err != nil {
+					t.Fatal(err)
+				}
+				if err := os.WriteFile(filepath.Join(nodeModules, "lodash.js"), []byte("// lodash"), 0644); err != nil {
+					t.Fatal(err)
+				}
+				return Repository{Path: dir, Name: "js-repo", RelativePath: "."}
+			},
+			wantLangs:     map[string]int{"JavaScript": 1},
+			wantFileCount: 1,
+			wantErr:       false,
+		},
+		{
+			name: "repository skips vendor directory",
+			setup: func(t *testing.T) Repository {
+				dir := t.TempDir()
+				if err := os.Mkdir(filepath.Join(dir, ".git"), 0755); err != nil {
+					t.Fatal(err)
+				}
+				// Create source file
+				if err := os.WriteFile(filepath.Join(dir, "main.go"), []byte("package main"), 0644); err != nil {
+					t.Fatal(err)
+				}
+				// Create vendor directory (should be skipped)
+				vendor := filepath.Join(dir, "vendor")
+				if err := os.MkdirAll(vendor, 0755); err != nil {
+					t.Fatal(err)
+				}
+				if err := os.WriteFile(filepath.Join(vendor, "dep.go"), []byte("package dep"), 0644); err != nil {
+					t.Fatal(err)
+				}
+				return Repository{Path: dir, Name: "go-with-vendor", RelativePath: "."}
+			},
+			wantLangs:     map[string]int{"Go": 1},
+			wantFileCount: 1,
+			wantErr:       false,
+		},
+		{
+			name: "repository skips hidden directories",
+			setup: func(t *testing.T) Repository {
+				dir := t.TempDir()
+				if err := os.Mkdir(filepath.Join(dir, ".git"), 0755); err != nil {
+					t.Fatal(err)
+				}
+				// Create source file
+				if err := os.WriteFile(filepath.Join(dir, "main.py"), []byte("print('hello')"), 0644); err != nil {
+					t.Fatal(err)
+				}
+				// Create hidden directory (should be skipped)
+				hidden := filepath.Join(dir, ".hidden")
+				if err := os.MkdirAll(hidden, 0755); err != nil {
+					t.Fatal(err)
+				}
+				if err := os.WriteFile(filepath.Join(hidden, "secret.py"), []byte("# secret"), 0644); err != nil {
+					t.Fatal(err)
+				}
+				return Repository{Path: dir, Name: "py-repo", RelativePath: "."}
+			},
+			wantLangs:     map[string]int{"Python": 1},
+			wantFileCount: 1,
+			wantErr:       false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := tt.setup(t)
+			analysis, err := AnalyzeRepository(repo, log)
+
+			if (err != nil) != tt.wantErr {
+				t.Errorf("AnalyzeRepository() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if err != nil {
+				return
+			}
+
+			if analysis.TotalFiles != tt.wantFileCount {
+				t.Errorf("AnalyzeRepository() TotalFiles = %d, want %d", analysis.TotalFiles, tt.wantFileCount)
+			}
+
+			// Check languages match
+			for lang, wantCount := range tt.wantLangs {
+				if gotCount := analysis.Languages[lang]; gotCount != wantCount {
+					t.Errorf("AnalyzeRepository() Languages[%s] = %d, want %d", lang, gotCount, wantCount)
+				}
+			}
+
+			// Check no extra languages
+			for lang := range analysis.Languages {
+				if _, ok := tt.wantLangs[lang]; !ok {
+					t.Errorf("AnalyzeRepository() unexpected language: %s", lang)
+				}
+			}
+		})
+	}
+}
+
+func TestPrimaryLanguage(t *testing.T) {
+	tests := []struct {
+		name      string
+		languages map[string]int
+		want      string
+	}{
+		{
+			name:      "empty languages",
+			languages: map[string]int{},
+			want:      "",
+		},
+		{
+			name:      "single language",
+			languages: map[string]int{"Go": 10},
+			want:      "Go",
+		},
+		{
+			name:      "multiple languages - Go dominant",
+			languages: map[string]int{"Go": 50, "Python": 10, "JavaScript": 5},
+			want:      "Go",
+		},
+		{
+			name:      "multiple languages - Python dominant",
+			languages: map[string]int{"Go": 5, "Python": 100, "JavaScript": 20},
+			want:      "Python",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			analysis := &RepositoryAnalysis{
+				Languages: tt.languages,
+			}
+			if got := analysis.PrimaryLanguage(); got != tt.want {
+				t.Errorf("PrimaryLanguage() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
