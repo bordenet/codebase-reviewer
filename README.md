@@ -6,11 +6,11 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Go 1.21+](https://img.shields.io/badge/go-1.21+-00ADD8.svg)](https://go.dev/)
 
-This repository contains **two powerful codebase analysis tools** that work together or independently:
+Two codebase analysis tools that work together or independently.
 
-## 🔍 Tool 1: Static Analysis Engine (Python)
+## Tool 1: Static Analysis Engine (Python)
 
-**Industry-standard static analysis** with 300+ security and quality rules.
+300+ security and quality rules. No LLM required.
 
 ### Features
 - ✅ **200+ Security Rules**: SQL injection, XSS, hardcoded secrets, OWASP Top 10
@@ -54,11 +54,11 @@ review-codebase roi /path/to/your/code
 
 ---
 
-## 🤖 Tool 2: Self-Evolving Documentation System (Go + Python)
+## Tool 2: Self-Evolving Documentation System (Go + Python)
 
-**LLM-powered documentation generation** with auto-regenerative capabilities.
+LLM-powered documentation generation with auto-regeneration.
 
-### The Big Idea
+### How It Works
 
 Use an LLM **once** to generate **offline tools** that regenerate documentation infinitely without the LLM.
 
@@ -142,26 +142,26 @@ review-codebase approve /path/to/your/code --reason "Obsolescence detected"
 
 ---
 
-## 🎯 Which Tool Should I Use?
+## Which Tool Should I Use?
 
-| Use Case | Tool 1: Static Analysis | Tool 2: Self-Evolving Docs |
-|----------|-------------------------|----------------------------|
-| **Security vulnerabilities** | ✅ Best choice | ❌ Not designed for this |
-| **Code quality metrics** | ✅ Best choice | ❌ Not designed for this |
-| **Compliance reporting** | ✅ Best choice | ❌ Not designed for this |
-| **Documentation generation** | ❌ Not designed for this | ✅ Best choice |
-| **Codebase understanding** | ⚠️ Basic | ✅ Best choice |
-| **CI/CD integration** | ✅ GitHub Actions ready | ⚠️ Coming soon |
-| **Offline execution** | ✅ Yes | ✅ Yes (after initial LLM) |
-| **LLM required** | ❌ No | ✅ Once (then offline) |
+| Use Case | Tool 1 | Tool 2 |
+|----------|--------|--------|
+| Security vulnerabilities | ✅ | ❌ |
+| Code quality metrics | ✅ | ❌ |
+| Compliance reporting | ✅ | ❌ |
+| Documentation generation | ❌ | ✅ |
+| Codebase understanding | ⚠️ | ✅ |
+| CI/CD integration | ✅ | ⚠️ |
+| Offline execution | ✅ | ✅ (after LLM) |
+| LLM required | ❌ | ✅ Once |
 
-**Pro Tip**: Use **both tools together**!
+Use both: Tool 1 for security/quality, Tool 2 for docs.
 - Tool 1 for security/quality/compliance
 - Tool 2 for documentation and deep understanding
 
 ---
 
-## 📦 Installation
+## Installation
 
 ```bash
 # Clone repository
@@ -181,7 +181,7 @@ review-codebase --help
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 ### Tool 1: Static Analysis Engine
 - [Quick Start Guide](docs/QUICK_START.md)
@@ -202,7 +202,7 @@ review-codebase --help
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Run all tests
@@ -216,23 +216,14 @@ pytest tests/test_compliance.py      # Compliance
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
----
+## License
 
-## 📄 License
+MIT - See [LICENSE](LICENSE).
 
-MIT License - See [LICENSE](LICENSE) for details.
+## Author
 
----
-
-## 🙏 Acknowledgments
-
-Built with ❤️ by [Matt Bordenet](https://github.com/bordenet)
-
-Powered by:
-- **Static Analysis**: Semgrep-inspired rule engine
-- **LLM Integration**: Claude (Anthropic), GPT-4 (OpenAI)
-- **Language Support**: Tree-sitter parsers
+Matt Bordenet ([@bordenet](https://github.com/bordenet))
