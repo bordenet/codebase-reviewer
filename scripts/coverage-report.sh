@@ -98,11 +98,11 @@ echo ""
 
 for repo in "$WORKSPACE"/*/ "$WORKSPACE"/*/*/; do
     [ -d "$repo/.git" ] || continue
-    
+
     name=$(basename "$repo")
     lang=""
     coverage=""
-    
+
     # Detect language and get coverage
     if [ -f "$repo/go.mod" ]; then
         lang="Go"
@@ -114,11 +114,11 @@ for repo in "$WORKSPACE"/*/ "$WORKSPACE"/*/*/; do
         lang="Python"
         coverage=$(get_python_coverage "$repo")
     fi
-    
+
     if [ -n "$lang" ]; then
         [ -z "$coverage" ] && coverage="N/A"
         echo "$name|$lang|$coverage" >> "$REPORT_FILE"
-        
+
         if $VERBOSE; then
             echo -e "  ${GREEN}✓${NC} $name ($lang): $coverage"
         fi
@@ -155,4 +155,3 @@ echo ""
 echo -e "${GREEN}✓ Report complete${NC} (${DURATION}s)"
 
 rm -f "$REPORT_FILE"
-
