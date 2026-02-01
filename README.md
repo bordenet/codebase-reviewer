@@ -1,27 +1,23 @@
-# Codebase Reviewer - Dual-Tool Suite
+# Codebase Reviewer
+
+Two codebase analysis tools: static analysis (Python) and self-evolving documentation (Go + Python).
 
 [![CI](https://github.com/bordenet/codebase-reviewer/actions/workflows/ci.yml/badge.svg)](https://github.com/bordenet/codebase-reviewer/actions/workflows/ci.yml)
-[![Dependabot](https://img.shields.io/badge/Dependabot-enabled-brightgreen?logo=dependabot)](https://github.com/bordenet/codebase-reviewer/security/dependabot)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Go 1.21+](https://img.shields.io/badge/go-1.21+-00ADD8.svg)](https://go.dev/)
-
-Two codebase analysis tools that work together or independently.
 
 ## Tool 1: Static Analysis Engine (Python)
 
 300+ security and quality rules. No LLM required.
 
-### Features
-- ✅ **200+ Security Rules**: SQL injection, XSS, hardcoded secrets, OWASP Top 10
-- ✅ **100+ Quality Rules**: Code smells, complexity, maintainability
-- ✅ **Compliance Reporting**: SOC2, HIPAA, PCI-DSS automation
-- ✅ **Interactive HTML Reports**: Real-time filtering, search, drill-down
-- ✅ **CI/CD Integration**: GitHub Actions (GitLab CI and Jenkins examples available in docs)
-- ✅ **Multi-Language Support**: Python, JavaScript, TypeScript, Go, Java, Ruby, PHP, C#
-- ✅ **Dependency Analysis**: SCA (Software Composition Analysis)
-- ✅ **AI-Powered Fixes**: Automated remediation suggestions
-- ✅ **ROI Calculator**: Demonstrate tool value
+### What It Does
+
+- **200+ security rules** — SQL injection, XSS, hardcoded secrets, OWASP Top 10
+- **100+ quality rules** — Code smells, complexity, maintainability
+- **Compliance** — SOC2, HIPAA, PCI-DSS automation
+- **HTML reports** — Interactive filtering, search, drill-down
+- **CI/CD** — GitHub Actions, GitLab CI, Jenkins
+- **Languages** — Python, JavaScript, TypeScript, Go, Java, Ruby, PHP, C#
+- **SCA** — Dependency vulnerability scanning
+- **Fix suggestions** — Automated remediation via AI
 
 ### Quick Start
 
@@ -42,47 +38,30 @@ review-codebase compliance /path/to/your/code --framework soc2
 review-codebase roi /path/to/your/code
 ```
 
-### Use Cases
-- **Security Audits**: Find vulnerabilities before they reach production
-- **Code Reviews**: Automated quality checks in CI/CD
-- **Compliance**: SOC2, HIPAA, PCI-DSS compliance automation
-- **Technical Debt**: Track and prioritize code quality issues
-
-**Status**: ✅ **Production Ready** - A+ Grade (10 sprints complete, 191 tests passing)
-
-**Documentation**: See [`docs/STATIC_ANALYSIS.md`](docs/STATIC_ANALYSIS.md)
+**Status**: 191 tests passing. See [`docs/STATIC_ANALYSIS.md`](docs/STATIC_ANALYSIS.md)
 
 ---
 
 ## Tool 2: Self-Evolving Documentation System (Go + Python)
 
-LLM-powered documentation generation with auto-regeneration.
-
-### How It Works
-
-Use an LLM **once** to generate **offline tools** that regenerate documentation infinitely without the LLM.
+Use an LLM **once** to generate **offline tools** that regenerate documentation without the LLM.
 
 ```
 Phase 1 (One-Time LLM Cost)
   Codebase → Analyzer → LLM → Offline Go Tools → Initial Docs
 
-Phase 2 (Infinite, Free, Offline)
+Phase 2 (Offline, Free)
   Code Changes → Tools → Updated Docs (No LLM!)
-                   ↓
-            Obsolete? → Regenerate (Gen 2, Gen 3...)
 ```
 
-### Features
-- ✅ **v2.0 Prompt Architecture**: Structured schemas, OWASP/CWE mapping
-- ✅ **Phase 1 Prompt Generation**: analyze-v2 command fully implemented
-- ✅ **Obsolescence Detection**: Multi-variate heuristics (files changed, new languages, coverage, staleness)
-- ✅ **Metrics Tracking**: 8 dimensions (coverage, quality, performance, staleness)
-- ✅ **Learning Capture Framework**: Structured learning entries for continuous improvement
-- ✅ **Three Scan Modes**: review (quick), deep_scan (thorough), scorch (exhaustive)
-- ✅ **Comprehensive Testing**: 191 tests passing (obsolescence, metrics, CLI integration, core functionality)
-- ✅ **IP Protection**: Forced /tmp/ output, pre-commit hooks, security validation
-- ✅ **Phase 2 Tool Generation**: Complete - `evolve` command generates and compiles LLM-powered Go tools
-- ✅ **Human-in-the-Loop**: Approval gates, rollback support, and version management fully implemented
+### What It Does
+
+- **Prompt architecture** — Structured schemas, OWASP/CWE mapping
+- **Obsolescence detection** — Heuristics for files changed, coverage gaps, staleness
+- **Metrics** — 8 dimensions (coverage, quality, performance, staleness)
+- **Scan modes** — review (quick), deep_scan (thorough), scorch (exhaustive)
+- **Tool generation** — `evolve` command compiles Go tools from LLM output
+- **Version control** — Rollback, approval gates, version history
 
 ### Quick Start
 
@@ -123,22 +102,7 @@ review-codebase activate /path/to/your/code 1
 review-codebase approve /path/to/your/code --reason "Obsolescence detected"
 ```
 
-**Features:**
-- 🔄 Automatic version tracking for all generated tools
-- 📦 Version history with timestamps and validation status
-- ↩️ One-command rollback to any previous version
-- ✅ Approval gates for controlled regeneration
-- 🛡️ Safe experimentation with version isolation
-
-### Use Cases
-- **Documentation Generation**: LLM-quality docs without LLM costs
-- **Codebase Understanding**: Deep analysis with structured outputs
-- **Continuous Documentation**: Auto-update docs as code changes
-- **Self-Improving Tools**: Tools get better over time
-
-**Status**: ✅ **v2.1 Complete** - Full pipeline functional (191 tests passing), Phase 2 tool generation complete
-
-**Documentation**: See [`docs/V2_ARCHITECTURE.md`](docs/V2_ARCHITECTURE.md)
+See [`docs/V2_ARCHITECTURE.md`](docs/V2_ARCHITECTURE.md)
 
 ---
 
@@ -155,9 +119,7 @@ review-codebase approve /path/to/your/code --reason "Obsolescence detected"
 | Offline execution | ✅ | ✅ (after LLM) |
 | LLM required | ❌ | ✅ Once |
 
-Use both: Tool 1 for security/quality, Tool 2 for docs.
-- Tool 1 for security/quality/compliance
-- Tool 2 for documentation and deep understanding
+Use Tool 1 for security/quality, Tool 2 for documentation.
 
 ---
 
