@@ -328,6 +328,8 @@ logs/
 /*.json
 /*.md
 !README.md
+!Agents.md
+!CLAUDE.md
 !INTEGRATION_SUMMARY.md
 !SECURITY_AUDIT.md
 !MANIFEST.md
