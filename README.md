@@ -149,13 +149,10 @@ review-codebase --help
 - [Quick Start Guide](docs/QUICK_START.md)
 - [Features Comparison](docs/FEATURES_COMPARISON.md)
 - [CI/CD Integration](docs/WORKFLOW_INTEGRATION_PROPOSAL.md)
-- [Compliance Guide](docs/COMPLIANCE.md)
 
 ### Tool 2: Self-Evolving Documentation
 - [v2.0 Architecture](docs/V2_ARCHITECTURE.md)
 - [Phase 1 Prompt Template](prompts/templates/phase1-prompt-template.yaml)
-- [Phase 2 Meta-Prompt Template](prompts/templates/meta-prompt-template.md)
-- [Obsolescence Detection](docs/OBSOLESCENCE_DETECTION.md)
 
 ### General
 - [Changelog](CHANGELOG.md)
