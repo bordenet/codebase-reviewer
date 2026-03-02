@@ -30,12 +30,11 @@ setup(
         "Topic :: Software Development :: Quality Assurance",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
     ],
-    python_requires=">=3.9",
+    python_requires=">=3.10",
     install_requires=[
         "Flask>=3.0.0",
         "Jinja2>=3.1.2",
