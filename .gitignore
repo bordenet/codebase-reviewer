@@ -357,3 +357,6 @@ logs/
 ADOPT-PROMPT.md
 Agents.md.original
 MODULAR-MIGRATION-PROMPT.md
+
+*.pem
+*.key
