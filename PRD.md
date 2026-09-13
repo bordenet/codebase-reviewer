@@ -95,7 +95,7 @@ Gen 1 Tools → Run → Capture Learnings → Detect Obsolescence
 **Purpose**: Analyze codebase and generate LLM prompt
 
 **Inputs**:
-- Codebase path (e.g., `/Users/Matt/GitHub/CallBox`)
+- Codebase path (e.g., `/Users/Matt/GitHub/Acme`)
 - Analysis depth (quick/deep)
 - Target LLM provider (Claude/OpenAI)
 
@@ -286,13 +286,13 @@ Gen 1 Tools → Run → Capture Learnings → Detect Obsolescence
 
 ```bash
 # Step 1: Analyze codebase and generate Phase 2 tools
-review-codebase evolve /Users/Matt/GitHub/CallBox \
+review-codebase evolve /Users/Matt/GitHub/Acme \
   --llm-provider anthropic \
   --api-key $ANTHROPIC_API_KEY \
-  --output-dir /tmp/callbox-reviewer
+  --output-dir /tmp/acme-reviewer
 
 # System does:
-# 1. Analyzes CallBox codebase
+# 1. Analyzes Acme codebase
 # 2. Generates Phase 1 prompt
 # 3. Sends to Claude API
 # 4. Extracts Phase 2 tool code
@@ -301,8 +301,8 @@ review-codebase evolve /Users/Matt/GitHub/CallBox \
 # 7. Validates fidelity ≥ 95%
 
 # Output:
-# ✅ /tmp/callbox-reviewer/phase2-tools/bin/generate-docs
-# ✅ /tmp/callbox-reviewer/docs/ (initial documentation)
+# ✅ /tmp/acme-reviewer/phase2-tools/bin/generate-docs
+# ✅ /tmp/acme-reviewer/docs/ (initial documentation)
 # ✅ Fidelity: 97% ✅
 ```
 
@@ -310,8 +310,8 @@ review-codebase evolve /Users/Matt/GitHub/CallBox \
 
 ```bash
 # Run Phase 2 tools (no LLM needed)
-/tmp/callbox-reviewer/phase2-tools/bin/generate-docs \
-  /Users/Matt/GitHub/CallBox
+/tmp/acme-reviewer/phase2-tools/bin/generate-docs \
+  /Users/Matt/GitHub/Acme
 
 # System does:
 # 1. Scans codebase for changes
@@ -320,7 +320,7 @@ review-codebase evolve /Users/Matt/GitHub/CallBox \
 # 4. Captures learnings
 
 # Output:
-# ✅ Updated docs in /tmp/callbox-reviewer/docs/
+# ✅ Updated docs in /tmp/acme-reviewer/docs/
 # ✅ Obsolescence: 0.15 (still valid)
 # ✅ Learnings saved to learnings.yaml
 ```
@@ -329,8 +329,8 @@ review-codebase evolve /Users/Matt/GitHub/CallBox \
 
 ```bash
 # Watch mode (continuous monitoring)
-review-codebase watch /Users/Matt/GitHub/CallBox \
-  --tools-dir /tmp/callbox-reviewer/phase2-tools \
+review-codebase watch /Users/Matt/GitHub/Acme \
+  --tools-dir /tmp/acme-reviewer/phase2-tools \
   --check-interval 3600 \
   --auto-regenerate
 

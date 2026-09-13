@@ -294,24 +294,24 @@ uploaded_repos/
 temp_repos/
 temporary_repos/
 
-# Any file containing "cari" or other specific repo names (case-insensitive)
-*cari*.json
-*cari*.md
-*Cari*.json
-*Cari*.md
-*CARI*.json
-*CARI*.md
+# Any file containing "widget" or other specific repo names (case-insensitive)
+*widget*.json
+*widget*.md
+*Widget*.json
+*Widget*.md
+*WIDGET*.json
+*WIDGET*.md
 
-# CallBox-specific patterns (CRITICAL - DO NOT REMOVE)
-*callbox*.json
-*callbox*.md
-*CallBox*.json
-*CallBox*.md
-*CALLBOX*.json
-*CALLBOX*.md
-*callbox*/
-*CallBox*/
-*CALLBOX*/
+# Acme-specific patterns (CRITICAL - DO NOT REMOVE)
+*acme*.json
+*acme*.md
+*Acme*.json
+*Acme*.md
+*ACME*.json
+*ACME*.md
+*acme*/
+*Acme*/
+*ACME*/
 
 # Backup files that might contain analysis data
 *.bak

@@ -25,12 +25,12 @@
 **Results**:
 ```
 ✅ Phase 1 tool built successfully
-✅ CallBox codebase analyzed (28 repositories)
+✅ Acme codebase analyzed (28 repositories)
 ✅ Phase 1 prompt generated (506 lines)
-✅ Prompt saved to /tmp/codebase-reviewer/CallBox/phase1-llm-prompt.md
+✅ Prompt saved to /tmp/codebase-reviewer/Acme/phase1-llm-prompt.md
 ```
 
-**Validation**: Phase 1 works perfectly on proprietary CallBox codebase
+**Validation**: Phase 1 works perfectly on proprietary Acme codebase
 
 ### 3. ✅ LLM Integration Layer (COMPLETE)
 
@@ -78,7 +78,7 @@
 
 **Usage**:
 ```bash
-review-codebase evolve /Users/Matt/GitHub/CallBox \
+review-codebase evolve /Users/Matt/GitHub/Acme \
   --llm-provider anthropic \
   --api-key $ANTHROPIC_API_KEY \
   --auto-run
@@ -130,12 +130,12 @@ review-codebase evolve /Users/Matt/GitHub/CallBox \
 export ANTHROPIC_API_KEY="your-key-here"
 
 # Step 2: Run the complete pipeline
-review-codebase evolve /Users/Matt/GitHub/CallBox \
+review-codebase evolve /Users/Matt/GitHub/Acme \
   --llm-provider anthropic \
   --auto-run
 
 # This will:
-# ✅ Analyze CallBox (28 repos)
+# ✅ Analyze Acme (28 repos)
 # ✅ Generate Phase 1 prompt
 # ✅ Send to Claude API
 # ✅ Extract Phase 2 tool code
@@ -145,18 +145,18 @@ review-codebase evolve /Users/Matt/GitHub/CallBox \
 # ✅ Report cost (~$0.50-$2.00)
 
 # Step 3: Use offline tools (no LLM needed!)
-/tmp/codebase-reviewer/CallBox/phase2-tools-gen1/bin/generate-docs \
-  /Users/Matt/GitHub/CallBox
+/tmp/codebase-reviewer/Acme/phase2-tools-gen1/bin/generate-docs \
+  /Users/Matt/GitHub/Acme
 
 # Step 4: View generated docs
-ls /tmp/codebase-reviewer/CallBox/
+ls /tmp/codebase-reviewer/Acme/
 ```
 
 ### Security
 
 ✅ **All outputs to `/tmp/`** - No proprietary code in git
 ✅ **Multi-layer .gitignore** - Comprehensive IP protection
-✅ **Validated on CallBox** - Real proprietary codebase tested
+✅ **Validated on Acme** - Real proprietary codebase tested
 
 ---
 
@@ -225,10 +225,10 @@ ls /tmp/codebase-reviewer/CallBox/
 
 ### Immediate (Can Do Now)
 
-1. **Test on CallBox with real API key**:
+1. **Test on Acme with real API key**:
    ```bash
    export ANTHROPIC_API_KEY="sk-ant-..."
-   review-codebase evolve /Users/Matt/GitHub/CallBox --auto-run
+   review-codebase evolve /Users/Matt/GitHub/Acme --auto-run
    ```
 
 2. **Validate fidelity manually**:
@@ -268,7 +268,7 @@ ls /tmp/codebase-reviewer/CallBox/
 
 ### One-Time LLM Cost (Per Codebase)
 
-**CallBox Example** (28 repos, ~500K LOC):
+**Acme Example** (28 repos, ~500K LOC):
 - Input tokens: ~50,000 (Phase 1 prompt)
 - Output tokens: ~15,000 (Phase 2 tool code)
 - **Total cost**: ~$0.50-$2.00 (Claude Sonnet)
@@ -309,4 +309,4 @@ ls /tmp/codebase-reviewer/CallBox/
 
 **Ready to Use**: **YES** (with API key)
 
-**Next Milestone**: Validate ≥95% fidelity on CallBox
+**Next Milestone**: Validate ≥95% fidelity on Acme

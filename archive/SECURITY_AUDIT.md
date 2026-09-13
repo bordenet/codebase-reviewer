@@ -27,7 +27,7 @@ The codebase-reviewer tool analyzes external repositories and could potentially 
 - All prompt files (`prompts.json`, `prompts.md`, etc.)
 - Simulation results directories (`simulation_results/`, etc.)
 - Prompt tuning data (`prompt_tuning_results/`, `tuning_*/`, etc.)
-- Repository-specific files (`*cari*.json`, etc.)
+- Repository-specific files (`*widget*.json`, etc.)
 - Temporary analysis files (`*.analysis.json`, etc.)
 - Web UI uploads (`uploads/`, `temp_repos/`, etc.)
 - All output directories (`*output*/`, `*results*/`, etc.)
@@ -43,7 +43,7 @@ The codebase-reviewer tool analyzes external repositories and could potentially 
 2. **Directory Scanning**: Blocks files in sensitive directories
 3. **Content Scanning**: Scans file contents for:
    - Absolute paths to external repositories
-   - Specific repository names (CallBox, Cari, etc.)
+   - Specific repository names (Acme, Widget, etc.)
    - Large code blocks that might be from analyzed repos
 4. **Integrity Check**: Verifies .gitignore protection is intact
 
@@ -69,12 +69,12 @@ The codebase-reviewer tool analyzes external repositories and could potentially 
 ### Files Scanned
 
 Total files in repository: 100+
-Files containing "CallBox" or "Cari": 2
+Files containing "Acme" or "Widget": 2
 
 ### Detailed Analysis
 
 #### README.md ✅ SAFE
-- **References Found**: 9 instances of `/Users/matt/GitHub/CallBox/Cari`
+- **References Found**: 9 instances of `/Users/matt/GitHub/Acme/Widget`
 - **Context**: Documentation examples showing CLI usage
 - **Contains Code**: NO
 - **Contains Analysis Data**: NO
@@ -89,7 +89,7 @@ Files containing "CallBox" or "Cari": 2
 
 #### simulation_results/ ❌ REMOVED
 - **Status**: Previously committed, now removed
-- **Content**: Simulation results of THIS repository (not Cari)
+- **Content**: Simulation results of THIS repository (not Widget)
 - **Action**: Removed from git with `git rm -r simulation_results/`
 - **Risk Level**: LOW (was analyzing this repo, not external repos)
 
@@ -97,7 +97,7 @@ Files containing "CallBox" or "Cari": 2
 
 Searched for potential code leaks:
 ```bash
-grep -r "index\.ts\|api\.ts\|CallBox.*code\|Cari.*code"
+grep -r "index\.ts\|api\.ts\|Acme.*code\|Widget.*code"
 ```
 **Result**: No code snippets found
 
@@ -117,7 +117,7 @@ git ls-files | grep -E '\.json$'
 ✓ prompts.md - IGNORED
 ✓ simulation_results/ - IGNORED
 ✓ prompt_tuning_results/ - IGNORED
-✓ cari_analysis.json - IGNORED
+✓ widget_analysis.json - IGNORED
 ```
 
 ### Pre-Commit Hook Test Results

@@ -90,7 +90,7 @@ repos:
       - id: check-proprietary-refs
         name: Check for proprietary codebase references
         entry: bash
-        args: ['-c', 'FILES=$(git diff --cached --name-only | grep -E "\.(py|go|js|ts|yaml|yml|json|sh)$" | grep -v "^\.pre-commit-config\.yaml$" | grep -v "^docs/" | grep -v "^archive/" | grep -v "^PRD\.md$" | grep -v "^CHANGELOG\.md$"); if [ -n "$FILES" ]; then echo "$FILES" | xargs grep -l "CallBox\|/Users/matt/GitHub/CallBox" 2>/dev/null && echo "ERROR: Found CallBox references in source files!" && exit 1; fi; exit 0']
+        args: ['-c', 'FILES=$(git diff --cached --name-only | grep -E "\.(py|go|js|ts|yaml|yml|json|sh)$" | grep -v "^\.pre-commit-config\.yaml$" | grep -v "^docs/" | grep -v "^archive/" | grep -v "^PRD\.md$" | grep -v "^CHANGELOG\.md$" | grep -v "^scripts/validate_security\.sh$" | grep -v "^test_ip_protection\.sh$" | grep -v "^test_meta_prompt\.sh$"); if [ -n "$FILES" ]; then echo "$FILES" | xargs grep -l "Acme\|/Users/matt/GitHub/Acme" 2>/dev/null && echo "ERROR: Found Acme references in source files!" && exit 1; fi; exit 0']
         language: system
         pass_filenames: false
         always_run: true

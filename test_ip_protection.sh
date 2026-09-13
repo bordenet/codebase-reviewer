@@ -39,7 +39,7 @@ echo -e "${YELLOW}Test 1: .gitignore blocks analysis outputs${NC}"
 # Create fake analysis file
 cat > "$TEST_DIR/analysis.json" << 'EOF'
 {
-  "repository": "/Users/matt/GitHub/CallBox/Cari",
+  "repository": "/Users/matt/GitHub/Acme/Widget",
   "analysis": {
     "files": ["src/index.ts", "src/api.ts"],
     "code_snippets": ["const api = require('./api');"]
@@ -65,7 +65,7 @@ cat > "$TEST_DIR/prompts.md" << 'EOF'
 # Generated Prompts
 
 ## Prompt 1
-Analyze the following code from /Users/matt/GitHub/CallBox/Cari/src/index.ts
+Analyze the following code from /Users/matt/GitHub/Acme/Widget/src/index.ts
 EOF
 
 if git check-ignore -q "$TEST_DIR/prompts.md"; then
@@ -117,15 +117,15 @@ fi
 # ============================================================================
 echo -e "${YELLOW}Test 5: .gitignore blocks repo-specific files${NC}"
 
-cat > "$TEST_DIR/cari_analysis.json" << 'EOF'
-{"repo": "cari", "data": "sensitive"}
+cat > "$TEST_DIR/widget_analysis.json" << 'EOF'
+{"repo": "widget", "data": "sensitive"}
 EOF
 
-if git check-ignore -q "$TEST_DIR/cari_analysis.json"; then
-    echo -e "${GREEN}✓ PASS: cari_analysis.json is ignored${NC}"
+if git check-ignore -q "$TEST_DIR/widget_analysis.json"; then
+    echo -e "${GREEN}✓ PASS: widget_analysis.json is ignored${NC}"
     TESTS_PASSED=$((TESTS_PASSED + 1))
 else
-    echo -e "${RED}✗ FAIL: cari_analysis.json is NOT ignored${NC}"
+    echo -e "${RED}✗ FAIL: widget_analysis.json is NOT ignored${NC}"
     TESTS_FAILED=$((TESTS_FAILED + 1))
 fi
 
@@ -137,7 +137,7 @@ echo -e "${YELLOW}Test 6: Pre-commit hook blocks sensitive files${NC}"
 # Create a file that should be blocked
 cat > "$TEST_DIR/test_blocked.json" << 'EOF'
 {
-  "repository_path": "/Users/matt/GitHub/CallBox/Cari",
+  "repository_path": "/Users/matt/GitHub/Acme/Widget",
   "analysis": "sensitive data"
 }
 EOF

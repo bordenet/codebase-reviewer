@@ -64,7 +64,7 @@ This release introduces a completely redesigned prompt architecture with enhance
 - **Enhanced Security Controls**:
   - Security validation script (`scripts/validate_security.sh`)
   - Pre-commit hook to block proprietary references
-  - CallBox-specific .gitignore patterns
+  - Acme-specific .gitignore patterns
   - Forced /tmp/ output for all analysis results
   - IP protection validation in CI/CD
 
@@ -87,15 +87,15 @@ This release introduces a completely redesigned prompt architecture with enhance
 
 - Phase 1 prompt template upgraded to v2.0 with explicit schemas
 - Phase 2 meta-prompt upgraded to v2.0 with enhanced obsolescence detection
-- .gitignore enhanced with CallBox-specific patterns
+- .gitignore enhanced with Acme-specific patterns
 - Pre-commit hooks updated to allow security infrastructure files
 
 ### Security
 
 - All analysis outputs forced to /tmp/ directory
-- Pre-commit hooks block any CallBox references in code
+- Pre-commit hooks block any Acme references in code
 - Security validation script for comprehensive IP protection
-- Successfully tested on CallBox codebase (113,300 files) with zero leaks
+- Successfully tested on Acme codebase (113,300 files) with zero leaks
 
 ### Documentation
 

@@ -59,7 +59,7 @@ deps: ## Download dependencies
 
 run: build ## Build and run with example
 	@echo "Running example..."
-	./bin/$(BINARY_NAME) -v /Users/matt/GitHub/CallBox
+	./bin/$(BINARY_NAME) -v /Users/matt/GitHub/Acme
 
 help: ## Show this help
 	@echo "Available targets:"

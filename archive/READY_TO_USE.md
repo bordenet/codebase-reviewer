@@ -22,7 +22,7 @@ A **self-evolving documentation system** where:
 
 ```bash
 # Analyze your codebase and generate meta-prompt
-review-codebase evolve /Users/Matt/GitHub/CallBox
+review-codebase evolve /Users/Matt/GitHub/Acme
 
 # This will:
 # 1. Run Phase 1 Go tool to analyze codebase
@@ -30,7 +30,7 @@ review-codebase evolve /Users/Matt/GitHub/CallBox
 # 3. Display the meta-prompt for you to copy
 ```
 
-**Output**: `/tmp/codebase-reviewer/CallBox/meta-prompt-gen1.md`
+**Output**: `/tmp/codebase-reviewer/Acme/meta-prompt-gen1.md`
 
 ---
 
@@ -38,7 +38,7 @@ review-codebase evolve /Users/Matt/GitHub/CallBox
 
 Copy the meta-prompt and paste it to me (your AI assistant). Say:
 
-> "Here's the meta-prompt for my CallBox codebase. Please generate Phase 2 Go tools that:
+> "Here's the meta-prompt for my Acme codebase. Please generate Phase 2 Go tools that:
 > 1. Analyze the codebase and generate documentation
 > 2. Run offline without needing you (the AI)
 > 3. Track metrics and detect obsolescence
@@ -62,7 +62,7 @@ cat > /tmp/ai-response.md
 # (Paste my response, then press Ctrl+D)
 
 # Compile Phase 2 tools
-review-codebase evolve /Users/Matt/GitHub/CallBox \
+review-codebase evolve /Users/Matt/GitHub/Acme \
   --ai-response /tmp/ai-response.md \
   --auto-run
 
@@ -74,8 +74,8 @@ review-codebase evolve /Users/Matt/GitHub/CallBox \
 ```
 
 **Output**:
-- `/tmp/codebase-reviewer/CallBox/phase2-tools-gen1/` (source code)
-- `/tmp/codebase-reviewer/CallBox/phase2-tools-gen1/bin/generate-docs` (binary)
+- `/tmp/codebase-reviewer/Acme/phase2-tools-gen1/` (source code)
+- `/tmp/codebase-reviewer/Acme/phase2-tools-gen1/bin/generate-docs` (binary)
 - Documentation generated!
 
 ---
@@ -84,8 +84,8 @@ review-codebase evolve /Users/Matt/GitHub/CallBox \
 
 ```bash
 # Run tools anytime - no AI needed!
-/tmp/codebase-reviewer/CallBox/phase2-tools-gen1/bin/generate-docs \
-  /Users/Matt/GitHub/CallBox
+/tmp/codebase-reviewer/Acme/phase2-tools-gen1/bin/generate-docs \
+  /Users/Matt/GitHub/Acme
 
 # Tools will:
 # 1. Analyze codebase
@@ -112,7 +112,7 @@ Obsolescence detected:
 - Coverage dropped: 94% → 67%
 
 📋 Meta-prompt saved to:
-/tmp/codebase-reviewer/CallBox/regeneration-prompt-gen2.md
+/tmp/codebase-reviewer/Acme/regeneration-prompt-gen2.md
 
 🤖 Next steps:
 1. Review the meta-prompt
@@ -165,7 +165,7 @@ The system improves over time:
 
 ### **One-Time AI Interaction** (Per Generation)
 
-**CallBox Example** (28 repos):
+**Acme Example** (28 repos):
 - Meta-prompt generation: Free (local tool)
 - AI interaction: **One conversation with me**
 - Phase 2 tool generation: **One response from me**
@@ -219,9 +219,9 @@ The system improves over time:
 
 ### **Immediate** (Do This Now!)
 
-1. **Generate meta-prompt for CallBox**:
+1. **Generate meta-prompt for Acme**:
    ```bash
-   review-codebase evolve /Users/Matt/GitHub/CallBox
+   review-codebase evolve /Users/Matt/GitHub/Acme
    ```
 
 2. **Copy meta-prompt to me** (your AI assistant)
@@ -230,14 +230,14 @@ The system improves over time:
 
 4. **Compile and run tools**:
    ```bash
-   review-codebase evolve /Users/Matt/GitHub/CallBox \
+   review-codebase evolve /Users/Matt/GitHub/Acme \
      --ai-response /tmp/ai-response.md \
      --auto-run
    ```
 
 ### **Short Term** (This Week)
 
-5. **Test offline tools** on CallBox
+5. **Test offline tools** on Acme
 
 6. **Validate fidelity**: Compare my docs vs. tool-generated docs
 
@@ -282,7 +282,7 @@ The meta-prompt is the "genetic code" that gets passed from generation to genera
 **Status**: ✅ **READY TO USE**
 
 **What You Can Do Right Now**:
-1. Generate meta-prompt for CallBox
+1. Generate meta-prompt for Acme
 2. Give it to me (AI assistant)
 3. I'll generate Phase 2 tools
 4. You'll have offline tools that run forever!
@@ -303,7 +303,7 @@ Ready to generate your first set of Phase 2 tools?
 Run this command and let's get started:
 
 ```bash
-review-codebase evolve /Users/Matt/GitHub/CallBox
+review-codebase evolve /Users/Matt/GitHub/Acme
 ```
 
 Then copy the meta-prompt and paste it to me. I'll generate amazing Phase 2 tools for you! 🎉
