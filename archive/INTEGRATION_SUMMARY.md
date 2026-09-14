@@ -27,7 +27,7 @@ Successfully integrated the Python-based comprehensive analyzer with the existin
 - Shared `prompts/` directory
 - Unified documentation in README.md
 - Clear positioning of each tool's purpose
-- Both tools tested on target: `/Users/matt/GitHub/CallBox/Cari/`
+- Both tools tested on target: `/Users/matt/GitHub/Acme/Widget/`
 
 ### 2. ✅ CI/CD Integration
 
@@ -129,7 +129,7 @@ codebase-reviewer/
 
 ### Python Tool
 ```bash
-✓ Analyzed /Users/matt/GitHub/CallBox/Cari/
+✓ Analyzed /Users/matt/GitHub/Acme/Widget/
 ✓ Generated 18 AI prompts (reviewer_criteria workflow)
 ✓ Analysis completed in 5.16 seconds
 ✓ Outputs: JSON + Markdown
@@ -154,7 +154,7 @@ codebase-reviewer/
 ### Analyze a Codebase
 ```bash
 # Python tool (primary)
-review-codebase analyze /Users/matt/GitHub/CallBox/Cari \
+review-codebase analyze /Users/matt/GitHub/Acme/Widget \
   --workflow reviewer_criteria \
   -o analysis.json \
   -p prompts.md
@@ -166,13 +166,13 @@ review-codebase analyze /Users/matt/GitHub/CallBox/Cari \
 ### Run Prompt Tuning
 ```bash
 # 1. Initialize session
-review-codebase tune init --project cari --num-tests 5
+review-codebase tune init --project widget --num-tests 5
 
 # 2. Run simulations (manual)
-review-codebase simulate /Users/matt/GitHub/CallBox/Cari
+review-codebase simulate /Users/matt/GitHub/Acme/Widget
 
 # 3. Evaluate and get recommendations
-review-codebase tune evaluate ./prompt_tuning_results/tuning_cari_*
+review-codebase tune evaluate ./prompt_tuning_results/tuning_widget_*
 ```
 
 ### Run Tests
@@ -192,7 +192,7 @@ pytest tests/ --cov=src/codebase_reviewer --cov-report=html
 
 ## Next Steps
 
-1. **Run Tuning on Cari Repository**
+1. **Run Tuning on Widget Repository**
    - Initialize tuning session
    - Run simulations with reviewer_criteria workflow
    - Evaluate outputs
@@ -223,7 +223,7 @@ pytest tests/ --cov=src/codebase_reviewer --cov-report=html
 
 ## References
 
-- **Target Repository**: `/Users/matt/GitHub/CallBox/Cari/`
+- **Target Repository**: `/Users/matt/GitHub/Acme/Widget/`
 - **Archive Documentation**: `archive/PROMPT_TUNING_*.md`
 - **Workflow Design**: `docs/WORKFLOW_INTEGRATION_PROPOSAL.md`
 - **CI Configuration**: `.github/workflows/ci.yml`

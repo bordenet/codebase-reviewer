@@ -9,15 +9,15 @@
 
 ```bash
 # ONE COMMAND that does everything:
-review-codebase evolve /Users/Matt/GitHub/CallBox \
+review-codebase evolve /Users/Matt/GitHub/Acme \
   --llm-provider anthropic \
   --api-key $ANTHROPIC_API_KEY \
-  --output-dir /tmp/callbox-reviewer \
+  --output-dir /tmp/acme-reviewer \
   --auto-run \
   --watch
 
 # This should:
-# 1. Analyze CallBox codebase
+# 1. Analyze Acme codebase
 # 2. Generate Phase 1 prompt
 # 3. Send to Claude API automatically
 # 4. Extract Phase 2 tool code from response
@@ -110,9 +110,9 @@ class Phase2Runner:
 
 **Test**:
 ```bash
-review-codebase generate-phase2-tools /Users/Matt/GitHub/CallBox \
+review-codebase generate-phase2-tools /Users/Matt/GitHub/Acme \
   --llm-provider anthropic \
-  --output /tmp/callbox-tools \
+  --output /tmp/acme-tools \
   --compile \
   --validate
 ```
@@ -151,16 +151,16 @@ class ArtifactComparator:
 **Test**:
 ```bash
 # Generate docs both ways
-review-codebase analyze /Users/Matt/GitHub/CallBox \
+review-codebase analyze /Users/Matt/GitHub/Acme \
   --output /tmp/llm_output.md
 
-/tmp/callbox-tools/bin/generate-docs /Users/Matt/GitHub/CallBox
-# → /tmp/codebase-reviewer/CallBox/docs/
+/tmp/acme-tools/bin/generate-docs /Users/Matt/GitHub/Acme
+# → /tmp/codebase-reviewer/Acme/docs/
 
 # Compare
 review-codebase compare \
   --llm-output /tmp/llm_output.md \
-  --tool-output /tmp/codebase-reviewer/CallBox/docs/ \
+  --tool-output /tmp/codebase-reviewer/Acme/docs/ \
   --report /tmp/comparison_report.md
 
 # Should show: "Fidelity: 95%+ ✅"
@@ -219,8 +219,8 @@ class Regenerator:
 **Test**:
 ```bash
 # Watch mode
-review-codebase watch /Users/Matt/GitHub/CallBox \
-  --tools-dir /tmp/callbox-tools \
+review-codebase watch /Users/Matt/GitHub/Acme \
+  --tools-dir /tmp/acme-tools \
   --check-interval 3600 \
   --auto-regenerate \
   --llm-provider anthropic
@@ -262,7 +262,7 @@ review-codebase watch /Users/Matt/GitHub/CallBox \
 5. **End-to-End**: ✅
    - One command does everything
    - No manual intervention needed
-   - Works on CallBox codebase
+   - Works on Acme codebase
 
 ---
 
@@ -271,7 +271,7 @@ review-codebase watch /Users/Matt/GitHub/CallBox \
 | Week | Phase | Deliverable | Test |
 |------|-------|-------------|------|
 | 1 | LLM Integration | API clients working | Send prompt, get response |
-| 2 | Phase 2 Generation | Tools compile and run | Generate tools for CallBox |
+| 2 | Phase 2 Generation | Tools compile and run | Generate tools for Acme |
 | 3 | Validation | Comparison framework | Prove 95%+ fidelity |
 | 4 | Self-Evolution | Watch mode working | Detect changes, regenerate |
 
@@ -285,14 +285,14 @@ review-codebase watch /Users/Matt/GitHub/CallBox \
 
 ```bash
 # Add to .gitignore (already done):
-/tmp/callbox-*
-/tmp/codebase-reviewer/CallBox/
-*CallBox*
-*callbox*
+/tmp/acme-*
+/tmp/codebase-reviewer/Acme/
+*Acme*
+*acme*
 
 # Ensure all outputs go to /tmp:
-review-codebase evolve /Users/Matt/GitHub/CallBox \
-  --output-dir /tmp/callbox-reviewer  # ← MUST be /tmp
+review-codebase evolve /Users/Matt/GitHub/Acme \
+  --output-dir /tmp/acme-reviewer  # ← MUST be /tmp
 
 # Never commit:
 # - Analysis results
@@ -305,8 +305,8 @@ review-codebase evolve /Users/Matt/GitHub/CallBox \
 
 ```bash
 # Before any git commit:
-git status | grep -i callbox && echo "⚠️  STOP! CallBox files detected!"
-git diff --cached | grep -i "CallBox\|/Users/Matt" && echo "⚠️  STOP! Proprietary paths!"
+git status | grep -i acme && echo "⚠️  STOP! Acme files detected!"
+git diff --cached | grep -i "Acme\|/Users/Matt" && echo "⚠️  STOP! Proprietary paths!"
 ```
 
 ---

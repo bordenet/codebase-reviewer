@@ -1,6 +1,6 @@
-# Phase 2 Tools for CallBox - Generation 1
+# Phase 2 Tools for Acme - Generation 1
 
-I'll generate a complete, self-contained Go tool that analyzes the CallBox codebase and generates comprehensive documentation offline.
+I'll generate a complete, self-contained Go tool that analyzes the Acme codebase and generates comprehensive documentation offline.
 
 ## File Structure
 
@@ -76,7 +76,7 @@ func main() {
 		*outputPath = "/tmp/codebase-docs"
 	}
 
-	fmt.Printf("🚀 CallBox Documentation Generator - Gen %d\n", GENERATION)
+	fmt.Printf("🚀 Acme Documentation Generator - Gen %d\n", GENERATION)
 	fmt.Printf("   Version: %s\n", VERSION)
 	fmt.Printf("   Codebase: %s\n", *codebasePath)
 	fmt.Printf("   Output: %s\n\n", *outputPath)
@@ -119,7 +119,7 @@ func main() {
 	// Step 5: Check obsolescence
 	if *checkObsolescence {
 		fmt.Println("🔍 Checking obsolescence...")
-		detector := obsolescence.NewDetector(GENERATION, "CallBox")
+		detector := obsolescence.NewDetector(GENERATION, "Acme")
 		isObsolete, reasons := detector.Check(m, *codebasePath)
 
 		if isObsolete {
@@ -131,7 +131,7 @@ func main() {
 
 			// Emit regeneration prompt
 			fmt.Println("\n🔄 Generating regeneration prompt...")
-			promptPath, err := metaprompt.EmitRegenerationPrompt(GENERATION, "CallBox", m, reasons)
+			promptPath, err := metaprompt.EmitRegenerationPrompt(GENERATION, "Acme", m, reasons)
 			if err != nil {
 				fmt.Printf("❌ Failed to emit regeneration prompt: %v\n", err)
 			} else {

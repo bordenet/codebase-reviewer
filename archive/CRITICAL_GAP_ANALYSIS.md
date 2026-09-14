@@ -10,7 +10,7 @@
 ### The Two-Phase Evolution System
 
 **Phase 1** (Go Tool - `generate-docs`):
-1. Scan codebase at `/Users/Matt/GitHub/CallBox`
+1. Scan codebase at `/Users/Matt/GitHub/Acme`
 2. Generate LLM prompt with codebase analysis
 3. Send prompt to LLM (Claude)
 4. LLM generates **Phase 2 Tools** (Go code)
@@ -57,19 +57,19 @@ Codebase → Phase1 Tool → LLM Prompt → LLM → Phase2 Tools → Docs
 **The Gap**:
 ```bash
 # What SHOULD work (but doesn't):
-./bin/generate-docs /Users/Matt/GitHub/CallBox
+./bin/generate-docs /Users/Matt/GitHub/Acme
 # → Generates prompt
 # → Sends to LLM automatically
-# → LLM generates Phase 2 tools in /tmp/codebase-reviewer/CallBox/phase2-tools/
+# → LLM generates Phase 2 tools in /tmp/codebase-reviewer/Acme/phase2-tools/
 # → Phase 2 tools run to generate docs
 # → Docs update as code changes
 # → Tools detect obsolescence
 # → Regeneration loop triggers
 
 # What ACTUALLY works:
-./bin/generate-docs /Users/Matt/GitHub/CallBox
+./bin/generate-docs /Users/Matt/GitHub/Acme
 # → Generates prompt
-# → Saves to /tmp/codebase-reviewer/CallBox/phase1-llm-prompt.md
+# → Saves to /tmp/codebase-reviewer/Acme/phase1-llm-prompt.md
 # → YOU manually copy/paste to Claude
 # → Claude responds in chat
 # → YOU manually save Claude's code
@@ -127,17 +127,17 @@ class LLMIntegrator:
 **What's Needed**:
 ```bash
 # DESIRED (not implemented):
-review-codebase generate-offline-tools /Users/Matt/GitHub/CallBox
+review-codebase generate-offline-tools /Users/Matt/GitHub/Acme
 # → Generates Phase 2 tools via LLM
 # → Compiles them
 # → Runs them to create initial docs
 
-review-codebase run-offline-tools /tmp/codebase-reviewer/CallBox/phase2-tools/
+review-codebase run-offline-tools /tmp/codebase-reviewer/Acme/phase2-tools/
 # → Runs existing Phase 2 tools
 # → Updates docs
 # → Checks for obsolescence
 
-review-codebase watch /Users/Matt/GitHub/CallBox
+review-codebase watch /Users/Matt/GitHub/Acme
 # → Monitors for changes
 # → Runs Phase 2 tools automatically
 # → Triggers regeneration if obsolete
@@ -203,31 +203,31 @@ class ArtifactComparator:
 # Step 1: Generate prompt
 cd /Users/matt/GitHub/Personal/codebase-reviewer
 make build
-./bin/generate-docs /Users/Matt/GitHub/CallBox
+./bin/generate-docs /Users/Matt/GitHub/Acme
 
 # Step 2: Manually send to Claude
-cat /tmp/codebase-reviewer/CallBox/phase1-llm-prompt.md
+cat /tmp/codebase-reviewer/Acme/phase1-llm-prompt.md
 # Copy/paste to Claude
 
 # Step 3: Manually save Claude's response
 # (Claude generates Go code for Phase 2 tools)
 
 # Step 4: Manually build and run
-cd /tmp/codebase-reviewer/CallBox/phase2-tools/
+cd /tmp/codebase-reviewer/Acme/phase2-tools/
 go build ./cmd/generate-docs/
-./generate-docs /Users/Matt/GitHub/CallBox
+./generate-docs /Users/Matt/GitHub/Acme
 ```
 
 ### Option B: Python Tool (Different Purpose)
 ```bash
 # One-time analysis with actionable prompts
-review-codebase analyze /Users/Matt/GitHub/CallBox \
+review-codebase analyze /Users/Matt/GitHub/Acme \
   --workflow reviewer_criteria \
-  --output /tmp/callbox_analysis.json \
-  --prompts-output /tmp/callbox_prompts.md
+  --output /tmp/acme_analysis.json \
+  --prompts-output /tmp/acme_prompts.md
 
 # Review the prompts (for human action)
-cat /tmp/callbox_prompts.md
+cat /tmp/acme_prompts.md
 ```
 
 **Neither achieves the mission!**
@@ -274,7 +274,7 @@ cat /tmp/callbox_prompts.md
 
 1. **STOP** enhancing the Python tool (it's not the mission)
 2. **BUILD** LLM integration layer
-3. **TEST** on CallBox codebase (with IP protection)
+3. **TEST** on Acme codebase (with IP protection)
 4. **VALIDATE** Phase 2 tools reproduce LLM quality
 5. **IMPLEMENT** self-evolution loop
 

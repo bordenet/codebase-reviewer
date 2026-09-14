@@ -31,26 +31,26 @@ These files contain NO proprietary information and are ready to push:
 
 ## ❌ Files to NEVER Commit
 
-These files contain proprietary CARI information:
+These files contain proprietary WIDGET information:
 
 ### In /tmp (Protected by Location)
-- [ ] `/tmp/codebase-reviewer/Cari/phase1-llm-prompt.yaml`
-- [ ] `/tmp/codebase-reviewer/Cari/phase1-llm-prompt.md`
-- [ ] `/tmp/codebase-reviewer/Cari/phase1-analysis.md`
-- [ ] `/tmp/codebase-reviewer/Cari/phase1-regeneration-prompt.yaml`
-- [ ] `/tmp/codebase-reviewer/Cari/phase1-regeneration-prompt.md`
-- [ ] `/tmp/codebase-reviewer/Cari/learnings.yaml`
-- [ ] `/tmp/codebase-reviewer/Cari/SECURITY-VALIDATION.md`
-- [ ] `/tmp/codebase-reviewer/Cari/README.md`
-- [ ] `/tmp/codebase-reviewer/Cari/phase2-tools/**/*`
-- [ ] `/tmp/codebase-reviewer/Cari/reference-materials/**/*`
+- [ ] `/tmp/codebase-reviewer/Widget/phase1-llm-prompt.yaml`
+- [ ] `/tmp/codebase-reviewer/Widget/phase1-llm-prompt.md`
+- [ ] `/tmp/codebase-reviewer/Widget/phase1-analysis.md`
+- [ ] `/tmp/codebase-reviewer/Widget/phase1-regeneration-prompt.yaml`
+- [ ] `/tmp/codebase-reviewer/Widget/phase1-regeneration-prompt.md`
+- [ ] `/tmp/codebase-reviewer/Widget/learnings.yaml`
+- [ ] `/tmp/codebase-reviewer/Widget/SECURITY-VALIDATION.md`
+- [ ] `/tmp/codebase-reviewer/Widget/README.md`
+- [ ] `/tmp/codebase-reviewer/Widget/phase2-tools/**/*`
+- [ ] `/tmp/codebase-reviewer/Widget/reference-materials/**/*`
 
-### In CallBox Directory (Protected by .gitignore)
-- [ ] `docs/architecture/system-overview.md` (CARI-specific)
-- [ ] `docs/architecture/service-catalog.md` (CARI-specific)
-- [ ] `docs/services/telephony-service.md` (CARI-specific)
-- [ ] `docs/services/agent-api.md` (CARI-specific)
-- [ ] Any file with "CARI" or "CallBox" in content
+### In Acme Directory (Protected by .gitignore)
+- [ ] `docs/architecture/system-overview.md` (WIDGET-specific)
+- [ ] `docs/architecture/service-catalog.md` (WIDGET-specific)
+- [ ] `docs/services/telephony-service.md` (WIDGET-specific)
+- [ ] `docs/services/agent-api.md` (WIDGET-specific)
+- [ ] Any file with "WIDGET" or "Acme" in content
 
 ## 🔍 Pre-Commit Verification
 
@@ -61,14 +61,14 @@ Before committing, run these checks:
 git status
 
 # 2. Verify no proprietary files
-git diff --cached | grep -i "cari\|callbox\|proprietary"
+git diff --cached | grep -i "widget\|acme\|proprietary"
 # Should return nothing
 
 # 3. Run pre-commit hooks
 pre-commit run --all-files
 
 # 4. Check .gitignore is working
-git check-ignore /tmp/codebase-reviewer/Cari/phase1-analysis.md
+git check-ignore /tmp/codebase-reviewer/Widget/phase1-analysis.md
 # Should output the path (meaning it's ignored)
 
 # 5. List files to be committed
@@ -80,7 +80,7 @@ git diff --cached --name-only
 
 ### Option 1: Commit Evolution System Only
 ```bash
-cd /Users/matt/GitHub/CallBox
+cd /Users/matt/GitHub/Acme
 
 # Add evolution system files
 git add prompts/templates/phase1-regeneration-prompt-template.yaml
@@ -106,7 +106,7 @@ git push origin main
 
 ### Option 2: Commit Everything (First Time Setup)
 ```bash
-cd /Users/matt/GitHub/CallBox
+cd /Users/matt/GitHub/Acme
 
 # Initialize git if needed
 git init
@@ -150,11 +150,11 @@ git push -u origin main
 Before pushing to GitHub, verify:
 
 - [ ] No files from `/tmp/codebase-reviewer/` are staged
-- [ ] No files with "CARI" in the name are staged
-- [ ] No files with "CallBox" in the name are staged
+- [ ] No files with "WIDGET" in the name are staged
+- [ ] No files with "Acme" in the name are staged
 - [ ] No proprietary analysis files are staged
-- [ ] No Phase 2 tools for CARI are staged
-- [ ] No reference materials for CARI are staged
+- [ ] No Phase 2 tools for WIDGET are staged
+- [ ] No reference materials for WIDGET are staged
 - [ ] `.gitignore` is committed and comprehensive
 - [ ] Pre-commit hooks are committed and active
 
@@ -173,7 +173,7 @@ git diff --cached
 ## 📊 Summary
 
 **Safe to Commit**: 15+ files (generic tool code)
-**Protected**: All CARI-specific analysis and outputs
+**Protected**: All WIDGET-specific analysis and outputs
 **Security**: Multi-layered protection active
 **Status**: ✅ Ready for public GitHub
 

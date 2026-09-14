@@ -377,7 +377,7 @@ make clean
 
 ```bash
 # Analyze a repository
-review-codebase analyze /Users/matt/GitHub/CallBox/Cari
+review-codebase analyze /Users/matt/GitHub/Acme/Widget
 
 # Output shows:
 # - Documentation files found
@@ -395,10 +395,10 @@ review-codebase analyze /Users/matt/GitHub/CallBox/Cari
 
 ```bash
 # Use the comprehensive review workflow
-review-codebase analyze /Users/matt/GitHub/CallBox/Cari \
+review-codebase analyze /Users/matt/GitHub/Acme/Widget \
   --workflow reviewer_criteria \
-  -o cari_analysis.json \
-  -p cari_prompts.md
+  -o widget_analysis.json \
+  -p widget_prompts.md
 
 # This generates prompts for:
 # 1. High-Level Reconnaissance
@@ -413,7 +413,7 @@ review-codebase analyze /Users/matt/GitHub/CallBox/Cari \
 
 ```bash
 # Test prompts before using with real LLM
-review-codebase simulate /Users/matt/GitHub/CallBox/Cari \
+review-codebase simulate /Users/matt/GitHub/Acme/Widget \
   --workflow reviewer_criteria \
   --output-dir ./simulation_results
 
@@ -435,7 +435,7 @@ review-codebase web --port 3000
 
 # Then:
 # 1. Open http://localhost:3000
-# 2. Enter repository path: /Users/matt/GitHub/CallBox/Cari
+# 2. Enter repository path: /Users/matt/GitHub/Acme/Widget
 # 3. Click "Analyze"
 # 4. View results and download prompts
 ```
@@ -482,20 +482,20 @@ make build
 
 This tool is configured to analyze:
 
-**Primary Target**: `/Users/matt/GitHub/CallBox/Cari/`
+**Primary Target**: `/Users/matt/GitHub/Acme/Widget/`
 
 ```bash
 # Quick analysis
-review-codebase analyze /Users/matt/GitHub/CallBox/Cari
+review-codebase analyze /Users/matt/GitHub/Acme/Widget
 
 # Comprehensive review
-review-codebase analyze /Users/matt/GitHub/CallBox/Cari \
+review-codebase analyze /Users/matt/GitHub/Acme/Widget \
   --workflow reviewer_criteria \
-  -o cari_analysis.json \
-  -p cari_review_prompts.md
+  -o widget_analysis.json \
+  -p widget_review_prompts.md
 
 # Simulation mode
-review-codebase simulate /Users/matt/GitHub/CallBox/Cari \
+review-codebase simulate /Users/matt/GitHub/Acme/Widget \
   --workflow reviewer_criteria
 ```
 
@@ -571,4 +571,4 @@ See LICENSE file for details.
 **Version**: 1.0.0
 **Last Updated**: 2025-11-24
 **Primary Tool**: Python-based comprehensive analyzer
-**Target Repository**: /Users/matt/GitHub/CallBox/Cari/
+**Target Repository**: /Users/matt/GitHub/Acme/Widget/

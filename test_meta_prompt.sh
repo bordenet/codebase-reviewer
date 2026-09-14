@@ -8,12 +8,12 @@ echo "Testing Meta-Prompt Generation"
 echo "=========================================="
 echo ""
 
-# Use the existing Phase 1 prompt from CallBox
-PHASE1_PROMPT="/tmp/codebase-reviewer/CallBox/phase1-llm-prompt.md"
+# Use the existing Phase 1 prompt from Acme
+PHASE1_PROMPT="/tmp/codebase-reviewer/Acme/phase1-llm-prompt.md"
 
 if [ ! -f "$PHASE1_PROMPT" ]; then
     echo "❌ Phase 1 prompt not found: $PHASE1_PROMPT"
-    echo "   Run: ./bin/generate-docs /Users/Matt/GitHub/CallBox"
+    echo "   Run: ./bin/generate-docs /Users/Matt/GitHub/Acme"
     exit 1
 fi
 
@@ -29,8 +29,8 @@ from src.codebase_reviewer.metaprompt.generator import MetaPromptGenerator
 # Generate meta-prompt
 gen = MetaPromptGenerator()
 meta_prompt = gen.generate(
-    phase1_prompt_path=Path("/tmp/codebase-reviewer/CallBox/phase1-llm-prompt.md"),
-    codebase_name="CallBox",
+    phase1_prompt_path=Path("/tmp/codebase-reviewer/Acme/phase1-llm-prompt.md"),
+    codebase_name="Acme",
     generation=1
 )
 

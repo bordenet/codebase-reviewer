@@ -10,7 +10,7 @@ I've created a complete Go-based CLI tool that:
 - Includes comprehensive security safeguards
 - Can be run against ANY codebase
 
-**Location**: `/Users/matt/GitHub/CallBox/`
+**Location**: `/Users/matt/GitHub/Acme/`
 
 **Files Created**:
 - `cmd/generate-docs/main.go` - Main CLI application
@@ -24,14 +24,14 @@ I've created a complete Go-based CLI tool that:
 - `README.md` - Comprehensive documentation
 - `go.mod` - Go dependencies
 
-### CARI Analysis (PROPRIETARY - PROTECTED)
-I've analyzed the CARI codebase and generated:
+### WIDGET Analysis (PROPRIETARY - PROTECTED)
+I've analyzed the WIDGET codebase and generated:
 - Comprehensive analysis document
 - LLM prompts for Phase 2 tool generation
 - Security validation report
 - Directory structure for Phase 2 outputs
 
-**Location**: `/tmp/codebase-reviewer/Cari/` (NOT in git)
+**Location**: `/tmp/codebase-reviewer/Widget/` (NOT in git)
 
 ---
 
@@ -39,21 +39,21 @@ I've analyzed the CARI codebase and generated:
 
 ### 1. Review the Analysis
 ```bash
-# Read the comprehensive CARI analysis
-cat /tmp/codebase-reviewer/Cari/phase1-analysis.md
+# Read the comprehensive WIDGET analysis
+cat /tmp/codebase-reviewer/Widget/phase1-analysis.md
 
 # Or open in VS Code
-code /tmp/codebase-reviewer/Cari/phase1-analysis.md
+code /tmp/codebase-reviewer/Widget/phase1-analysis.md
 ```
 
 ### 2. Verify Security
 ```bash
 # Check security validation
-cat /tmp/codebase-reviewer/Cari/SECURITY-VALIDATION.md
+cat /tmp/codebase-reviewer/Widget/SECURITY-VALIDATION.md
 
 # Verify nothing proprietary is tracked
-ls -la /Users/matt/GitHub/CallBox/
-# Should NOT see any CARI-specific files
+ls -la /Users/matt/GitHub/Acme/
+# Should NOT see any WIDGET-specific files
 ```
 
 ### 3. Test the Tool
@@ -71,22 +71,22 @@ ls -la /Users/matt/GitHub/CallBox/
 
 ### Option A: Create New Repo (Recommended)
 ```bash
-# Navigate to a NEW directory (not CallBox)
+# Navigate to a NEW directory (not Acme)
 cd ~/GitHub
 mkdir codebase-reviewer
 cd codebase-reviewer
 
-# Copy only the tool files (not CARI analysis)
-cp -r /Users/matt/GitHub/CallBox/cmd .
-cp -r /Users/matt/GitHub/CallBox/internal .
-cp -r /Users/matt/GitHub/CallBox/pkg .
-cp -r /Users/matt/GitHub/CallBox/prompts .
-cp /Users/matt/GitHub/CallBox/.gitignore .
-cp /Users/matt/GitHub/CallBox/.pre-commit-config.yaml .
-cp /Users/matt/GitHub/CallBox/Makefile .
-cp /Users/matt/GitHub/CallBox/README.md .
-cp /Users/matt/GitHub/CallBox/go.mod .
-cp /Users/matt/GitHub/CallBox/go.sum .
+# Copy only the tool files (not WIDGET analysis)
+cp -r /Users/matt/GitHub/Acme/cmd .
+cp -r /Users/matt/GitHub/Acme/internal .
+cp -r /Users/matt/GitHub/Acme/pkg .
+cp -r /Users/matt/GitHub/Acme/prompts .
+cp /Users/matt/GitHub/Acme/.gitignore .
+cp /Users/matt/GitHub/Acme/.pre-commit-config.yaml .
+cp /Users/matt/GitHub/Acme/Makefile .
+cp /Users/matt/GitHub/Acme/README.md .
+cp /Users/matt/GitHub/Acme/go.mod .
+cp /Users/matt/GitHub/Acme/go.sum .
 
 # Initialize git
 git init
@@ -98,11 +98,11 @@ gh repo create bordenet/codebase-reviewer --public --source=. --remote=origin
 git push -u origin main
 ```
 
-### Option B: Keep in CallBox (If CallBox will become the tool repo)
+### Option B: Keep in Acme (If Acme will become the tool repo)
 ```bash
-cd /Users/matt/GitHub/CallBox
+cd /Users/matt/GitHub/Acme
 
-# Remove the docs folder we created earlier (it was for CARI)
+# Remove the docs folder we created earlier (it was for WIDGET)
 rm -rf docs/
 
 # Initialize git if not already
@@ -170,7 +170,7 @@ You can either:
 ## 🎯 Success Criteria Checklist
 
 - [x] Phase 1 tool builds successfully
-- [x] Tool runs against CARI codebase
+- [x] Tool runs against WIDGET codebase
 - [x] LLM prompt generated
 - [x] Analysis document created
 - [x] Security validated
@@ -187,12 +187,12 @@ You can either:
 
 ### DO NOT Commit to GitHub:
 - ❌ `/tmp/codebase-reviewer/` directory
-- ❌ Any file with "CARI" in the name
-- ❌ Any file with "CallBox" in the name
+- ❌ Any file with "WIDGET" in the name
+- ❌ Any file with "Acme" in the name
 - ❌ `phase1-analysis.md`
 - ❌ `phase1-llm-prompt.*`
-- ❌ Phase 2 tools generated for CARI
-- ❌ Reference materials for CARI
+- ❌ Phase 2 tools generated for WIDGET
+- ❌ Reference materials for WIDGET
 
 ### SAFE to Commit to GitHub:
 - ✅ `cmd/generate-docs/main.go`
@@ -216,9 +216,9 @@ Yes! That's the whole point. Run it on any codebase:
 ./bin/generate-docs -v /path/to/any/codebase
 ```
 
-### "What if I need to rebuild the CARI analysis?"
+### "What if I need to rebuild the WIDGET analysis?"
 ```bash
-./bin/generate-docs --scorch /Users/matt/GitHub/CallBox/Cari
+./bin/generate-docs --scorch /Users/matt/GitHub/Acme/Widget
 ```
 
 ### "How do I build Phase 2 tools?"

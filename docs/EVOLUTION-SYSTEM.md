@@ -186,25 +186,25 @@ if obsolescence.IsObsolete {
 
 ```bash
 # Step 1: Run Phase 1 tool
-cd /Users/matt/GitHub/CallBox
-./bin/generate-docs -v ./Cari
+cd /Users/matt/GitHub/Acme
+./bin/generate-docs -v ./Widget
 
 # Output:
-# - /tmp/codebase-reviewer/Cari/phase1-llm-prompt.yaml
-# - /tmp/codebase-reviewer/Cari/phase1-llm-prompt.md
+# - /tmp/codebase-reviewer/Widget/phase1-llm-prompt.yaml
+# - /tmp/codebase-reviewer/Widget/phase1-llm-prompt.md
 
 # Step 2: Provide prompt to LLM (Augment Agent)
 # LLM generates Phase 2 tools in:
-# - /tmp/codebase-reviewer/Cari/phase2-tools/
+# - /tmp/codebase-reviewer/Widget/phase2-tools/
 
 # Step 3: Build and run Phase 2 tools
-cd /tmp/codebase-reviewer/Cari/phase2-tools
+cd /tmp/codebase-reviewer/Widget/phase2-tools
 make build
-./bin/update-docs --path /Users/matt/GitHub/CallBox/Cari
+./bin/update-docs --path /Users/matt/GitHub/Acme/Widget
 
 # Output:
-# - /tmp/codebase-reviewer/Cari/reference-materials/ (docs)
-# - /tmp/codebase-reviewer/Cari/learnings.yaml (learnings)
+# - /tmp/codebase-reviewer/Widget/reference-materials/ (docs)
+# - /tmp/codebase-reviewer/Widget/learnings.yaml (learnings)
 ```
 
 ### Subsequent Generations (Gen 2+)
@@ -214,8 +214,8 @@ make build
 # New services added, languages changed, etc.
 
 # Step 1: Run Phase 2 tool (Gen 1)
-cd /tmp/codebase-reviewer/Cari/phase2-tools
-./bin/update-docs --path /Users/matt/GitHub/CallBox/Cari
+cd /tmp/codebase-reviewer/Widget/phase2-tools
+./bin/update-docs --path /Users/matt/GitHub/Acme/Widget
 
 # Tool detects obsolescence:
 # ⚠️  Tool has become obsolete!
@@ -223,8 +223,8 @@ cd /tmp/codebase-reviewer/Cari/phase2-tools
 # ⚠️  Reason: Codebase fingerprint changed (and other changes)
 #
 # ✅ Regeneration prompt saved to:
-#    - /tmp/codebase-reviewer/Cari/phase1-regeneration-prompt.yaml
-#    - /tmp/codebase-reviewer/Cari/phase1-regeneration-prompt.md
+#    - /tmp/codebase-reviewer/Widget/phase1-regeneration-prompt.yaml
+#    - /tmp/codebase-reviewer/Widget/phase1-regeneration-prompt.md
 #
 # Next steps:
 # 1. Review the regeneration prompt
@@ -232,19 +232,19 @@ cd /tmp/codebase-reviewer/Cari/phase2-tools
 # 3. Provide the regeneration prompt to the LLM
 
 # Step 2: Review regeneration prompt
-cat /tmp/codebase-reviewer/Cari/phase1-regeneration-prompt.md
+cat /tmp/codebase-reviewer/Widget/phase1-regeneration-prompt.md
 
 # Step 3: Re-run Phase 1 with --scorch
-cd /Users/matt/GitHub/CallBox
-./bin/generate-docs --scorch ./Cari
+cd /Users/matt/GitHub/Acme
+./bin/generate-docs --scorch ./Widget
 
 # Step 4: Provide regeneration prompt to LLM
 # LLM reads learnings and generates IMPROVED Phase 2 tools (Gen 2)
 
 # Step 5: Build and run Gen 2 tools
-cd /tmp/codebase-reviewer/Cari/phase2-tools
+cd /tmp/codebase-reviewer/Widget/phase2-tools
 make build
-./bin/update-docs --path /Users/matt/GitHub/CallBox/Cari
+./bin/update-docs --path /Users/matt/GitHub/Acme/Widget
 
 # Gen 2 tools are better:
 # ✓ Fixed issues from Gen 1

@@ -120,7 +120,7 @@ All outputs are saved to `/tmp/codebase-reviewer/{repo_name}/`:
 ### Security Features
 
 1. **Forced /tmp/ Output**: All outputs must go to `/tmp/` to prevent git tracking
-2. **CallBox Protection**: .gitignore and pre-commit hooks block any CallBox references
+2. **Acme Protection**: .gitignore and pre-commit hooks block any Acme references
 3. **IP Protection**: Pre-commit hooks scan for proprietary paths and code
 4. **Validation Script**: `scripts/validate_security.sh` for comprehensive security checks
 

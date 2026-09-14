@@ -34,14 +34,14 @@ The codebase-reviewer now implements a **self-evolving system** where Phase 2 to
   - Outputs YAML and Markdown
 
 #### Example Phase 2 Tool
-- `/tmp/codebase-reviewer/Cari/phase2-tools/cmd/update-docs/main.go`
+- `/tmp/codebase-reviewer/Widget/phase2-tools/cmd/update-docs/main.go`
   - Complete example showing evolution pattern
   - Loads previous learnings
   - Detects obsolescence
   - Generates regeneration prompt
   - Saves new learnings
 
-- `/tmp/codebase-reviewer/Cari/phase2-tools/internal/validator/validator.go`
+- `/tmp/codebase-reviewer/Widget/phase2-tools/internal/validator/validator.go`
   - Obsolescence detection logic
   - Scoring system (0.0 = fresh, 1.0 = obsolete)
   - Multiple detection criteria
@@ -160,13 +160,13 @@ prompts/
 ### Inspecting Prompts
 ```bash
 # View initial prompt
-cat /tmp/codebase-reviewer/Cari/phase1-llm-prompt.yaml
+cat /tmp/codebase-reviewer/Widget/phase1-llm-prompt.yaml
 
 # View regeneration prompt (after obsolescence detected)
-cat /tmp/codebase-reviewer/Cari/phase1-regeneration-prompt.yaml
+cat /tmp/codebase-reviewer/Widget/phase1-regeneration-prompt.yaml
 
 # Edit before providing to LLM
-code /tmp/codebase-reviewer/Cari/phase1-regeneration-prompt.yaml
+code /tmp/codebase-reviewer/Widget/phase1-regeneration-prompt.yaml
 ```
 
 ## 🚀 Usage Example
@@ -174,14 +174,14 @@ code /tmp/codebase-reviewer/Cari/phase1-regeneration-prompt.yaml
 ### First Run (Gen 1)
 ```bash
 # Generate initial prompt
-./bin/generate-docs -v ./Cari
+./bin/generate-docs -v ./Widget
 
 # Provide to LLM → Get Phase 2 tools
 
 # Run Phase 2 tools
-cd /tmp/codebase-reviewer/Cari/phase2-tools
+cd /tmp/codebase-reviewer/Widget/phase2-tools
 make build
-./bin/update-docs --path /Users/matt/GitHub/CallBox/Cari
+./bin/update-docs --path /Users/matt/GitHub/Acme/Widget
 
 # Output: Documentation + learnings.yaml
 ```
@@ -189,18 +189,18 @@ make build
 ### After Codebase Changes (Gen 2)
 ```bash
 # Run Phase 2 tools again
-./bin/update-docs --path /Users/matt/GitHub/CallBox/Cari
+./bin/update-docs --path /Users/matt/GitHub/Acme/Widget
 
 # Tool detects obsolescence:
 # ⚠️  Tool has become obsolete!
 # ✅ Regeneration prompt saved
 
 # Review regeneration prompt
-cat /tmp/codebase-reviewer/Cari/phase1-regeneration-prompt.yaml
+cat /tmp/codebase-reviewer/Widget/phase1-regeneration-prompt.yaml
 
 # Regenerate
-cd /Users/matt/GitHub/CallBox
-./bin/generate-docs --scorch ./Cari
+cd /Users/matt/GitHub/Acme
+./bin/generate-docs --scorch ./Widget
 
 # Provide regeneration prompt to LLM → Get improved Phase 2 tools
 ```
@@ -249,9 +249,9 @@ When codebase changes too much:
 
 ### Non-Tracked (Proprietary)
 ```
-🔒 /tmp/codebase-reviewer/Cari/phase1-regeneration-prompt.yaml
-🔒 /tmp/codebase-reviewer/Cari/learnings.yaml
-🔒 /tmp/codebase-reviewer/Cari/phase2-tools/
+🔒 /tmp/codebase-reviewer/Widget/phase1-regeneration-prompt.yaml
+🔒 /tmp/codebase-reviewer/Widget/learnings.yaml
+🔒 /tmp/codebase-reviewer/Widget/phase2-tools/
 ```
 
 ## ✅ Requirements Met

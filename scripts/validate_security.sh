@@ -14,35 +14,35 @@ NC='\033[0m' # No Color
 
 ERRORS=0
 
-# Check 1: Verify .gitignore covers CallBox patterns
+# Check 1: Verify .gitignore covers Acme patterns
 echo "📋 Check 1: Verifying .gitignore patterns..."
-if grep -q "CallBox" .gitignore; then
-    echo -e "${GREEN}✓${NC} CallBox patterns found in .gitignore"
+if grep -q "Acme" .gitignore; then
+    echo -e "${GREEN}✓${NC} Acme patterns found in .gitignore"
 else
-    echo -e "${RED}✗${NC} CallBox patterns NOT found in .gitignore"
+    echo -e "${RED}✗${NC} Acme patterns NOT found in .gitignore"
     ERRORS=$((ERRORS + 1))
 fi
 
-# Check 2: Scan Python/Go code files for CallBox references (excluding docs/examples)
-echo "📋 Check 2: Scanning code files for CallBox references..."
-CALLBOX_IN_CODE=$(git ls-files | grep -E "\.(py|go)$" | xargs grep -l "CallBox" 2>/dev/null | grep -v "test_" || true)
-if [ -n "$CALLBOX_IN_CODE" ]; then
-    echo -e "${RED}✗${NC} Found CallBox references in code files:"
-    echo "$CALLBOX_IN_CODE"
+# Check 2: Scan Python/Go code files for Acme references (excluding docs/examples)
+echo "📋 Check 2: Scanning code files for Acme references..."
+ACME_IN_CODE=$(git ls-files | grep -E "\.(py|go)$" | xargs grep -l "Acme" 2>/dev/null | grep -v "test_" || true)
+if [ -n "$ACME_IN_CODE" ]; then
+    echo -e "${RED}✗${NC} Found Acme references in code files:"
+    echo "$ACME_IN_CODE"
     ERRORS=$((ERRORS + 1))
 else
-    echo -e "${GREEN}✓${NC} No CallBox references in code files"
+    echo -e "${GREEN}✓${NC} No Acme references in code files"
 fi
 
-# Check 3: Scan for actual CallBox file paths (not just the word "CallBox")
-echo "📋 Check 3: Scanning for CallBox absolute file paths..."
-CALLBOX_PATHS=$(git ls-files | xargs grep -l "/Users/matt/GitHub/CallBox/" 2>/dev/null | grep -v "scripts/\|docs/\|test_\|\.md$" || true)
-if [ -n "$CALLBOX_PATHS" ]; then
-    echo -e "${RED}✗${NC} Found CallBox absolute paths in files:"
-    echo "$CALLBOX_PATHS"
+# Check 3: Scan for actual Acme file paths (not just the word "Acme")
+echo "📋 Check 3: Scanning for Acme absolute file paths..."
+ACME_PATHS=$(git ls-files | xargs grep -l "/Users/matt/GitHub/Acme/" 2>/dev/null | grep -v "scripts/\|docs/\|test_\|\.md$" || true)
+if [ -n "$ACME_PATHS" ]; then
+    echo -e "${RED}✗${NC} Found Acme absolute paths in files:"
+    echo "$ACME_PATHS"
     ERRORS=$((ERRORS + 1))
 else
-    echo -e "${GREEN}✓${NC} No CallBox absolute paths in files"
+    echo -e "${GREEN}✓${NC} No Acme absolute paths in files"
 fi
 
 # Check 4: Verify /tmp/ output directory exists and is writable
@@ -78,8 +78,8 @@ echo "📋 Check 7: Verifying comprehensive .gitignore patterns..."
 REQUIRED_PATTERNS=(
     "analysis-results.json"
     "simulation_results/"
-    "*callbox*"
-    "*CallBox*"
+    "*acme*"
+    "*Acme*"
 )
 
 for pattern in "${REQUIRED_PATTERNS[@]}"; do
